@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ComponentDependencies } from 'src/di';
 import { environment } from 'src/environments/environment';
+import { stringHelper } from 'src/utilities';
 
 import { BaseComponent } from '../core/base.component';
-import { stringHelper } from '../utilities';
 
 interface INavigationItem {
   routerLink: string;
@@ -12,6 +12,7 @@ interface INavigationItem {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './master-layout.component.html',
   styleUrls: [
     './master-layout.component.scss'

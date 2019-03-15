@@ -1,28 +1,71 @@
-<div libTitle1>
-    Source Project
+<ng-container *ngIf="!isLoading && !importCompleted">
+
+    <div libTitle1>
+        Source Project
+    </div>
+
+    <form [formGroup]="formGroup">
+
+        <mat-card>
+            <mat-card-content>
+                <mat-form-field class="w-full-width">
+                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="sourceProjectId"
+                        required>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+
+        <div libTitle1 class="push-top">
+            Target Project
+        </div>
+
+        <mat-card>
+            <mat-card-content>
+                <mat-form-field class="w-full-width">
+                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="targetProjectId"
+                        required>
+                </mat-form-field>
+
+                <mat-form-field class="push-top w-full-width">
+                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="targetProjectCmApiKey"
+                        required>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="push-bottom push-top" *ngIf="error">
+            {{ error }}
+        </div>
+
+        <div class="push-top" *ngIf="!isLoading">
+            <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
+            <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
+        </div>
+    </form>
+</ng-container>
+
+<div class="push-top" *ngIf="importTriggered">
+
+    <div libTitle1 *ngIf="!importCompleted">
+        Status
+    </div>
+
+    <div *ngIf="importCompleted" libTitle1>
+        Import completed
+    </div>
+
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+    <mat-card>
+        <cdk-virtual-scroll-viewport itemSize="50" class="w-import-viewport">
+            <mat-list role="list">
+                <mat-list-item role="listitem" *cdkVirtualFor="let processedItem of processedItems">
+                    <p>
+                        <strong>{{ processedItem.type }}</strong>: {{ processedItem.name }}
+                    </p>
+                </mat-list-item>
+            </mat-list>
+
+        </cdk-virtual-scroll-viewport>
+    </mat-card>
+
 </div>
-
-<mat-card>
-    <mat-card-content>
-        <mat-form-field class="w-full-width">
-            <input autocomplete="off" matInput placeholder="Project Id">
-        </mat-form-field>
-    </mat-card-content>
-</mat-card>
-
-<div libTitle1 class="push-top">
-    Target Project
-</div>
-
-<mat-card>
-    <mat-card-content>
-        <mat-form-field class="w-full-width">
-            <input autocomplete="off" matInput placeholder="Project Id">
-        </mat-form-field>
-
-        <mat-form-field class="push-top w-full-width">
-                <input autocomplete="off" matInput placeholder="CM API Key">
-            </mat-form-field>
-    </mat-card-content>
-
-</mat-card>

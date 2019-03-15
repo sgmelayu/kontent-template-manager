@@ -9,16 +9,16 @@
 
 // below defines your custom color to build a theme palette from
 $primary: (
-  50: $primaryColor,
-  100: $primaryColor,
-  200: $primaryColor,
-  300: $primaryColor,
-  400: $primaryColor,
-  500: $primaryColor,
-  600: $primaryColor,
-  700: $primaryColor,
-  800: $primaryColor,
-  900: $primaryColor,
+  50:  lighten($primaryColor, 25),
+  100: lighten($primaryColor, 20),
+  200: lighten($primaryColor, 15),
+  300: lighten($primaryColor, 10),
+  400: lighten($primaryColor, 5),
+  500: lighten($primaryColor, 0),
+  600: lighten($primaryColor, 0),
+  700: lighten($primaryColor, 0),
+  800: lighten($primaryColor, 0),
+  900: lighten($primaryColor, 0),
   A100: $primaryColor,
   A200: $primaryColor,
   A400: $primaryColor,
@@ -42,16 +42,16 @@ $primary: (
 );
 
 $accent: (
-  50: $accentColor,
-  100: $accentColor,
-  200: $accentColor,
-  300: $accentColor,
-  400: $accentColor,
-  500: $accentColor,
-  600: $accentColor,
-  700: $accentColor,
-  800: $accentColor,
-  900: $accentColor,
+  50:  lighten($accentColor, 25),
+  100: lighten($accentColor, 20),
+  200: lighten($accentColor, 15),
+  300: lighten($accentColor, 10),
+  400: lighten($accentColor, 5),
+  500: lighten($accentColor, 0),
+  600: lighten($accentColor, 0),
+  700: lighten($accentColor, 0),
+  800: lighten($accentColor, 0),
+  900: lighten($accentColor, 0),
   A100: $accentColor,
   A200: $accentColor,
   A400: $accentColor,
@@ -81,7 +81,7 @@ $app-primary: mat-palette($primary);
 $app-accent:  mat-palette($accent, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$app-warn:    mat-palette($mat-red);
+$app-warn:  mat-palette($mat-red);
 
 // Create the theme object (a Sass map containing all of the palettes).
 $app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);

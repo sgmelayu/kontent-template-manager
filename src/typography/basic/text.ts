@@ -30,7 +30,6 @@ export class Text2Directive {
         addClass(this.renderer, this.hostElement, 'mat-body-2');
     }
 
-
 }
 
 @Directive({

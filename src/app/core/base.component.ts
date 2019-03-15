@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Observable, of, Subject, zip } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject, throwError } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { ComponentDependencies } from 'src/di';
+import { observableHelper } from 'src/utilities';
 
 export abstract class BaseComponent implements OnDestroy {
 
@@ -19,10 +20,16 @@ export abstract class BaseComponent implements OnDestroy {
         return !this.isSmallScreen;
     }
 
+    public isLoading: boolean = false;
+
     constructor(
         protected dependencies: ComponentDependencies,
         protected cdr: ChangeDetectorRef
     ) {
+    }
+
+    ngOnDestroy(): void {
+        this.destroy();
     }
 
     protected destroy(): void {
@@ -30,8 +37,12 @@ export abstract class BaseComponent implements OnDestroy {
         this.ngUnsubscribe.complete();
     }
 
-    ngOnDestroy(): void {
-        this.destroy();
+    protected startLoading(): void {
+        this.isLoading = true;
+    }
+
+    protected stopLoading(): void {
+        this.isLoading = false;
     }
 
     protected detectChanges(): void {
@@ -43,49 +54,22 @@ export abstract class BaseComponent implements OnDestroy {
     }
 
     protected subscribeToObservables(observables: Observable<any>[]): void {
-        this.subscribeToObservable(this.zipObservables(observables));
+        this.subscribeToObservable(observableHelper.zipObservables(observables));
     }
 
     protected subscribeToObservable(observable: Observable<any>): void {
         observable
             .pipe(
                 takeUntil(this.ngUnsubscribe),
+                catchError(error => {
+                    this.markForCheck();
+                    return throwError(error);
+                })
             )
             .subscribe(() => {
                 this.markForCheck();
-            },
-                error => {
-                    this.markForCheck();
-                    throw error;
-                }
-            );
+            });
     }
 
-    private zipObservables(observables: Observable<any>[]): Observable<any> {
-        if (!observables) {
-            throw Error(`Given observables are not valid`);
-        }
 
-        if (!Array.isArray(observables)) {
-            throw Error(`Given observables are not in array`);
-        }
-
-        if (observables.length === 0) {
-            // return empty/fake observable if there are none observables
-            return of(undefined);
-        }
-
-        if (observables.length === 1) {
-            return observables[0];
-        }
-
-        let zippedObservable: Observable<any> = observables[0];
-
-        for (let i = 1; i < observables.length; i++) {
-            const currentObservable = observables[i];
-            zippedObservable = zip(zippedObservable, currentObservable);
-        }
-
-        return zippedObservable;
-    }
 }

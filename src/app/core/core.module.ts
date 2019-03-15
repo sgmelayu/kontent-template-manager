@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DependenciesModule } from 'src/di';
 import { ServicesModule } from 'src/services';
@@ -9,12 +11,15 @@ import { LayoutModule } from '../layout';
 
 @NgModule({
     exports: [
+        CommonModule,
         BrowserAnimationsModule,
         ServicesModule,
         DependenciesModule,
         LayoutModule,
         ExternalModule,
-        TypographyModule
+        TypographyModule,
+        FormsModule,
+        ReactiveFormsModule
     ],
 })
 export class CoreModule { }
