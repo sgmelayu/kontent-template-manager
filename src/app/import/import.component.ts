@@ -1,13 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { ComponentDependencies } from 'src/di';
 
-import { BaseComponent } from './core/base.component';
+import { BaseComponent } from '../core/base.component';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+  templateUrl: './import.component.html',
 })
-export class AppComponent extends BaseComponent {
+export class ImportComponent extends BaseComponent {
 
   constructor(
     dependencies: ComponentDependencies,

@@ -1,0 +1,92 @@
+@import '~@angular/material/theming';
+@import './styles-core.scss';
+
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// below defines your custom color to build a theme palette from
+$primary: (
+  50: $primaryColor,
+  100: $primaryColor,
+  200: $primaryColor,
+  300: $primaryColor,
+  400: $primaryColor,
+  500: $primaryColor,
+  600: $primaryColor,
+  700: $primaryColor,
+  800: $primaryColor,
+  900: $primaryColor,
+  A100: $primaryColor,
+  A200: $primaryColor,
+  A400: $primaryColor,
+  A700: $primaryColor,
+  contrast: (
+    50: $primaryColorContrast,
+    100: $primaryColorContrast,
+    200: $primaryColorContrast,
+    300: $primaryColorContrast,
+    400: $primaryColorContrast,
+    500: $primaryColorContrast,
+    600: $primaryColorContrast,
+    700: $primaryColorContrast,
+    800: $primaryColorContrast,
+    900: $primaryColorContrast,
+    A100: $primaryColorContrast,
+    A200: $primaryColorContrast,
+    A400: $primaryColorContrast,
+    A700: $primaryColorContrast,
+  )
+);
+
+$accent: (
+  50: $accentColor,
+  100: $accentColor,
+  200: $accentColor,
+  300: $accentColor,
+  400: $accentColor,
+  500: $accentColor,
+  600: $accentColor,
+  700: $accentColor,
+  800: $accentColor,
+  900: $accentColor,
+  A100: $accentColor,
+  A200: $accentColor,
+  A400: $accentColor,
+  A700: $accentColor,
+  contrast: (
+    50: $accentColorContrast,
+    100: $accentColorContrast,
+    200: $accentColorContrast,
+    300: $accentColorContrast,
+    400: $accentColorContrast,
+    500: $accentColorContrast,
+    600: $accentColorContrast,
+    700: $accentColorContrast,
+    800: $accentColorContrast,
+    900: $accentColorContrast,
+    A100: $accentColorContrast,
+    A200: $accentColorContrast,
+    A400: $accentColorContrast,
+    A700: $accentColorContrast,
+  )
+);
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$app-primary: mat-palette($primary);
+$app-accent:  mat-palette($accent, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$app-warn:    mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($app-theme);

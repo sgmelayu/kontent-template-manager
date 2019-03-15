@@ -1,0 +1,38 @@
+@import '../../assets/styles/styles-core.scss';
+.w-layout-container {
+    position: absolute;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #eee;
+}
+
+.w-layout-side-menu {
+    width: 200px;
+}
+
+.w-layout-content {
+    margin: 16px;
+}
+
+.w-layout-github-logo {
+    height: 40px;
+}
+
+.w-layout-side-item {
+    display: block;
+    text-decoration: none;
+    padding: 12px;
+    color: $primaryColor;
+    cursor: pointer;
+    &:hover {
+        background-color: $accentColor;
+        color: $accentColorContrast;
+    }
+
+    &.active {
+        background-color: rgb(238, 238, 238);
+        color: $primaryColor;
+    }
+}
