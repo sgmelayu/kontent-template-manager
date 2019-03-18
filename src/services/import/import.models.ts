@@ -1,3 +1,4 @@
+import { IContentManagementClient } from 'kentico-cloud-content-management';
 import { ContentItem, ContentType } from 'kentico-cloud-delivery';
 
 export type ImportItemStatus = 'imported';
@@ -11,9 +12,14 @@ export interface IImportItem {
     name: string;
 }
 
-export interface IImportData {
+export interface IImportConfig {
     sourceProjectId: string;
     targetProjectId: string;
     targetProjectCmApiKey: string;
     processItem: (item: IImportItem) => void;
+}
+
+export interface IImportData {
+    targetClient: IContentManagementClient;
+    contentTypes: ContentType[];
 }

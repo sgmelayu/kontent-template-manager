@@ -1,27 +1,23 @@
 import { Injectable } from '@angular/core';
 import { ContentTypeModels, ElementModels, IContentManagementClient } from 'kentico-cloud-content-management';
-import { ContentType, IDeliveryClient, Element } from 'kentico-cloud-delivery';
+import { ContentType, Element } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
-import { IImportData } from '../import.models';
+import { IImportConfig, IImportData } from '../import.models';
 
 @Injectable()
 export class ContentTypesImportService {
 
-    importContentTypes(sourceDeliveryClient: IDeliveryClient, targetClient: IContentManagementClient, data: IImportData): Observable<void> {
-        return this.getAllTypes(sourceDeliveryClient, [], undefined).pipe(
-            flatMap(contentTypes => {
-                const obs: Observable<ContentTypeModels.ContentType>[] = [];
+    importContentTypes(data: IImportData, config: IImportConfig): Observable<void> {
+        const obs: Observable<ContentTypeModels.ContentType>[] = [];
 
-                contentTypes.forEach(contentType => {
-                    obs.push(this.createType(contentType, targetClient, data));
-                });
+        data.contentTypes.forEach(contentType => {
+            obs.push(this.createType(contentType, data.targetClient, config));
+        });
 
-                return observableHelper.zipObservables(obs);
-            })
-        )
+        return observableHelper.zipObservables(obs);
     }
 
     private mapElementType(element: Element): ElementModels.ElementType | undefined {
@@ -60,7 +56,7 @@ export class ContentTypesImportService {
         });
     }
 
-    private createType(contentType: ContentType, targetClient: IContentManagementClient, data: IImportData): Observable<ContentTypeModels.ContentType> {
+    private createType(contentType: ContentType, targetClient: IContentManagementClient, data: IImportConfig): Observable<ContentTypeModels.ContentType> {
         return targetClient.addContentType()
             .withData({
                 name: contentType.system.name,
@@ -100,24 +96,5 @@ export class ContentTypesImportService {
             );
     }
 
-    private getAllTypes(sourceDeliveryClient: IDeliveryClient, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
-        const query = sourceDeliveryClient.types();
 
-        if (nextPageUrl) {
-            query.withUrl(nextPageUrl);
-        }
-
-        return query
-            .getObservable()
-            .pipe(
-                map(response => {
-                    allTypes.push(...response.types);
-
-                    if (response.pagination.nextPage) {
-                        this.getAllTypes(sourceDeliveryClient, allTypes, response.pagination.nextPage);
-                    }
-                    return allTypes;
-                })
-            );
-    }
 }
