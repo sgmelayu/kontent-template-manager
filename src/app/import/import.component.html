@@ -50,12 +50,35 @@
         Status
     </div>
 
-    <div *ngIf="importCompleted" libTitle1>
-        Import completed
+    <div *ngIf="importCompleted">
+        <div libTitle1>
+            Import completed
+        </div>
+
+        <mat-card *ngIf="importResult" class="push-top push-bottom">
+            <div>
+                <mat-list role="list">
+                    <mat-list-item role="listitem">
+                        <strong>{{ importResult.contentTypes }}</strong>&nbsp;content types imported
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <strong>{{ importResult.taxonomies }}</strong>&nbsp;taxonomies imported
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <strong>{{ importResult.contentItems }}</strong>&nbsp;content items imported
+                    </mat-list-item>
+                </mat-list>
+            </div>
+        </mat-card>
+    </div>
+
+    <div libTitle2>
+        Processed items
     </div>
 
     <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
     <mat-card>
+
         <cdk-virtual-scroll-viewport itemSize="50" class="w-import-viewport">
             <mat-list role="list">
                 <mat-list-item role="listitem" *cdkVirtualFor="let processedItem of processedItems">

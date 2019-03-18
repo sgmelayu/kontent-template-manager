@@ -30,6 +30,12 @@ export class ImportComponent extends BaseComponent {
     return this.formGroup.valid;
   }
 
+  public importResult: {
+    contentTypes: number,
+    contentItems: number,
+    taxonomies: number
+  } | undefined = undefined;
+
   constructor(
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef,
@@ -57,6 +63,8 @@ export class ImportComponent extends BaseComponent {
     const targetProjectId = this.formGroup.controls['targetProjectId'].value;
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
 
+    super.startLoading();
+
     super.subscribeToObservable(this.dependencies.importService.import({
       sourceProjectId: sourceProjectId,
       targetProjectId: targetProjectId,
@@ -65,13 +73,15 @@ export class ImportComponent extends BaseComponent {
         this._processedItems = this._processedItems.push(item);
       }
     }).pipe(
-      tap(() => {
-        super.startLoading();
-        super.detectChanges();
-      }),
+
       map((result) => {
         super.stopLoading();
         this.importCompleted = true;
+        this.importResult = {
+          contentItems: this._processedItems.filter(m => m.type === 'Content item').size,
+          contentTypes: this._processedItems.filter(m => m.type === 'Content type').size,
+          taxonomies: this._processedItems.filter(m => m.type === 'Taxonomy').size,
+        }
       }),
       catchError((error) => {
         super.stopLoading();

@@ -11,20 +11,39 @@ import { observableHelper } from 'src/utilities';
 
 import { FetchService } from '../fetch/fetch.service';
 import { IImportConfig, IImportData } from './import.models';
+import { ContentItemsImportService } from './types/content-items-import.service';
 import { ContentTypesImportService } from './types/content-types-import.service';
+import { TaxonomiesImportService } from './types/taxonomies-import.service';
 
 @Injectable()
 export class ImportService {
 
     constructor(
         private contentTypesImportService: ContentTypesImportService,
+        private contentItemsImportService: ContentItemsImportService,
+        private taxonomiesImportService: TaxonomiesImportService,
         private fetchService: FetchService
     ) { }
 
     import(config: IImportConfig): Observable<void> {
         return this.getImportDataFromProject(config).pipe(
             flatMap(data => {
-                return this.contentTypesImportService.importContentTypes(data, config);
+                return this.contentTypesImportService.importContentTypes(data, config).pipe(
+                    map((response) => {
+                        return data;
+                    })
+                )
+            }),
+            flatMap((data) => {
+                return this.taxonomiesImportService.importTaxonomies(data, config).pipe(
+                    map((response) => data)
+                )
+            }),
+            flatMap((data) => {
+                return this.contentItemsImportService.importContentItems(data, config)
+            }),
+            map(() => {
+                // all finished
             })
         );
     }
