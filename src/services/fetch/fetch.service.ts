@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { ContentType, IDeliveryClient } from 'kentico-cloud-delivery';
+import { ContentType, IDeliveryClient, TaxonomyGroup, ContentItem } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class FetchService {
 
-    getAllTypes(sourceDeliveryClient: IDeliveryClient, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
-        const query = sourceDeliveryClient.types();
+    getAllTypes(deliveryClient: IDeliveryClient, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
+        const query = deliveryClient.types();
 
         if (nextPageUrl) {
             query.withUrl(nextPageUrl);
@@ -20,9 +20,51 @@ export class FetchService {
                     allTypes.push(...response.types);
 
                     if (response.pagination.nextPage) {
-                        this.getAllTypes(sourceDeliveryClient, allTypes, response.pagination.nextPage);
+                        this.getAllTypes(deliveryClient, allTypes, response.pagination.nextPage);
                     }
                     return allTypes;
+                })
+            );
+    }
+
+    getAllTaxonomies(deliveryClient: IDeliveryClient, taxonomies: TaxonomyGroup[], nextPageUrl?: string): Observable<TaxonomyGroup[]> {
+        const query = deliveryClient.taxonomies();
+
+        if (nextPageUrl) {
+            query.withUrl(nextPageUrl);
+        }
+
+        return query
+            .getObservable()
+            .pipe(
+                map(response => {
+                    taxonomies.push(...response.taxonomies);
+
+                    if (response.pagination.nextPage) {
+                        this.getAllTaxonomies(deliveryClient, taxonomies, response.pagination.nextPage);
+                    }
+                    return taxonomies;
+                })
+            );
+    }
+
+    getAllContentItems(deliveryClient: IDeliveryClient, contentItems: ContentItem[], nextPageUrl?: string): Observable<ContentItem[]> {
+        const query = deliveryClient.items();
+
+        if (nextPageUrl) {
+            query.withUrl(nextPageUrl);
+        }
+
+        return query
+            .getObservable()
+            .pipe(
+                map(response => {
+                    contentItems.push(...response.items);
+
+                    if (response.pagination.nextPage) {
+                        this.getAllContentItems(deliveryClient, contentItems, response.pagination.nextPage);
+                    }
+                    return contentItems;
                 })
             );
     }

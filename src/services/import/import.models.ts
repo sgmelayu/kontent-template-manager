@@ -1,5 +1,5 @@
 import { IContentManagementClient } from 'kentico-cloud-content-management';
-import { ContentItem, ContentType } from 'kentico-cloud-delivery';
+import { ContentItem, ContentType, TaxonomyGroup } from 'kentico-cloud-delivery';
 
 export type ImportItemStatus = 'imported';
 
@@ -22,4 +22,6 @@ export interface IImportConfig {
 export interface IImportData {
     targetClient: IContentManagementClient;
     contentTypes: ContentType[];
+    contentItems: ContentItem[];
+    taxonomies: TaxonomyGroup[];
 }

@@ -40,8 +40,10 @@ export class ImportService {
         })
 
         const data: IImportData = {
+            targetClient: targetContentManagementClient,
             contentTypes: [],
-            targetClient: targetContentManagementClient
+            contentItems: [],
+            taxonomies: []
         };
 
         const obs: Observable<void>[] = [
@@ -49,7 +51,17 @@ export class ImportService {
                 map((response) => {
                     data.contentTypes = response;
                 })
-            )
+            ),
+            this.fetchService.getAllContentItems(sourceDeliveryClient, []).pipe(
+                map((response) => {
+                    data.contentItems = response;
+                })
+            ),
+            this.fetchService.getAllTaxonomies(sourceDeliveryClient, []).pipe(
+                map((response) => {
+                    data.taxonomies = response;
+                })
+            ),
         ];
 
         return observableHelper.zipObservables(obs).pipe(
