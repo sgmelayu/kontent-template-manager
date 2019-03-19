@@ -53,7 +53,8 @@ export class ContentItemsImportService extends BaseService {
             map(() => {
                 return <IImportContentItemsResult>{
                     contentItems: importedContentItems,
-                    languageVariants: importedLanguageVariants
+                    languageVariants: importedLanguageVariants,
+                    assets: assets
                 }
             })
         );
@@ -133,7 +134,6 @@ export class ContentItemsImportService extends BaseService {
                     });
 
                     result.languageVariant = response.data;
-
                     return result;
                 })
             );

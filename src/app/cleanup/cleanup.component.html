@@ -1,0 +1,56 @@
+<ng-container *ngIf="!isLoading && !cleanupCompleted">
+    <div libTitle1>
+        Cleanup
+    </div>
+
+    <p>This action will delete all data in your project. Proceed with caution.</p>
+
+    <form [formGroup]="formGroup">
+
+        <div libTitle1>
+            Project
+        </div>
+
+        <mat-card>
+            <mat-card-content>
+                <mat-form-field class="w-full-width">
+                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
+                </mat-form-field>
+
+                <mat-form-field class="push-top w-full-width">
+                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="push-bottom push-top" *ngIf="error">
+            {{ error }}
+        </div>
+
+        <div class="push-top" *ngIf="!isLoading">
+            <button *ngIf="canSubmit" (click)="openConfirmation()" mat-raised-button color="warn">I know what I'm doing
+                -
+                Cleanup</button>
+            <button disabled *ngIf="!canSubmit" (click)="openConfirmation()" mat-raised-button>I know what I'm
+                doing - Cleanup</button>
+        </div>
+    </form>
+</ng-container>
+
+<ng-container *ngIf="isLoading || cleanupCompleted">
+
+    <h1 *ngIf="cleanupCompleted">
+        Cleanup complete
+    </h1>
+
+    <h1 *ngIf="isLoading">
+        Cleaning up the project
+    </h1>
+
+    <div class="push-top" *ngIf="isLoading">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <mat-card>
+            deleting ...
+        </mat-card>
+    </div>
+</ng-container>

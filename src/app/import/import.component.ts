@@ -15,7 +15,6 @@ import { BaseComponent } from '../core/base.component';
 })
 export class ImportComponent extends BaseComponent {
 
-  public loading: boolean = false;
   public importCompleted: boolean = false;
   public formGroup: FormGroup;
   public error?: string;

@@ -32,6 +32,11 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       title: 'Export',
       routerLink: '/export',
       icon: 'cloud_download'
+    },
+    {
+      title: 'Cleanup',
+      routerLink: '/cleanup',
+      icon: 'delete'
     }
   ];
 

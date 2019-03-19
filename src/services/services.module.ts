@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 
-import { FetchService } from './fetch/fetch.service';
+import { CleanupService } from './cleanup/cleanup.service';
+import { CmFetchService } from './fetch/cm-fetch.service';
+import { DeliveryFetchService } from './fetch/delivery-fetch.service';
 import { ImportService } from './import/import.service';
 import { ContentItemsImportService } from './import/types/content-items-import.service';
 import { ContentTypesImportService } from './import/types/content-types-import.service';
@@ -13,12 +15,14 @@ import { WorkflowService } from './workflow/workflow.service';
     imports: [
     ],
     providers: [
-        FetchService,
+        DeliveryFetchService,
+        CmFetchService,
         ImportService,
         ContentTypesImportService,
         ContentItemsImportService,
         TaxonomiesImportService,
-        WorkflowService
+        WorkflowService,
+        CleanupService
     ],
 })
 export class ServicesModule { }

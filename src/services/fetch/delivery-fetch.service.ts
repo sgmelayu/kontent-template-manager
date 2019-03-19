@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ContentType, IDeliveryClient, TaxonomyGroup, ContentItem } from 'kentico-cloud-delivery';
+import { ContentItem, ContentType, IDeliveryClient, TaxonomyGroup } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class FetchService {
+export class DeliveryFetchService {
 
     getAllTypes(deliveryClient: IDeliveryClient, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
         const query = deliveryClient.types();

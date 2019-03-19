@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
-import { FetchService } from '../fetch/fetch.service';
+import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
 import { WorkflowService } from '../workflow/workflow.service';
 import { IImportConfig, IImportData, IImportResult, IPublishItemRequest } from './import.models';
 import { ContentItemsImportService } from './types/content-items-import.service';
@@ -23,7 +23,7 @@ export class ImportService {
         private contentTypesImportService: ContentTypesImportService,
         private contentItemsImportService: ContentItemsImportService,
         private taxonomiesImportService: TaxonomiesImportService,
-        private fetchService: FetchService,
+        private deliveryFetchService: DeliveryFetchService,
         private workflowService: WorkflowService
     ) { }
 
@@ -100,17 +100,17 @@ export class ImportService {
         };
 
         const obs: Observable<void>[] = [
-            this.fetchService.getAllTypes(sourceDeliveryClient, []).pipe(
+            this.deliveryFetchService.getAllTypes(sourceDeliveryClient, []).pipe(
                 map((response) => {
                     data.contentTypes = response;
                 })
             ),
-            this.fetchService.getAllContentItems(sourceDeliveryClient, []).pipe(
+            this.deliveryFetchService.getAllContentItems(sourceDeliveryClient, []).pipe(
                 map((response) => {
                     data.contentItems = response;
                 })
             ),
-            this.fetchService.getAllTaxonomies(sourceDeliveryClient, []).pipe(
+            this.deliveryFetchService.getAllTaxonomies(sourceDeliveryClient, []).pipe(
                 map((response) => {
                     data.taxonomies = response;
                 })

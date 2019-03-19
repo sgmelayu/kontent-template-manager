@@ -4,6 +4,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import {
   MatButtonModule,
   MatCardModule,
+  MatDialogModule,
   MatDividerModule,
   MatFormFieldModule,
   MatIconModule,
@@ -29,7 +30,8 @@ import {
     MatProgressBarModule,
     ScrollDispatchModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatDialogModule
   ],
 })
 export class ExternalModule { }
