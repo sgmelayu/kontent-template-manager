@@ -1,23 +1,37 @@
 import { Injectable } from '@angular/core';
-import { ContentTypeModels, ElementModels, IContentManagementClient, TaxonomyModels } from 'kentico-cloud-content-management';
-import { ContentType, Element, TaxonomyGroup } from 'kentico-cloud-delivery';
+import { IContentManagementClient, TaxonomyModels } from 'kentico-cloud-content-management';
+import { TaxonomyGroup } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { delay, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
+import { BaseService } from '../../base-service';
 import { IImportConfig, IImportData } from '../import.models';
 
 @Injectable()
-export class TaxonomiesImportService {
+export class TaxonomiesImportService extends BaseService {
 
-    importTaxonomies(data: IImportData, config: IImportConfig): Observable<void> {
-        const obs: Observable<TaxonomyModels.Taxonomy>[] = [];
+    constructor() {
+        super();
+    }
+
+    importTaxonomies(data: IImportData, config: IImportConfig): Observable<TaxonomyModels.Taxonomy[]> {
+        const obs: Observable<void>[] = [];
+        const taxonomies: TaxonomyModels.Taxonomy[] = [];
 
         data.taxonomies.forEach(taxonomy => {
-            obs.push(this.createTaxonomy(taxonomy, data.targetClient, config));
+            obs.push(this.createTaxonomy(taxonomy, data.targetClient, config).pipe(
+                map((importedTaxonomy) => {
+                    taxonomies.push(importedTaxonomy);
+                })
+            ));
         });
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.zipObservables(obs).pipe(
+            map(() => {
+                return taxonomies;
+            })
+        );
     }
 
     private createTaxonomy(taxonomy: TaxonomyGroup, targetClient: IContentManagementClient, data: IImportConfig): Observable<TaxonomyModels.Taxonomy> {
@@ -28,11 +42,12 @@ export class TaxonomiesImportService {
             })
             .toObservable()
             .pipe(
+                delay(this.cmRequestDelay),
                 map((response) => {
                     data.processItem({
                         item: taxonomy,
                         status: 'imported',
-                        type: 'Taxonomy',
+                        action: 'Taxonomy',
                         name: response.data.codename
                     })
                     return response.data;

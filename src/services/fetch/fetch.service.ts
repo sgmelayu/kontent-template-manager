@@ -14,7 +14,7 @@ export class FetchService {
         }
 
         return query
-            .getObservable()
+            .toObservable()
             .pipe(
                 map(response => {
                     allTypes.push(...response.types);
@@ -35,7 +35,7 @@ export class FetchService {
         }
 
         return query
-            .getObservable()
+            .toObservable()
             .pipe(
                 map(response => {
                     taxonomies.push(...response.taxonomies);
@@ -56,7 +56,7 @@ export class FetchService {
         }
 
         return query
-            .getObservable()
+            .toObservable()
             .pipe(
                 map(response => {
                     contentItems.push(...response.items);

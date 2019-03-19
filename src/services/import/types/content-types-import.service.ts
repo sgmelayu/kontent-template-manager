@@ -2,22 +2,34 @@ import { Injectable } from '@angular/core';
 import { ContentTypeModels, ElementModels, IContentManagementClient } from 'kentico-cloud-content-management';
 import { ContentType, Element, FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, delay } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
 import { IImportConfig, IImportData } from '../import.models';
+import { BaseService } from '../../base-service';
 
 @Injectable()
-export class ContentTypesImportService {
+export class ContentTypesImportService extends BaseService{
 
-    importContentTypes(data: IImportData, config: IImportConfig): Observable<void> {
-        const obs: Observable<ContentTypeModels.ContentType>[] = [];
+    constructor() {
+        super();
+    }
+    
+    importContentTypes(data: IImportData, config: IImportConfig): Observable<ContentTypeModels.ContentType[]> {
+        const obs: Observable<void>[] = [];
+        const importedTypes: ContentTypeModels.ContentType[] = [];
 
         data.contentTypes.forEach(contentType => {
-            obs.push(this.createType(contentType, data.targetClient, config));
+            obs.push(this.createType(contentType, data.targetClient, config).pipe(
+                map(importedType => {
+                    importedTypes.push(importedType)
+                })
+            ));
         });
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.zipObservables(obs).pipe(
+            map(() => importedTypes)
+        );
     }
 
     private mapElementType(element: Element): ElementModels.ElementType | undefined {
@@ -98,11 +110,12 @@ export class ContentTypesImportService {
             })
             .toObservable()
             .pipe(
+                delay(this.cmRequestDelay),
                 map((response) => {
                     data.processItem({
                         item: contentType,
                         status: 'imported',
-                        type: 'Content type',
+                        action: 'Content type',
                         name: response.data.codename
                     })
                     return response.data;

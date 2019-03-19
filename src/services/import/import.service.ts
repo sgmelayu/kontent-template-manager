@@ -10,7 +10,8 @@ import { flatMap, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
 import { FetchService } from '../fetch/fetch.service';
-import { IImportConfig, IImportData } from './import.models';
+import { WorkflowService } from '../workflow/workflow.service';
+import { IImportConfig, IImportData, IImportResult, IPublishItemRequest } from './import.models';
 import { ContentItemsImportService } from './types/content-items-import.service';
 import { ContentTypesImportService } from './types/content-types-import.service';
 import { TaxonomiesImportService } from './types/taxonomies-import.service';
@@ -22,28 +23,59 @@ export class ImportService {
         private contentTypesImportService: ContentTypesImportService,
         private contentItemsImportService: ContentItemsImportService,
         private taxonomiesImportService: TaxonomiesImportService,
-        private fetchService: FetchService
+        private fetchService: FetchService,
+        private workflowService: WorkflowService
     ) { }
 
-    import(config: IImportConfig): Observable<void> {
+    import(config: IImportConfig): Observable<IImportResult> {
+        const result: IImportResult = {
+            importedContentItems: [],
+            importedContentTypes: [],
+            importedLanguageVariants: [],
+            importedTaxonomies: [],
+            publishedItems: []
+        };
+
         return this.getImportDataFromProject(config).pipe(
             flatMap(data => {
                 return this.contentTypesImportService.importContentTypes(data, config).pipe(
                     map((response) => {
+                        result.importedContentTypes = response;
                         return data;
                     })
                 )
             }),
             flatMap((data) => {
                 return this.taxonomiesImportService.importTaxonomies(data, config).pipe(
-                    map((response) => data)
+                    map((response) => {
+                        result.importedTaxonomies = response;
+                        return data;
+                    })
                 )
             }),
             flatMap((data) => {
-                return this.contentItemsImportService.importContentItems(data, config)
+                return this.contentItemsImportService.importContentItems(data, config).pipe(
+                    map((response) => {
+                        result.importedContentItems = response.contentItems;
+                        result.importedLanguageVariants = response.languageVariants;
+                        return data;
+                    })
+                )
+            }),
+            flatMap((data) => {
+                return this.workflowService.publishContentItems(data.contentItems.map(item => <IPublishItemRequest>{
+                    itemCodename: item.system.codename,
+                    languageCodename: item.system.language
+                }), config).pipe(
+                    map((response) => {
+                        result.publishedItems = response;
+                        return data;
+                    })
+                )
             }),
             map(() => {
                 // all finished
+                return result;
             })
         );
     }

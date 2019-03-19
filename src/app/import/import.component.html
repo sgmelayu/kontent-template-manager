@@ -59,13 +59,19 @@
             <div>
                 <mat-list role="list">
                     <mat-list-item role="listitem">
-                        <strong>{{ importResult.contentTypes }}</strong>&nbsp;content types imported
+                        <strong>{{ importResult.importedContentTypes.length }}</strong>&nbsp;content types imported
                     </mat-list-item>
                     <mat-list-item role="listitem">
-                        <strong>{{ importResult.taxonomies }}</strong>&nbsp;taxonomies imported
+                        <strong>{{ importResult.importedTaxonomies.length }}</strong>&nbsp;taxonomies imported
                     </mat-list-item>
                     <mat-list-item role="listitem">
-                        <strong>{{ importResult.contentItems }}</strong>&nbsp;content items imported
+                        <strong>{{ importResult.importedContentItems.length }}</strong>&nbsp;content items imported
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <strong>{{ importResult.importedLanguageVariants.length }}</strong>&nbsp;language variants imported
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <strong>{{ importResult.publishedItems.length }}</strong>&nbsp;published content items
                     </mat-list-item>
                 </mat-list>
             </div>
@@ -83,7 +89,7 @@
             <mat-list role="list">
                 <mat-list-item role="listitem" *cdkVirtualFor="let processedItem of processedItems">
                     <p>
-                        <strong>{{ processedItem.type }}</strong>: {{ processedItem.name }}
+                        <strong>{{ processedItem.action }}</strong>: {{ processedItem.name }}
                     </p>
                 </mat-list-item>
             </mat-list>

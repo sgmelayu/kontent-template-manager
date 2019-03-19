@@ -5,7 +5,7 @@ import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, delay, map, tap } from 'rxjs/operators';
 import { ComponentDependencies } from 'src/di';
-import { IImportItem } from 'src/services';
+import { IImportItem, IImportResult } from 'src/services';
 
 import { BaseComponent } from '../core/base.component';
 
@@ -30,11 +30,7 @@ export class ImportComponent extends BaseComponent {
     return this.formGroup.valid;
   }
 
-  public importResult: {
-    contentTypes: number,
-    contentItems: number,
-    taxonomies: number
-  } | undefined = undefined;
+  public importResult?: IImportResult | undefined = undefined;
 
   constructor(
     dependencies: ComponentDependencies,
@@ -74,14 +70,10 @@ export class ImportComponent extends BaseComponent {
       }
     }).pipe(
 
-      map((result) => {
+      map((importResult) => {
         super.stopLoading();
         this.importCompleted = true;
-        this.importResult = {
-          contentItems: this._processedItems.filter(m => m.type === 'Content item').size,
-          contentTypes: this._processedItems.filter(m => m.type === 'Content type').size,
-          taxonomies: this._processedItems.filter(m => m.type === 'Taxonomy').size,
-        }
+        this.importResult = importResult;
       }),
       catchError((error) => {
         super.stopLoading();

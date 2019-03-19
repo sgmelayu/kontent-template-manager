@@ -7,25 +7,52 @@ import {
 } from 'kentico-cloud-content-management';
 import { ContentItem, FieldModels, Fields, FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
+import { delay, flatMap, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
-import { IImportConfig, IImportData } from '../import.models';
+import { BaseService } from '../../base-service';
+import { IImportConfig, IImportContentItemsResult, IImportData } from '../import.models';
+
+interface ICreateContentItemResult {
+    contentItem?: ContentItemModels.ContentItem,
+    languageVariant?: LanguageVariantModels.ContentItemLanguageVariant
+}
 
 @Injectable()
-export class ContentItemsImportService {
+export class ContentItemsImportService extends BaseService {
 
-    importContentItems(data: IImportData, config: IImportConfig): Observable<void> {
-        const obs: Observable<ContentItemModels.ContentItem>[] = [];
-
-        data.contentItems.forEach(contentItem => {
-            obs.push(this.createContentItem(contentItem, data.targetClient, config));
-        });
-
-        return observableHelper.zipObservables(obs);
+    constructor() {
+        super();
     }
 
-    private createContentItem(contentItem: ContentItem, targetClient: IContentManagementClient, data: IImportConfig): Observable<ContentItemModels.ContentItem> {
+    importContentItems(data: IImportData, config: IImportConfig): Observable<IImportContentItemsResult> {
+        const obs: Observable<void>[] = [];
+        const importedContentItems: ContentItemModels.ContentItem[] = [];
+        const importedLanguageVariants: LanguageVariantModels.ContentItemLanguageVariant[] = [];
+
+        data.contentItems.forEach(contentItem => {
+            obs.push(this.createContentItem(contentItem, data.targetClient, config).pipe(
+                map((importResult) => {
+                    importedContentItems.push(importResult.contentItem);
+                    importedLanguageVariants.push(importResult.languageVariant);
+                })
+            ));
+        });
+
+        return observableHelper.zipObservables(obs).pipe(
+            map(() => {
+                return <IImportContentItemsResult>{
+                    contentItems: importedContentItems,
+                    languageVariants: importedLanguageVariants
+                }
+            })
+        );
+    }
+
+
+    private createContentItem(contentItem: ContentItem, targetClient: IContentManagementClient, data: IImportConfig): Observable<ICreateContentItemResult> {
+        let result: ICreateContentItemResult = {};
+
         return targetClient.addContentItem()
             .withData({
                 name: contentItem.system.name,
@@ -35,17 +62,20 @@ export class ContentItemsImportService {
             })
             .toObservable()
             .pipe(
+                delay(this.cmRequestDelay),
                 flatMap((response) => {
                     data.processItem({
                         item: contentItem,
                         status: 'imported',
-                        type: 'Content item',
+                        action: 'Content item',
                         name: response.data.codename
-                    })
+                    });
+
+                    result.contentItem = response.data;
 
                     return targetClient.upsertLanguageVariant()
-                        .byCodename(response.data.codename)
-                        .forLanguageCodename(contentItem.system.language)
+                        .byItemCodename(response.data.codename)
+                        .byLanguageCodename(contentItem.system.language)
                         .withElementCodenames(this.getElements(contentItem))
                         .toObservable();
                 }),
@@ -53,10 +83,13 @@ export class ContentItemsImportService {
                     data.processItem({
                         item: contentItem,
                         status: 'imported',
-                        type: 'Content item',
-                        name: `${response.data.item.codename} [${response.data.language.codename}]`
-                    })
-                    return response as any;
+                        action: 'Language variant',
+                        name: `${result.contentItem.codename} [${contentItem.system.language}] | ${response.data.item.id}`
+                    });
+
+                    result.languageVariant = response.data;
+
+                    return result;
                 })
             );
     }
