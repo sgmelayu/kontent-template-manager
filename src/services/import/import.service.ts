@@ -33,7 +33,8 @@ export class ImportService {
             importedContentTypes: [],
             importedLanguageVariants: [],
             importedTaxonomies: [],
-            publishedItems: []
+            publishedItems: [],
+            assets: []
         };
 
         return this.getImportDataFromProject(config).pipe(
@@ -58,6 +59,7 @@ export class ImportService {
                     map((response) => {
                         result.importedContentItems = response.contentItems;
                         result.importedLanguageVariants = response.languageVariants;
+                        result.assets = response.assets;
                         return data;
                     })
                 )

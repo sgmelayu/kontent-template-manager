@@ -67,6 +67,7 @@ export class ImportComponent extends BaseComponent {
       targetProjectCmApiKey: targetProjectCmApiKey,
       processItem: (item) => {
         this._processedItems = this._processedItems.push(item);
+        super.detectChanges();
       }
     }).pipe(
 

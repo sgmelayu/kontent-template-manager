@@ -47,7 +47,7 @@ export class TaxonomiesImportService extends BaseService {
                     data.processItem({
                         item: taxonomy,
                         status: 'imported',
-                        action: 'Taxonomy',
+                        action: 'Add taxonomy',
                         name: response.data.codename
                     })
                     return response.data;

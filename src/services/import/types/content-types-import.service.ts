@@ -14,7 +14,7 @@ export class ContentTypesImportService extends BaseService{
     constructor() {
         super();
     }
-    
+
     importContentTypes(data: IImportData, config: IImportConfig): Observable<ContentTypeModels.ContentType[]> {
         const obs: Observable<void>[] = [];
         const importedTypes: ContentTypeModels.ContentType[] = [];
@@ -115,7 +115,7 @@ export class ContentTypesImportService extends BaseService{
                     data.processItem({
                         item: contentType,
                         status: 'imported',
-                        action: 'Content type',
+                        action: 'Add content type',
                         name: response.data.codename
                     })
                     return response.data;

@@ -1,4 +1,4 @@
-import { IContentManagementClient, ContentTypeModels, ContentItemModels, TaxonomyModels, LanguageVariantModels } from 'kentico-cloud-content-management';
+import { IContentManagementClient, ContentTypeModels, ContentItemModels, TaxonomyModels, LanguageVariantModels, AssetModels } from 'kentico-cloud-content-management';
 import { ContentItem, ContentType, TaxonomyGroup } from 'kentico-cloud-delivery';
 
 export type ImportItemStatus = 'imported' | 'published';
@@ -8,7 +8,8 @@ export type ImportProcessedItemType = ContentItem | ContentType | TaxonomyGroup 
 export interface IImportItem {
     item: ImportProcessedItemType;
     status: ImportItemStatus;
-    action: 'Content type' | 'Content item' | 'Taxonomy' | 'Language variant' | 'Publish';
+    action: 'Add content type' | 'Add content item' | 'Add taxonomy' | 'Add language variant' | 'Publish' | 
+        'Upload binary file' | 'Add asset';
     name: string;
 }
 
@@ -22,6 +23,7 @@ export interface IImportConfig {
 export interface IImportContentItemsResult {
     contentItems: ContentItemModels.ContentItem[];
     languageVariants: LanguageVariantModels.ContentItemLanguageVariant[];
+    assets: AssetModels.Asset[];
 }
 
 export interface IImportResult {
@@ -30,6 +32,7 @@ export interface IImportResult {
     importedLanguageVariants: LanguageVariantModels.ContentItemLanguageVariant[],
     importedTaxonomies: TaxonomyModels.Taxonomy[];
     publishedItems: IPublishItemRequest[];
+    assets: AssetModels.Asset[];
 }
 
 export interface IPublishItemRequest {
