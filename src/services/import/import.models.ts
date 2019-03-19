@@ -8,7 +8,7 @@ export type ImportProcessedItemType = ContentItem | ContentType | TaxonomyGroup;
 export interface IImportItem {
     item: ImportProcessedItemType;
     status: ImportItemStatus;
-    type: 'Content type' | 'Content item' | 'Taxonomy';
+    type: 'Content type' | 'Content item' | 'Taxonomy' | 'Language variant';
     name: string;
 }
 

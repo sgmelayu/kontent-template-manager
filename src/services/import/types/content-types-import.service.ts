@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ContentTypeModels, ElementModels, IContentManagementClient } from 'kentico-cloud-content-management';
-import { ContentType, Element } from 'kentico-cloud-delivery';
+import { ContentType, Element, FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
@@ -21,27 +21,30 @@ export class ContentTypesImportService {
     }
 
     private mapElementType(element: Element): ElementModels.ElementType | undefined {
-        const type = element.type;
-        if (type === 'text') {
+        const type = element.type.toLowerCase();
+        if (type === FieldType.Text.toLowerCase()) {
             return ElementModels.ElementType.text;
         }
-        if (type === 'number') {
+        if (type === FieldType.Number.toLowerCase()) {
             return ElementModels.ElementType.number;
         }
-        if (type === 'asset') {
+        if (type === FieldType.Asset.toLowerCase()) {
             return ElementModels.ElementType.asset;
         }
-        if (type === 'date_time') {
+        if (type === FieldType.DateTime.toLowerCase()) {
             return ElementModels.ElementType.dateTime;
         }
-        if (type === 'rich_text') {
+        if (type === FieldType.RichText.toLowerCase()) {
             return ElementModels.ElementType.richText;
         }
-        if (type === 'urlSlug') {
+        if (type === FieldType.UrlSlug.toLowerCase()) {
             return ElementModels.ElementType.urlSlug;
         }
-        if (type === 'multiple_choice') {
+        if (type === FieldType.MultipleChoice.toLowerCase()) {
             return ElementModels.ElementType.multipleChoice;
+        }
+        if (type === FieldType.ModularContent.toLowerCase()) {
+            return ElementModels.ElementType.modularContent;
         }
 
         console.warn(`Mapping of element type '${element.type}' is not yet supported. Skipping element.`);
@@ -56,30 +59,41 @@ export class ContentTypesImportService {
         });
     }
 
+    private getElementData(element: Element): ContentTypeModels.IAddContentTypeElementData | undefined{
+        const elementType = this.mapElementType(element);
+
+        if (elementType) {
+            let mode: ElementModels.ElementMode;
+            let options: ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[];
+
+            if (elementType === ElementModels.ElementType.multipleChoice) {
+                mode = ElementModels.ElementMode.single;
+                options = this.getElementMultipleChoiceOptions(element);
+            }
+
+            if (elementType === ElementModels.ElementType.modularContent) {
+                mode = ElementModels.ElementMode.single;
+            }
+
+            return <ContentTypeModels.IAddContentTypeElementData>{
+                name: element.name,
+                mode: mode,
+                guidelines: '',
+                options: options,
+                type: elementType
+            }
+        }
+
+        return undefined;
+    }
+
     private createType(contentType: ContentType, targetClient: IContentManagementClient, data: IImportConfig): Observable<ContentTypeModels.ContentType> {
         return targetClient.addContentType()
             .withData({
                 name: contentType.system.name,
                 elements: contentType.elements.map(m => {
-                    const elementType = this.mapElementType(m);
-                    if (elementType) {
-
-                        let mode: ElementModels.ElementMode;
-                        let options: ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[];
-
-                        if (elementType === ElementModels.ElementType.multipleChoice) {
-                            mode = ElementModels.ElementMode.single;
-                            options = this.getElementMultipleChoiceOptions(m);
-                        }
-
-                        return <ContentTypeModels.IAddContentTypeElementData>{
-                            name: m.name,
-                            mode: mode,
-                            guidelines: '',
-                            options: options,
-                            type: this.mapElementType(m)
-                        }
-                    }
+                    const element = this.getElementData(m);
+                    return element;
                 })
             })
             .toObservable()

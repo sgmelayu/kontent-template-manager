@@ -5,6 +5,7 @@ import { ImportService } from './import/import.service';
 import { ContentItemsImportService } from './import/types/content-items-import.service';
 import { ContentTypesImportService } from './import/types/content-types-import.service';
 import { TaxonomiesImportService } from './import/types/taxonomies-import.service';
+import { WorkflowService } from './workflow/workflow.service';
 
 @NgModule({
     declarations: [
@@ -16,7 +17,8 @@ import { TaxonomiesImportService } from './import/types/taxonomies-import.servic
         ImportService,
         ContentTypesImportService,
         ContentItemsImportService,
-        TaxonomiesImportService
+        TaxonomiesImportService,
+        WorkflowService
     ],
 })
 export class ServicesModule { }

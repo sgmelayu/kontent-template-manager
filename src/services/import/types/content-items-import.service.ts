@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ContentItemModels, IContentManagementClient, LanguageVariantModels, SharedContracts } from 'kentico-cloud-content-management';
-import { ContentItem, FieldType } from 'kentico-cloud-delivery';
+import {
+    ContentItemModels,
+    IContentManagementClient,
+    LanguageVariantModels,
+    SharedContracts,
+} from 'kentico-cloud-content-management';
+import { ContentItem, FieldModels, Fields, FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
@@ -43,28 +48,38 @@ export class ContentItemsImportService {
                         .forLanguageCodename(contentItem.system.language)
                         .withElementCodenames(this.getElements(contentItem))
                         .toObservable();
-
                 }),
                 map(response => {
+                    data.processItem({
+                        item: contentItem,
+                        status: 'imported',
+                        type: 'Content item',
+                        name: `${response.data.item.codename} [${response.data.language.codename}]`
+                    })
                     return response as any;
                 })
             );
     }
 
-    private mapElementValue(rawElement: any): any {
-        const value = rawElement.value;
-
-        if (!value) {
-            return undefined;
+    private mapElementValue(field: FieldModels.IField | ContentItem[]): any {
+        if (Array.isArray(field)) {
+            const linkedItems = field as ContentItem[];
+            return linkedItems.map(m => <SharedContracts.IReferenceObjectContract>{
+                codename: m.system.codename
+            });
         }
 
-        if (rawElement.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
-            return value.map(multipleChoice => <SharedContracts.IReferenceObjectContract>{
+        const value = field.value;
+
+        if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
+            const multipleChoiceField = field as Fields.MultipleChoiceField;
+
+            return multipleChoiceField.options.map(multipleChoice => <SharedContracts.IReferenceObjectContract>{
                 codename: multipleChoice.codename
             });
         }
 
-        if (rawElement.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
+        if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
             return [];
         }
 
