@@ -1,4 +1,54 @@
-<ng-container *ngIf="!isLoading && !cleanupCompleted">
+<ng-container *ngIf="isLoading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-card>
+        loading ...
+    </mat-card>
+</ng-container>
+
+
+<ng-container *ngIf="cleanupCompleted">
+    <h1>
+        Cleanup complete
+    </h1>
+
+    <p class="push-top">
+        Project data successfully deleted
+    </p>
+</ng-container>
+
+<ng-container *ngIf="cleanupItems && !isLoading && !cleanupCompleted">
+
+    <div libTitle1>
+        Confirm cleanup
+    </div>
+
+    <p class="push-top" *ngIf="cleanupItems.length > 0">
+        Following items will be deleted from your project:
+    </p>
+
+    <mat-card class="push-top">
+        <div *ngIf="cleanupItems.length === 0">There are no items that can be deleted in your project.</div>
+        <cdk-virtual-scroll-viewport *ngIf="cleanupItems.length > 0" itemSize="50" class="w-import-viewport">
+            <mat-list role="list">
+                <mat-list-item role="listitem" *cdkVirtualFor="let cleanupItem of cleanupItems">
+                    <p>
+                        <strong>{{ cleanupItem.type }}</strong>: {{ cleanupItem.name }}
+                    </p>
+                </mat-list-item>
+            </mat-list>
+        </cdk-virtual-scroll-viewport>
+    </mat-card>
+
+    <div class="push-top" *ngIf="cleanupItems.length > 0">
+        <button *ngIf="canSubmit" (click)="openConfirmation()" mat-raised-button color="warn">I know what I'm doing
+            -
+            Cleanup</button>
+        <button disabled *ngIf="!canSubmit" (click)="openConfirmation()" mat-raised-button>I know what I'm
+            doing - Cleanup</button>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="(!isLoading && !cleanupCompleted) && !cleanupItems">
     <div libTitle1>
         Cleanup
     </div>
@@ -28,29 +78,10 @@
         </div>
 
         <div class="push-top" *ngIf="!isLoading">
-            <button *ngIf="canSubmit" (click)="openConfirmation()" mat-raised-button color="warn">I know what I'm doing
-                -
-                Cleanup</button>
-            <button disabled *ngIf="!canSubmit" (click)="openConfirmation()" mat-raised-button>I know what I'm
-                doing - Cleanup</button>
+            <button *ngIf="canSubmit" (click)="prepareCleanup()" mat-raised-button color="warn">Prepare cleanup
+                data</button>
+            <button disabled *ngIf="!canSubmit" (click)="prepareCleanup()" mat-raised-button>Prepare cleanup
+                data</button>
         </div>
     </form>
-</ng-container>
-
-<ng-container *ngIf="isLoading || cleanupCompleted">
-
-    <h1 *ngIf="cleanupCompleted">
-        Cleanup complete
-    </h1>
-
-    <h1 *ngIf="isLoading">
-        Cleaning up the project
-    </h1>
-
-    <div class="push-top" *ngIf="isLoading">
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <mat-card>
-            deleting ...
-        </mat-card>
-    </div>
 </ng-container>

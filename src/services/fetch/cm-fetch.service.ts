@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
+    AssetModels,
     ContentItemModels,
     ContentTypeModels,
     IContentManagementClient,
     LanguageVariantModels,
     TaxonomyModels,
-    AssetModels,
 } from 'kentico-cloud-content-management';
 import { ContentItem } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';

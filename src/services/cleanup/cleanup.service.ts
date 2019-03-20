@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
+    AssetModels,
+    ContentItemModels,
     ContentManagementClient,
+    ContentTypeModels,
     IContentManagementClient,
     IContentManagementClientConfig,
+    TaxonomyModels,
 } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { delay, flatMap, map } from 'rxjs/operators';
@@ -10,6 +14,7 @@ import { observableHelper } from 'src/utilities';
 
 import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
+import { ICleanupData } from './cleanup.models';
 
 @Injectable()
 export class CleanupService extends BaseService {
@@ -20,121 +25,132 @@ export class CleanupService extends BaseService {
         super();
     }
 
-    cleanupProject(projectId: string, apiKey: string): Observable<void> {
+    cleanupProject(projectId: string, apiKey: string, cleanupData: ICleanupData): Observable<void> {
         const client = this.getContentManagementClient({
             projectId: projectId,
             apiKey: apiKey
         });
 
-        return this.deleteContentItems(client)
+        return this.deleteContentItems(client, cleanupData.contentItems)
             .pipe(
                 flatMap(() => {
-                    return this.deleteAssets(client);
+                    return this.deleteAssets(client, cleanupData.assets);
                 }),
                 flatMap(() => {
-                    return this.deleteTaxonomies(client)
+                    return this.deleteTaxonomies(client, cleanupData.taxonomies)
                 }),
                 flatMap(() => {
-                    return this.deleteContentTypes(client)
+                    return this.deleteContentTypes(client, cleanupData.contentTypes)
                 })
             );
     }
+
+    prepareCleanup(projectId: string, apiKey: string): Observable<ICleanupData> {
+        const client = this.getContentManagementClient({
+            projectId: projectId,
+            apiKey: apiKey
+        });
+
+        const result: ICleanupData = {
+            assets: [],
+            contentItems: [],
+            contentTypes: [],
+            taxonomies: []
+        }
+
+        return this.cmFetchService.getAllAssets(client, []).pipe(
+            flatMap(assets => {
+                result.assets = assets;
+
+                return this.cmFetchService.getAllContentItems(client, [])
+            }),
+            flatMap(contentItems => {
+                result.contentItems = contentItems;
+
+                return this.cmFetchService.getAllTaxonomies(client, []);
+            }),
+            flatMap(taxonomies => {
+                result.taxonomies = taxonomies;
+
+                return this.cmFetchService.getAllTypes(client, []);
+            }),
+            map(contentTypes => {
+                result.contentTypes = contentTypes;
+
+                return result;
+            })
+        );
+    }
+
+
 
     private getContentManagementClient(config: IContentManagementClientConfig): IContentManagementClient {
         return new ContentManagementClient(config);
     }
 
-    private deleteAssets(client: IContentManagementClient): Observable<void> {
-        return this.cmFetchService.getAllAssets(client, []).pipe(
-            flatMap(assets => {
-                const obs: Observable<void>[] = [];
+    private deleteAssets(client: IContentManagementClient, assets: AssetModels.Asset[]): Observable<void> {
+        const obs: Observable<void>[] = [];
 
-                for (const asset of assets) {
-                    obs.push(
-                        client.deleteAsset().byAssetId(asset.id).toObservable()
-                            .pipe(
-                                delay(this.cmRequestDelay),
-                                map((response) => {
-                                })
-                            ));
-                }
+        for (const asset of assets) {
+            obs.push(
+                client.deleteAsset().byAssetId(asset.id).toObservable()
+                    .pipe(
+                        delay(this.cmRequestDelay),
+                        map((response) => {
+                        })
+                    ));
+        }
 
-                return observableHelper.zipObservables(obs);
-            }),
-            map(() => {
-
-            })
-        )
+        return observableHelper.zipObservables(obs);
     }
 
-    private deleteContentTypes(client: IContentManagementClient): Observable<void> {
-        return this.cmFetchService.getAllTypes(client, []).pipe(
-            flatMap(types => {
-                const obs: Observable<void>[] = [];
+    private deleteContentTypes(client: IContentManagementClient, contentTypes: ContentTypeModels.ContentType[]): Observable<void> {
+        const obs: Observable<void>[] = [];
 
-                for (const type of types) {
-                    obs.push(
-                        client.deleteContentType().byItemCodename(type.codename).toObservable()
-                            .pipe(
-                                delay(this.cmRequestDelay),
-                                map((response) => {
-                                })
-                            ));
-                }
+        for (const type of contentTypes) {
+            obs.push(
+                client.deleteContentType().byItemCodename(type.codename).toObservable()
+                    .pipe(
+                        delay(this.cmRequestDelay),
+                        map((response) => {
+                        })
+                    ));
+        }
 
-                return observableHelper.zipObservables(obs);
-            }),
-            map(() => {
-
-            })
-        )
+        return observableHelper.zipObservables(obs);
     }
 
-    private deleteTaxonomies(client: IContentManagementClient): Observable<void> {
-        return this.cmFetchService.getAllTaxonomies(client, []).pipe(
-            flatMap(taxonomies => {
-                const obs: Observable<void>[] = [];
+    private deleteTaxonomies(client: IContentManagementClient, taxonomies: TaxonomyModels.Taxonomy[]): Observable<void> {
+        const obs: Observable<void>[] = [];
 
-                for (const taxonomy of taxonomies) {
-                    obs.push(
-                        client.deleteTaxonomy().byTaxonomyCodename(taxonomy.codename).toObservable()
-                            .pipe(
-                                delay(this.cmRequestDelay),
-                                map((response) => {
-                                })
-                            ));
-                }
+        for (const taxonomy of taxonomies) {
+            obs.push(
+                client.deleteTaxonomy().byTaxonomyCodename(taxonomy.codename).toObservable()
+                    .pipe(
+                        delay(this.cmRequestDelay),
+                        map((response) => {
+                        })
+                    ));
+        }
 
-                return observableHelper.zipObservables(obs);
-            }),
-            map(() => {
-
-            })
-        )
+        return observableHelper.zipObservables(obs);
     }
 
 
-    private deleteContentItems(client: IContentManagementClient): Observable<void> {
-        return this.cmFetchService.getAllContentItems(client, []).pipe(
-            flatMap((items) => {
-                const obs: Observable<void>[] = [];
+    private deleteContentItems(client: IContentManagementClient, contentItems: ContentItemModels.ContentItem[]): Observable<void> {
+        const obs: Observable<void>[] = [];
 
-                for (const item of items) {
-                    obs.push(
-                        client.deleteContentItem().byItemCodename(item.codename).toObservable()
-                            .pipe(
-                                delay(this.cmRequestDelay),
-                                map((response) => {
-                                })
-                            ));
-                }
+        for (const item of contentItems) {
+            obs.push(
+                client.deleteContentItem().byItemCodename(item.codename).toObservable()
+                    .pipe(
+                        delay(this.cmRequestDelay),
+                        map((response) => {
+                        })
+                    ));
+        }
 
-                return observableHelper.zipObservables(obs);
-            }),
-            map(() => {
-
-            })
-        )
+        return observableHelper.zipObservables(obs);
     }
 
 }
