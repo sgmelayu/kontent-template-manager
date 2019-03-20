@@ -4,7 +4,15 @@
 
 export const environment = {
   production: false,
-  appName: 'KC Import tool'
+  appName: 'Import tool',
+  export: {
+    filenames: {
+      packagePrefix: 'export_',
+      contentItems: 'content-items.json',
+      contentTypes: 'content-types.json',
+      taxonomies: 'taxonomies.json'
+    }
+  }
 };
 
 /*

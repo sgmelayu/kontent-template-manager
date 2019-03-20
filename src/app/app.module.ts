@@ -8,6 +8,7 @@ import { CleanupConfirmComponent } from './cleanup/cleanup-confirm.component';
 import { CleanupComponent } from './cleanup/cleanup.component';
 import { CoreModule } from './core/core.module';
 import { ExportComponent } from './export/export.component';
+import { ImportFromFileComponent } from './import/import-from-file.component';
 import { ImportFromProjectComponent } from './import/import-from-project.component';
 import { MessageComponent } from './messages/message.component';
 
@@ -18,7 +19,8 @@ import { MessageComponent } from './messages/message.component';
     ExportComponent,
     CleanupComponent,
     CleanupConfirmComponent,
-    MessageComponent
+    MessageComponent,
+    ImportFromFileComponent
   ],
   entryComponents: [
     CleanupConfirmComponent

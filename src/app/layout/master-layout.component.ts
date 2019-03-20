@@ -29,6 +29,11 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       icon: 'settings_backup_restore'
     },
     {
+      title: 'Import from file',
+      routerLink: '/import-from-file',
+      icon: 'settings_backup_restore'
+    },
+    {
       title: 'Export',
       routerLink: '/export',
       icon: 'cloud_download'

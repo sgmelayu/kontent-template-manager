@@ -33,12 +33,15 @@ export class CleanupService extends BaseService {
 
         return this.deleteContentItems(client, cleanupData.contentItems)
             .pipe(
+                delay(this.cmRequestDelay),
                 flatMap(() => {
                     return this.deleteAssets(client, cleanupData.assets);
                 }),
+                delay(this.cmRequestDelay),
                 flatMap(() => {
                     return this.deleteTaxonomies(client, cleanupData.taxonomies)
                 }),
+                delay(this.cmRequestDelay),
                 flatMap(() => {
                     return this.deleteContentTypes(client, cleanupData.contentTypes)
                 })
@@ -46,11 +49,6 @@ export class CleanupService extends BaseService {
     }
 
     prepareCleanup(projectId: string, apiKey: string): Observable<ICleanupData> {
-        const client = this.getContentManagementClient({
-            projectId: projectId,
-            apiKey: apiKey
-        });
-
         const result: ICleanupData = {
             assets: [],
             contentItems: [],
@@ -58,21 +56,21 @@ export class CleanupService extends BaseService {
             taxonomies: []
         }
 
-        return this.cmFetchService.getAllAssets(client, []).pipe(
+        return this.cmFetchService.getAllAssets(projectId, apiKey, []).pipe(
             flatMap(assets => {
                 result.assets = assets;
 
-                return this.cmFetchService.getAllContentItems(client, [])
+                return this.cmFetchService.getAllContentItems(projectId, apiKey, [])
             }),
             flatMap(contentItems => {
                 result.contentItems = contentItems;
 
-                return this.cmFetchService.getAllTaxonomies(client, []);
+                return this.cmFetchService.getAllTaxonomies(projectId, apiKey, []);
             }),
             flatMap(taxonomies => {
                 result.taxonomies = taxonomies;
 
-                return this.cmFetchService.getAllTypes(client, []);
+                return this.cmFetchService.getAllTypes(projectId, apiKey, []);
             }),
             map(contentTypes => {
                 result.contentTypes = contentTypes;
@@ -81,8 +79,6 @@ export class CleanupService extends BaseService {
             })
         );
     }
-
-
 
     private getContentManagementClient(config: IContentManagementClientConfig): IContentManagementClient {
         return new ContentManagementClient(config);

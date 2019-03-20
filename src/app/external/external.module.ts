@@ -14,6 +14,7 @@ import {
   MatSidenavModule,
   MatToolbarModule,
 } from '@angular/material';
+import { FileDropModule } from 'ngx-file-drop';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import {
     ScrollDispatchModule,
     MatDividerModule,
     MatListModule,
-    MatDialogModule
+    MatDialogModule,
+    FileDropModule
   ],
 })
 export class ExternalModule { }

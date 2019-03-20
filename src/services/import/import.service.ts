@@ -1,17 +1,37 @@
 import { Injectable } from '@angular/core';
+import * as JSZip from 'jszip';
 import {
     ContentManagementClient,
     IContentManagementClient,
     IContentManagementClientConfig,
 } from 'kentico-cloud-content-management';
-import { DeliveryClient, IDeliveryClient, IDeliveryClientConfig } from 'kentico-cloud-delivery';
-import { Observable } from 'rxjs';
+import {
+    getParserAdapter,
+    ItemContracts,
+    ItemMapper,
+    TaxonomyContracts,
+    TaxonomyMapper,
+    TypeContracts,
+    TypeMapper,
+    TaxonomyGroup,
+    ContentType,
+    ContentItem,
+} from 'kentico-cloud-delivery';
+import { from, Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { observableHelper } from 'src/utilities';
 
 import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
 import { WorkflowService } from '../workflow/workflow.service';
-import { IImportConfig, IImportData, IImportResult, IPublishItemRequest } from './import.models';
+import {
+    IImportConfig,
+    IImportData,
+    IImportFromFileConfig,
+    IImportFromProjectConfig,
+    IImportResult,
+    IPublishItemRequest,
+} from './import.models';
 import { ContentItemsImportService } from './types/content-items-import.service';
 import { ContentTypesImportService } from './types/content-types-import.service';
 import { TaxonomiesImportService } from './types/taxonomies-import.service';
@@ -19,15 +39,100 @@ import { TaxonomiesImportService } from './types/taxonomies-import.service';
 @Injectable()
 export class ImportService {
 
+    private taxonomyMapper: TaxonomyMapper = new TaxonomyMapper();
+    private typeMapper: TypeMapper = new TypeMapper();
+    private itemMapper: ItemMapper = new ItemMapper({
+        projectId: 'xxx'
+    }, getParserAdapter());
+
     constructor(
         private contentTypesImportService: ContentTypesImportService,
         private contentItemsImportService: ContentItemsImportService,
         private taxonomiesImportService: TaxonomiesImportService,
         private deliveryFetchService: DeliveryFetchService,
         private workflowService: WorkflowService
-    ) { }
+    ) {
+    }
 
-    import(config: IImportConfig): Observable<IImportResult> {
+    importFromFile(config: IImportFromFileConfig, exportZipFile: File): Observable<IImportResult> {
+        const cmClient = this.getContentManagementClient({
+            apiKey: config.apiKey,
+            projectId: config.projectId
+        });
+
+        return from(JSZip.loadAsync(exportZipFile)).pipe(
+            flatMap((response: any) => {
+                const obs: Observable<void>[] = [];
+
+                const importData: IImportData = {
+                    contentItems: [],
+                    contentTypes: [],
+                    taxonomies: [],
+                    targetClient: cmClient
+                };
+
+                // taxonomies
+                obs.push(
+                    this.readJsonFile(response, environment.export.filenames.taxonomies).pipe(
+                        map(taxonomiesString => {
+                            // careful - this is weak typing and the object is not actually instance of class
+                            const taxonomies = JSON.parse(taxonomiesString) as TaxonomyGroup[];
+                            importData.taxonomies = taxonomies;
+                        })
+                    )
+                );
+
+                // content types
+                obs.push(
+                    this.readJsonFile(response, environment.export.filenames.contentTypes).pipe(
+                        map(contentTypesString => {
+                            // careful - this is weak typing and the object is not actually instance of class
+                            const contentTypes = JSON.parse(contentTypesString) as ContentType[];
+                            importData.contentTypes = contentTypes;
+                        })
+                    )
+                );
+
+                // content items
+                obs.push(
+                    this.readJsonFile(response, environment.export.filenames.contentItems).pipe(
+                        map(contentItemsString => {
+                              // careful - this is weak typing and the object is not actually instance of class
+                              const contentItems = JSON.parse(contentItemsString) as ContentItem[];
+                              importData.contentItems = contentItems;
+                        })
+                    )
+                );
+
+                return observableHelper.zipObservables(obs).pipe(
+                    map(() => {
+                        return importData;
+                    })
+                );
+            }),
+            flatMap((importData) => {
+                return this.import(importData, {
+                    processItem: config.processItem
+                });
+            }),
+            map(result => {
+                return result;
+            })
+        )
+    }
+
+    importFromProject(config: IImportFromProjectConfig): Observable<IImportResult> {
+        return this.getImportDataFromProject(config).pipe(
+            flatMap(data => {
+                return this.import(data, config);
+            }),
+            map((response) => {
+                return response;
+            })
+        );
+    }
+
+    import(data: IImportData, config: IImportConfig): Observable<IImportResult> {
         const result: IImportResult = {
             importedContentItems: [],
             importedContentTypes: [],
@@ -36,17 +141,10 @@ export class ImportService {
             publishedItems: [],
             assets: []
         };
+        return this.contentTypesImportService.importContentTypes(data, config).pipe(
+            flatMap((response) => {
+                result.importedContentTypes = response;
 
-        return this.getImportDataFromProject(config).pipe(
-            flatMap(data => {
-                return this.contentTypesImportService.importContentTypes(data, config).pipe(
-                    map((response) => {
-                        result.importedContentTypes = response;
-                        return data;
-                    })
-                )
-            }),
-            flatMap((data) => {
                 return this.taxonomiesImportService.importTaxonomies(data, config).pipe(
                     map((response) => {
                         result.importedTaxonomies = response;
@@ -68,7 +166,7 @@ export class ImportService {
                 return this.workflowService.publishContentItems(data.contentItems.map(item => <IPublishItemRequest>{
                     itemCodename: item.system.codename,
                     languageCodename: item.system.language
-                }), config).pipe(
+                }), data.targetClient, config).pipe(
                     map((response) => {
                         result.publishedItems = response;
                         return data;
@@ -82,11 +180,20 @@ export class ImportService {
         );
     }
 
-    private getImportDataFromProject(config: IImportConfig): Observable<IImportData> {
-        const sourceDeliveryClient = this.getDeliveryClient({
-            projectId: config.sourceProjectId
-        });
+    private readJsonFile(response: any, filename: string): Observable<string> {
+        const files = response.files;
+        const file = files[filename];
 
+        if (!file) {
+            throw Error(`Invalid file '${filename}'`);
+        }
+
+        return from(file.async('text')).pipe(
+            map(data => data as string)
+        );
+    }
+
+    private getImportDataFromProject(config: IImportFromProjectConfig): Observable<IImportData> {
         const targetContentManagementClient = this.getContentManagementClient({
             projectId: config.targetProjectId,
             apiKey: config.targetProjectCmApiKey
@@ -100,17 +207,17 @@ export class ImportService {
         };
 
         const obs: Observable<void>[] = [
-            this.deliveryFetchService.getAllTypes(sourceDeliveryClient, []).pipe(
+            this.deliveryFetchService.getAllTypes(config.sourceProjectId, []).pipe(
                 map((response) => {
                     data.contentTypes = response;
                 })
             ),
-            this.deliveryFetchService.getAllContentItems(sourceDeliveryClient, []).pipe(
+            this.deliveryFetchService.getAllContentItems(config.sourceProjectId, []).pipe(
                 map((response) => {
                     data.contentItems = response;
                 })
             ),
-            this.deliveryFetchService.getAllTaxonomies(sourceDeliveryClient, []).pipe(
+            this.deliveryFetchService.getAllTaxonomies(config.sourceProjectId, []).pipe(
                 map((response) => {
                     data.taxonomies = response;
                 })
@@ -120,10 +227,6 @@ export class ImportService {
         return observableHelper.zipObservables(obs).pipe(
             map(() => data)
         );
-    }
-
-    private getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
-        return new DeliveryClient(config);
     }
 
     private getContentManagementClient(config: IContentManagementClientConfig): IContentManagementClient {

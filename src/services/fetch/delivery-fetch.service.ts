@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ContentItem, ContentType, IDeliveryClient, TaxonomyGroup } from 'kentico-cloud-delivery';
+import { ContentItem, ContentType, IDeliveryClient, TaxonomyGroup, IDeliveryClientConfig, DeliveryClient } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class DeliveryFetchService {
 
-    getAllTypes(deliveryClient: IDeliveryClient, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
-        const query = deliveryClient.types();
+
+    getAllTypes(projectId: string, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
+        const query = this.getDeliveryClient({
+            projectId: projectId
+        }).types();
 
         if (nextPageUrl) {
             query.withUrl(nextPageUrl);
@@ -20,15 +23,17 @@ export class DeliveryFetchService {
                     allTypes.push(...response.types);
 
                     if (response.pagination.nextPage) {
-                        this.getAllTypes(deliveryClient, allTypes, response.pagination.nextPage);
+                        this.getAllTypes(projectId, allTypes, response.pagination.nextPage);
                     }
                     return allTypes;
                 })
             );
     }
 
-    getAllTaxonomies(deliveryClient: IDeliveryClient, taxonomies: TaxonomyGroup[], nextPageUrl?: string): Observable<TaxonomyGroup[]> {
-        const query = deliveryClient.taxonomies();
+    getAllTaxonomies(projectId: string, taxonomies: TaxonomyGroup[], nextPageUrl?: string): Observable<TaxonomyGroup[]> {
+        const query = this.getDeliveryClient({
+            projectId: projectId
+        }).taxonomies();
 
         if (nextPageUrl) {
             query.withUrl(nextPageUrl);
@@ -41,15 +46,17 @@ export class DeliveryFetchService {
                     taxonomies.push(...response.taxonomies);
 
                     if (response.pagination.nextPage) {
-                        this.getAllTaxonomies(deliveryClient, taxonomies, response.pagination.nextPage);
+                        this.getAllTaxonomies(projectId, taxonomies, response.pagination.nextPage);
                     }
                     return taxonomies;
                 })
             );
     }
 
-    getAllContentItems(deliveryClient: IDeliveryClient, contentItems: ContentItem[], nextPageUrl?: string): Observable<ContentItem[]> {
-        const query = deliveryClient.items();
+    getAllContentItems(projectId: string, contentItems: ContentItem[], nextPageUrl?: string): Observable<ContentItem[]> {
+        const query = this.getDeliveryClient({
+            projectId: projectId
+        }).items();
 
         if (nextPageUrl) {
             query.withUrl(nextPageUrl);
@@ -62,10 +69,14 @@ export class DeliveryFetchService {
                     contentItems.push(...response.items);
 
                     if (response.pagination.nextPage) {
-                        this.getAllContentItems(deliveryClient, contentItems, response.pagination.nextPage);
+                        this.getAllContentItems(projectId, contentItems, response.pagination.nextPage);
                     }
                     return contentItems;
                 })
             );
+    }
+
+    getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
+        return new DeliveryClient(config);
     }
 }

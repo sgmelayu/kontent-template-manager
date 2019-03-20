@@ -3,6 +3,8 @@ import { ContentItem, ContentType, TaxonomyGroup } from 'kentico-cloud-delivery'
 
 export type ImportItemStatus = 'imported' | 'published';
 
+export type ProcessItemEvent = (item: IImportItem) => void;
+
 export type ImportProcessedItemType = ContentItem | ContentType | TaxonomyGroup | string;
 
 export interface IImportItem {
@@ -13,11 +15,21 @@ export interface IImportItem {
     name: string;
 }
 
-export interface IImportConfig {
-    sourceProjectId: string;
+export interface IImportFromFileConfig {
+    projectId: string;
+    apiKey: string;
+    processItem: ProcessItemEvent;
+}
+
+export interface IImportFromProjectConfig {
     targetProjectId: string;
     targetProjectCmApiKey: string;
-    processItem: (item: IImportItem) => void;
+    sourceProjectId: string;
+    processItem: ProcessItemEvent;
+}
+
+export interface IImportConfig {
+    processItem: ProcessItemEvent;
 }
 
 export interface IImportContentItemsResult {

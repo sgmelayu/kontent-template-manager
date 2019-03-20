@@ -8,3 +8,14 @@
         </div>
     </div>
 </ng-container>
+
+<ng-container *ngIf="type === 'success'">
+        <div class="w-message success">
+            <div class="title">
+                Success
+            </div>
+            <div class="text">
+                {{ text }}
+            </div>
+        </div>
+    </ng-container>

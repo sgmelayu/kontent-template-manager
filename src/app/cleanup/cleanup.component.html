@@ -1,3 +1,7 @@
+<h1>
+    Cleanup project
+</h1>
+
 <div class="push-bottom" *ngIf="error">
     <lib-message [type]="'error'" [text]="error"></lib-message>
 </div>
@@ -11,20 +15,13 @@
 
 
 <ng-container *ngIf="cleanupCompleted">
-    <h1>
-        Cleanup complete
-    </h1>
 
-    <p class="push-top">
-        Project data successfully deleted
-    </p>
+    <div class="push-top">
+        <lib-message [type]="'success'" [text]="'Project data successfully deleted'"></lib-message>
+    </div>
 </ng-container>
 
 <ng-container *ngIf="cleanupItems && !isLoading && !cleanupCompleted">
-
-    <div libTitle1>
-        Confirm cleanup
-    </div>
 
     <p class="push-top" *ngIf="cleanupItems.length > 0">
         Following items will be deleted from your project:
@@ -53,9 +50,6 @@
 </ng-container>
 
 <ng-container *ngIf="(!isLoading && !cleanupCompleted) && !cleanupItems">
-    <div libTitle1>
-        Cleanup
-    </div>
 
     <p>This action will delete all data in your project. Proceed with caution.</p>
 

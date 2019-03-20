@@ -1,5 +1,5 @@
 <h1>
-    Import from project
+    Import from file
 </h1>
 
 <div class="push-bottom" *ngIf="error">
@@ -9,7 +9,7 @@
 <ng-container *ngIf="!isLoading && !importCompleted">
 
     <div libTitle1>
-        Source Project
+        Target project
     </div>
 
     <form [formGroup]="formGroup">
@@ -17,29 +17,23 @@
         <mat-card>
             <mat-card-content>
                 <mat-form-field class="w-full-width">
-                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="sourceProjectId"
-                        required>
-                </mat-form-field>
-            </mat-card-content>
-        </mat-card>
-
-        <div libTitle1 class="push-top">
-            Target Project
-        </div>
-
-        <mat-card>
-            <mat-card-content>
-                <mat-form-field class="w-full-width">
-                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="targetProjectId"
-                        required>
+                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
                 </mat-form-field>
 
                 <mat-form-field class="push-top w-full-width">
-                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="targetProjectCmApiKey"
-                        required>
+                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
                 </mat-form-field>
             </mat-card-content>
         </mat-card>
+
+        <div class="push-top">
+            <file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
+                <span>Drop export package</span>
+            </file-drop>
+            <div *ngIf="file" class="push-top" libTextCaption>
+                <em>{{ file.name }} </em>
+            </div>
+        </div>
 
         <div class="push-top" *ngIf="!isLoading">
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>

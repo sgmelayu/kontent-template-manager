@@ -60,7 +60,7 @@ export class ImportFromProjectComponent extends BaseComponent {
 
     super.startLoading();
 
-    super.subscribeToObservable(this.dependencies.importService.import({
+    super.subscribeToObservable(this.dependencies.importService.importFromProject({
       sourceProjectId: sourceProjectId,
       targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
@@ -82,6 +82,7 @@ export class ImportFromProjectComponent extends BaseComponent {
         } else {
           this.error = 'Import failed. See console for error details.';
         }
+        super.detectChanges();
         return throwError(error);
       })
     ))

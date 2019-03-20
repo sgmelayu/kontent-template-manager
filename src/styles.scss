@@ -34,7 +34,23 @@ body {
             font-size: 22px;
             padding: 8px 12px;
             display: block;
-            background-color: darken(#ca1717, 20);
+            background-color: darken(#ca1717, 10);
+        }
+
+        .text {
+            padding: 8px 12px;
+        }
+    }
+
+    &.success {
+        background-color: #1d770b;
+        color: white;
+
+        .title {
+            font-size: 22px;
+            padding: 8px 12px;
+            display: block;
+            background-color: darken(#1d770b, 10);
         }
 
         .text {

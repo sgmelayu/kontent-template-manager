@@ -71,7 +71,7 @@ export class ContentTypesImportService extends BaseService{
         });
     }
 
-    private getElementData(element: Element): ContentTypeModels.IAddContentTypeElementData | undefined{
+    private getElementData(element: Element): ContentTypeModels.IAddContentTypeElementData | undefined {
         const elementType = this.mapElementType(element);
 
         if (elementType) {
@@ -100,13 +100,18 @@ export class ContentTypesImportService extends BaseService{
     }
 
     private createType(contentType: ContentType, targetClient: IContentManagementClient, data: IImportConfig): Observable<ContentTypeModels.ContentType> {
+        const mappedElements: ContentTypeModels.IAddContentTypeElementData[] = [];
+        contentType.elements.forEach(sourceElement => {
+            const mappedElementData = this.getElementData(sourceElement);
+            if (mappedElementData) {
+                mappedElements.push(mappedElementData);
+            }
+        });
+        
         return targetClient.addContentType()
             .withData({
                 name: contentType.system.name,
-                elements: contentType.elements.map(m => {
-                    const element = this.getElementData(m);
-                    return element;
-                })
+                elements: mappedElements
             })
             .toObservable()
             .pipe(

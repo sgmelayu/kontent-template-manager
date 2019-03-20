@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { CleanupService } from './cleanup/cleanup.service';
+import { ExportService } from './export/export.service';
 import { CmFetchService } from './fetch/cm-fetch.service';
 import { DeliveryFetchService } from './fetch/delivery-fetch.service';
 import { ImportService } from './import/import.service';
@@ -22,7 +23,8 @@ import { WorkflowService } from './workflow/workflow.service';
         ContentItemsImportService,
         TaxonomiesImportService,
         WorkflowService,
-        CleanupService
+        CleanupService,
+        ExportService
     ],
 })
 export class ServicesModule { }
