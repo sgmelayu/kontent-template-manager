@@ -1,3 +1,7 @@
+<div class="push-bottom" *ngIf="error">
+    <lib-message [type]="'error'" [text]="error"></lib-message>
+</div>
+
 <ng-container *ngIf="!isLoading && !importCompleted">
 
     <div libTitle1>
@@ -33,10 +37,6 @@
             </mat-card-content>
         </mat-card>
 
-        <div class="push-bottom push-top" *ngIf="error">
-            {{ error }}
-        </div>
-
         <div class="push-top" *ngIf="!isLoading">
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
             <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
@@ -46,13 +46,13 @@
 
 <div class="push-top" *ngIf="importTriggered">
 
-    <div libTitle1 *ngIf="!importCompleted">
-        Status
-    </div>
-
     <div *ngIf="importCompleted">
         <div libTitle1>
             Import completed
+        </div>
+
+        <div class="push-top">
+            Overview of imported items:
         </div>
 
         <mat-card *ngIf="importResult" class="push-top push-bottom">
@@ -68,7 +68,8 @@
                         <strong>{{ importResult.importedContentItems.length }}</strong>&nbsp;content items imported
                     </mat-list-item>
                     <mat-list-item role="listitem">
-                        <strong>{{ importResult.importedLanguageVariants.length }}</strong>&nbsp;language variants imported
+                        <strong>{{ importResult.importedLanguageVariants.length }}</strong>&nbsp;language variants
+                        imported
                     </mat-list-item>
                     <mat-list-item role="listitem">
                         <strong>{{ importResult.assets.length }}</strong>&nbsp;imported assets

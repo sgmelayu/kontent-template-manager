@@ -1,5 +1,5 @@
 export abstract class BaseService {
 
-    protected cmRequestDelay: number = 300;
+    protected cmRequestDelay: number = 400;
 
 }

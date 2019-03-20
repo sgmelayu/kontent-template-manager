@@ -8,15 +8,17 @@ import { CleanupConfirmComponent } from './cleanup/cleanup-confirm.component';
 import { CleanupComponent } from './cleanup/cleanup.component';
 import { CoreModule } from './core/core.module';
 import { ExportComponent } from './export/export.component';
-import { ImportComponent } from './import/import.component';
+import { ImportFromProjectComponent } from './import/import-from-project.component';
+import { MessageComponent } from './messages/message.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ImportComponent,
+    ImportFromProjectComponent,
     ExportComponent,
     CleanupComponent,
-    CleanupConfirmComponent
+    CleanupConfirmComponent,
+    MessageComponent
   ],
   entryComponents: [
     CleanupConfirmComponent

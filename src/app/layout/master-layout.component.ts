@@ -24,7 +24,7 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public navigationItems: INavigationItem[] = [
     {
-      title: 'Import',
+      title: 'Import from project',
       routerLink: '/',
       icon: 'settings_backup_restore'
     },

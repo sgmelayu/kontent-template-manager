@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { List } from 'immutable';
 import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
-import { catchError, delay, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ComponentDependencies } from 'src/di';
 import { IImportItem, IImportResult } from 'src/services';
 
@@ -11,9 +11,9 @@ import { BaseComponent } from '../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './import.component.html',
+  templateUrl: './import-from-project.component.html',
 })
-export class ImportComponent extends BaseComponent {
+export class ImportFromProjectComponent extends BaseComponent {
 
   public importCompleted: boolean = false;
   public formGroup: FormGroup;

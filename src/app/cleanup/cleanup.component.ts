@@ -169,6 +169,12 @@ export class CleanupComponent extends BaseComponent {
           } else {
             this.error = 'Import failed. See console for error details.';
           }
+
+          // cleanup data because something might have been deleted already and same item
+          // cannot be deleted twice
+          this.cleanupData = undefined;
+          this.cleanupItems = undefined;
+
           return throwError(error);
         })
       )

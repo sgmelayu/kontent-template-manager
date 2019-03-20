@@ -1,3 +1,7 @@
+<div class="push-bottom" *ngIf="error">
+    <lib-message [type]="'error'" [text]="error"></lib-message>
+</div>
+
 <ng-container *ngIf="isLoading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     <mat-card>
@@ -42,9 +46,9 @@
     <div class="push-top" *ngIf="cleanupItems.length > 0">
         <button *ngIf="canSubmit" (click)="openConfirmation()" mat-raised-button color="warn">I know what I'm doing
             -
-            Cleanup</button>
+            Delete data</button>
         <button disabled *ngIf="!canSubmit" (click)="openConfirmation()" mat-raised-button>I know what I'm
-            doing - Cleanup</button>
+            doing - Delete data</button>
     </div>
 </ng-container>
 
@@ -72,10 +76,6 @@
                 </mat-form-field>
             </mat-card-content>
         </mat-card>
-
-        <div class="push-bottom push-top" *ngIf="error">
-            {{ error }}
-        </div>
 
         <div class="push-top" *ngIf="!isLoading">
             <button *ngIf="canSubmit" (click)="prepareCleanup()" mat-raised-button color="warn">Prepare cleanup

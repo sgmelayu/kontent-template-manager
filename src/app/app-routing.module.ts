@@ -3,15 +3,16 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CleanupComponent } from './cleanup/cleanup.component';
 import { ExportComponent } from './export/export.component';
-import { ImportComponent } from './import/import.component';
+import { ImportFromProjectComponent } from './import/import-from-project.component';
 import { MasterLayoutComponent } from './layout';
 
 const routes: Routes = [
   {
     path: '', component: MasterLayoutComponent, children: [
-      { path: '', component: ImportComponent },
+      { path: '', component: ImportFromProjectComponent },
       { path: 'export', component: ExportComponent },
       { path: 'cleanup', component: CleanupComponent },
+      { path: 'import-from-project', component: ImportFromProjectComponent },
     ]
   },
 ];
