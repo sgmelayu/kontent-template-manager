@@ -60,7 +60,7 @@ export class ImportFromFileComponent extends BaseComponent {
           apiKey: config.apiKey,
           projectId: config.projectId,
           processItem: (item => {
-            this._processedItems = this._processedItems.push(item);
+            this._processedItems = this._processedItems.unshift(item);
             super.detectChanges();
           })
         }, config.file).pipe(

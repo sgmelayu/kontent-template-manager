@@ -4,7 +4,7 @@ import { FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 
-import { observableHelper } from '../../../utilities';
+import { observableHelper, stringHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
 import { IImportConfig, IImportData } from '../import.models';
@@ -22,13 +22,14 @@ export class ContentTypesImportService extends BaseService {
 
         data.contentTypes.forEach(contentType => {
             obs.push(this.createType(contentType, data.targetClient, config).pipe(
+                delay(this.cmRequestDelay),
                 map(importedType => {
                     importedTypes.push(importedType)
                 })
             ));
         });
 
-        return observableHelper.zipObservables(obs).pipe(
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
             map(() => importedTypes)
         );
     }
@@ -59,6 +60,9 @@ export class ContentTypesImportService extends BaseService {
         if (type === FieldType.ModularContent.toLowerCase()) {
             return ElementModels.ElementType.modularContent;
         }
+        if (type === FieldType.Taxonomy.toLowerCase()) {
+            return ElementModels.ElementType.taxonomy;
+        }
 
         console.warn(`Mapping of element type '${element.type}' is not yet supported. Skipping element.`);
         return undefined;
@@ -72,12 +76,30 @@ export class ContentTypesImportService extends BaseService {
         });
     }
 
+    private fixUrlSlugElem(elements: ContentTypeModels.IAddContentTypeElementData[]): void {
+        for (const element of elements) {
+            if (element.type.toLowerCase() === FieldType.UrlSlug.toLowerCase()) {
+                const textElem = elements.find(m => m.type.toLowerCase() === FieldType.Text.toLowerCase());
+                if (textElem) {
+                    element.depends_on = {
+                        element: {
+                            external_id: (textElem as any)['external_id']
+                        }
+                    }
+                } else {
+                    throw Error(`Could not get any depending element for url slug field`);
+                }
+            }
+        }
+    }
+
     private getElementData(element: IContentTypeElementModel): ContentTypeModels.IAddContentTypeElementData | undefined {
         const elementType = this.mapElementType(element);
 
         if (elementType) {
             let mode: ElementModels.ElementMode | undefined = undefined;
             let options: ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[] | undefined;
+            let externalId = stringHelper.newGuid();
 
             if (elementType === ElementModels.ElementType.multipleChoice) {
                 mode = ElementModels.ElementMode.single;
@@ -88,12 +110,14 @@ export class ContentTypesImportService extends BaseService {
                 mode = ElementModels.ElementMode.single;
             }
 
+
             return <ContentTypeModels.IAddContentTypeElementData>{
                 name: element.name,
                 mode: mode,
                 guidelines: '',
                 options: options,
-                type: elementType
+                type: elementType,
+                external_id: externalId
             }
         }
 
@@ -108,6 +132,9 @@ export class ContentTypesImportService extends BaseService {
                 mappedElements.push(mappedElementData);
             }
         });
+
+        // fixes url slug elem
+        this.fixUrlSlugElem(mappedElements);
 
         return targetClient.addContentType()
             .withData({

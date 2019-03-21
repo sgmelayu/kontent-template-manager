@@ -1,4 +1,5 @@
 import { forkJoin, Observable, of, zip } from 'rxjs';
+import { flatMap, delay } from 'rxjs/operators';
 
 export class ObservableHelper {
 
@@ -43,6 +44,39 @@ export class ObservableHelper {
         }
 
         return zippedObservable;
+    }
+
+    flatMapObservables(observables: Observable<any>[], delayMs: number): Observable<any> {
+        if (!observables) {
+            throw Error(`Given observables are not valid`);
+        }
+
+        if (!Array.isArray(observables)) {
+            throw Error(`Given observables are not in array`);
+        }
+
+        if (observables.length === 0) {
+            // return empty/fake observable if there are none observables
+            return of(undefined);
+        }
+
+        if (observables.length === 1) {
+            return observables[0];
+        }
+
+        let flatMappedObs: Observable<any> = observables[0];
+
+        for (let i = 1; i < observables.length; i++) {
+            const currentObservable = observables[i];
+           flatMappedObs = flatMappedObs.pipe(
+                delay(delayMs),
+                flatMap((x) => {
+                    return currentObservable;
+                }),
+            );
+        }
+
+        return flatMappedObs;
     }
 
     /**

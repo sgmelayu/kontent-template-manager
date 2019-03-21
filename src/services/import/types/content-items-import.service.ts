@@ -10,18 +10,18 @@ import { FieldModels, FieldType } from 'kentico-cloud-delivery';
 import { from, Observable, of } from 'rxjs';
 import { delay, flatMap, map } from 'rxjs/operators';
 
-import { observableHelper } from '../../../utilities';
+import { observableHelper, stringHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import {
     IAssetFieldModel,
+    IAssetModel,
     ICMAssetModel,
     IContentItemFieldModel,
     IContentItemModel,
     IMultipleChoiceOptionModel,
     ISlimContentItemModel,
-    IAssetModel,
 } from '../../shared/shared.models';
-import { IImportConfig, IImportContentItemsResult, IImportData, IAssetFromFile, IGetAssetData } from '../import.models';
+import { IAssetFromFile, IGetAssetData, IImportConfig, IImportContentItemsResult, IImportData } from '../import.models';
 
 interface ICreateContentItemResult {
     contentItem?: ISlimContentItemModel,
@@ -45,9 +45,10 @@ export class ContentItemsImportService extends BaseService {
         const importedContentItems: ISlimContentItemModel[] = [];
         const importedLanguageVariants: LanguageVariantModels.ContentItemLanguageVariant[] = [];
         const assets: ICMAssetModel[] = [];
+        const processedAssetsUrls: string[] = [];
 
         data.contentItems.forEach(contentItem => {
-            obs.push(this.createContentItem(data.assetsFromFile, contentItem, data.targetClient, config).pipe(
+            obs.push(this.createContentItem(data, data.assetsFromFile, contentItem, data.targetClient, config, processedAssetsUrls).pipe(
                 map((importResult) => {
                     if (!importResult.assets) {
                         throw Error(`Missing assets`);
@@ -66,7 +67,7 @@ export class ContentItemsImportService extends BaseService {
             ));
         });
 
-        return observableHelper.zipObservables(obs).pipe(
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
             map(() => {
                 return <IImportContentItemsResult>{
                     contentItems: importedContentItems,
@@ -78,11 +79,7 @@ export class ContentItemsImportService extends BaseService {
     }
 
 
-    private createContentItem(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<ICreateContentItemResult> {
-        let result: ICreateContentItemResult = {
-            assets: []
-        };
-
+    private addContentItem(targetClient: IContentManagementClient, contentItem: IContentItemModel, config: IImportConfig): Observable<ContentItemResponses.AddContentItemResponse> {
         return targetClient.addContentItem()
             .withData({
                 name: contentItem.system.name,
@@ -91,6 +88,26 @@ export class ContentItemsImportService extends BaseService {
                 },
             })
             .toObservable()
+            .pipe(
+                map(response => {
+                    config.processItem({
+                        item: contentItem,
+                        status: 'imported',
+                        action: 'Add content item',
+                        name: response.data.codename
+                    });
+
+                    return response;
+                })
+            );
+    }
+
+    private createContentItem(data: IImportData, assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, targetClient: IContentManagementClient, config: IImportConfig, processedAssetUrls: string[]): Observable<ICreateContentItemResult> {
+        let result: ICreateContentItemResult = {
+            assets: []
+        };
+
+        return this.addContentItem(targetClient, contentItem, config)
             .pipe(
                 delay(this.cmRequestDelay),
                 flatMap(response => {
@@ -104,7 +121,7 @@ export class ContentItemsImportService extends BaseService {
                         const element = contentItem.elements[elementCodename];
                         if (element.type) {
                             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                                obs.push(...this.createAssets(assetsFromFile, contentItem, element as IAssetFieldModel, targetClient, config).map(
+                                obs.push(...this.createAssets(assetsFromFile, contentItem, element as IAssetFieldModel, targetClient, config, processedAssetUrls).map(
                                     m => m.pipe(map((assetResponse) => {
                                         createContentItemWithAssetsResult.assetResponses.push(assetResponse);
                                     })
@@ -127,16 +144,29 @@ export class ContentItemsImportService extends BaseService {
                     }))
 
                 }),
+                flatMap(response => {
+                    // prepare linked items
+                    const obs: Observable<void>[] = [];
+
+                    for (const linkedItemCodename of contentItem.linkedItemCodenames) {
+                        const linkedItem = data.contentItems.find(m => m.system.codename === linkedItemCodename);
+
+                        if (!linkedItem) {
+                            throw Error(`Linked item with codename '${linkedItemCodename}' was not found. This item is requested by '${contentItem.system.codename}'`);
+                        }
+                        obs.push(this.addContentItem(targetClient, linkedItem, config).pipe(
+                            map((response) => {
+                            })
+                        ));
+                    }
+
+                    return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(map(() => {
+                        return response;
+                    }));
+                }),
                 flatMap((response) => {
                     const createdContentItem = response.contentItemResponse.data;
                     const assets = response.assetResponses.map(m => m.data);
-
-                    config.processItem({
-                        item: contentItem,
-                        status: 'imported',
-                        action: 'Add content item',
-                        name: createdContentItem.codename
-                    });
 
                     result.contentItem = {
                         codename: createdContentItem.codename,
@@ -182,7 +212,7 @@ export class ContentItemsImportService extends BaseService {
             xhr.responseType = 'blob';
             xhr.onload = () => {
                 resolve({
-                    blog: xhr.response,
+                    blob: xhr.response,
                     asset: asset
                 });
             }
@@ -190,7 +220,7 @@ export class ContentItemsImportService extends BaseService {
         })) as Observable<IGetAssetData>;
     }
 
-    private createAssets(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<AssetResponses.AddAssetResponse>[] {
+    private createAssets(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig, processedAssetsUrls: string[]): Observable<AssetResponses.AddAssetResponse>[] {
         const obs: Observable<AssetResponses.AddAssetResponse>[] = [];
         const assetsToCreateObs: Observable<IGetAssetData>[] = [];
 
@@ -204,68 +234,68 @@ export class ContentItemsImportService extends BaseService {
                     blob: assetFromFile.data
                 }));
             }
-
         } else {
             // create assets from urls from projects directly
-            for (const asset of assetField.value) {    
-                assetsToCreateObs.push(this.getAssetBlobFromUrl(asset));
+            for (const asset of assetField.value) {
+                // filter already processed urls to avoid duplicates   
+                if (!processedAssetsUrls.includes(asset.url)) {
+                    assetsToCreateObs.push(this.getAssetBlobFromUrl(asset));
+                    processedAssetsUrls.push(asset.url);
+                }
             }
         }
-            
-            for (const assetObs of assetsToCreateObs) {
-                obs.push(
-                    assetObs.pipe(
-                        flatMap(data => {
-                            const asset: FieldModels.AssetModel = data.asset;
-                            const contentLength = data.blob.size;
-                            const contentType = data.asset.type;
-                            const fileBinary = data.blob;
-    
-                            return targetClient.uploadBinaryFile()
-                                .withData({
-                                    binaryData: fileBinary,
-                                    contentLength: contentLength,
-                                    contentType: contentType,
-                                    filename: asset.name
-                                }).toObservable().pipe(
-                                    flatMap(response => {
-    
-                                        config.processItem({
-                                            item: contentItem,
-                                            status: 'imported',
-                                            action: 'Upload binary file',
-                                            name: `[${response.data.type}] - ${response.data.id}`
-                                        });
-    
-                                        return targetClient.addAsset().withData({
-                                            title: asset.name,
-                                            descriptions: [{
-                                                description: asset.description,
-                                                language: {
-                                                    codename: contentItem.system.language
-                                                }
-                                            }],
-                                            fileReference: {
-                                                id: response.data.id,
-                                                type: response.data.type
-                                            },
-                                            externalId: asset.url,
-                                        }).toObservable()
-                                    }),
-                                    map((response) => {
-                                        config.processItem({
-                                            item: contentItem,
-                                            status: 'imported',
-                                            action: 'Add asset',
-                                            name: `[${response.data.type}] - ${response.data.id}`
-                                        });
-                                        return response;
-                                    })
-                                )
-                        }
-                        )
-                    ))
-            }
+
+        for (const assetObs of assetsToCreateObs) {
+            obs.push(
+                assetObs.pipe(
+                    delay(this.cmRequestDelay),
+                    flatMap(data => {
+                        const asset: FieldModels.AssetModel = data.asset;
+                        const contentLength = data.asset.size;
+                        const contentType = data.asset.type;
+                        const fileBinary = data.blob;
+
+                        return targetClient.uploadBinaryFile()
+                            .withData({
+                                binaryData: fileBinary,
+                                contentLength: contentLength,
+                                contentType: contentType,
+                                filename: asset.name
+                            }).toObservable().pipe(
+                                delay(this.cmRequestDelay),
+                                flatMap(response => {
+
+                                    config.processItem({
+                                        item: contentItem,
+                                        status: 'imported',
+                                        action: 'Upload binary file',
+                                        name: `[${response.data.type}] - ${response.data.id}`
+                                    });
+
+                                    return targetClient.addAsset().withData({
+                                        title: asset.name,
+                                        descriptions: [], // we don't know the language of description
+                                        fileReference: {
+                                            id: response.data.id,
+                                            type: response.data.type
+                                        },
+                                        externalId: asset.url,
+                                    }).toObservable()
+                                }),
+                                map((response) => {
+                                    config.processItem({
+                                        item: contentItem,
+                                        status: 'imported',
+                                        action: 'Add asset',
+                                        name: `[${response.data.type}] - ${response.data.id}`
+                                    });
+                                    return response;
+                                })
+                            )
+                    }
+                    )
+                ))
+        }
 
         return obs;
     }
@@ -279,6 +309,15 @@ export class ContentItemsImportService extends BaseService {
         }
 
         const value = field.value;
+
+        if (field.type.toLowerCase() === FieldType.Taxonomy.toLowerCase()) {
+            console.log('TODO!');
+            const taxonomyField = field.value as IMultipleChoiceOptionModel[];
+
+            return taxonomyField.map(option => <SharedContracts.IReferenceObjectContract>{
+                codename: option.codename
+            });
+        }
 
         if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
             const multipleChoiceField = field.value as IMultipleChoiceOptionModel[];
@@ -314,7 +353,7 @@ export class ContentItemsImportService extends BaseService {
 
         for (const elementCodename of elementCodenames) {
             elements.push({
-                codename: elementCodename,
+                codename: this.removeSnippetFromElementCodename(elementCodename),
                 value: this.mapElementValue(contentItem.elements[elementCodename], assets)
             });
         }
@@ -322,5 +361,11 @@ export class ContentItemsImportService extends BaseService {
         return elements;
     }
 
-
+    private removeSnippetFromElementCodename(codename: string): string {
+        const metadataIdentifier = '__';
+        if (codename.includes(metadataIdentifier)) {
+            return codename.toString().substring(codename.indexOf(metadataIdentifier) + 2);
+        }
+        return codename;
+    }
 }

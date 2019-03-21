@@ -88,7 +88,8 @@ export class DeliveryFetchService {
                             return <IContentItemModel>{
                                 elements: m.elements,
                                 system: m.system,
-                                assets: this.extractAssets(m)
+                                assets: this.extractAssets(m),
+                                linkedItemCodenames: this.extractLinkedItemCodenames(m)
                             };
                         }
                     ));
@@ -103,6 +104,33 @@ export class DeliveryFetchService {
 
     getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
         return new DeliveryClient(config);
+    }
+
+    private extractLinkedItemCodenames(contentItem: ContentItem): string[] {
+        const linkedItems: string[] = [];
+
+        for (const elementCodename of Object.keys(contentItem.elements)) {
+            const element = contentItem.elements[elementCodename];
+            if (element.type.toLowerCase() === FieldType.ModularContent.toLowerCase()) {
+                const modularContent = element.value as string[];
+                for (const modularItem of modularContent) {
+                    if (!linkedItems.includes(modularItem)) {
+                        linkedItems.push(modularItem);
+                    }
+                }
+            }
+
+            if (element.type.toLowerCase() === FieldType.RichText.toLowerCase()) {
+                const modularContent = (element as any)['modular_content'] as string[];
+                for (const modularItem of modularContent) {
+                    if (!linkedItems.includes(modularItem)) {
+                        linkedItems.push(modularItem);
+                    }
+                }
+            }
+        }
+
+        return linkedItems;
     }
 
     private extractAssets(contentItem: ContentItem): IEmbeddedAsset[] {

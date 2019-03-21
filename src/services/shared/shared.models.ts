@@ -80,6 +80,7 @@ export interface IContentItemModel {
     };
     elements: IContentItemElementModel;
     assets: IEmbeddedAsset[];
+    linkedItemCodenames: string[];
 }
 
 export interface IAssetFieldModel extends IFieldModel {

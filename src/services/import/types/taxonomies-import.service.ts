@@ -27,7 +27,7 @@ export class TaxonomiesImportService extends BaseService {
             ));
         });
 
-        return observableHelper.zipObservables(obs).pipe(
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
             map(() => {
                 return taxonomies;
             })

@@ -1,5 +1,7 @@
+import { environment } from '../environments/environment';
+
 export abstract class BaseService {
 
-    protected cmRequestDelay: number = 600;
+    protected cmRequestDelay: number = environment.requestDelay;
 
 }

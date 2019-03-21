@@ -94,7 +94,7 @@ export class CleanupService extends BaseService {
                     ));
         }
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay);
     }
 
     private deleteContentTypes(client: IContentManagementClient, contentTypes: IContentTypeModel[]): Observable<void> {
@@ -104,13 +104,12 @@ export class CleanupService extends BaseService {
             obs.push(
                 client.deleteContentType().byItemCodename(type.system.codename).toObservable()
                     .pipe(
-                        delay(this.cmRequestDelay),
                         map((response) => {
                         })
                     ));
         }
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay);
     }
 
     private deleteTaxonomies(client: IContentManagementClient, taxonomies: ITaxonomyModel[]): Observable<void> {
@@ -126,7 +125,7 @@ export class CleanupService extends BaseService {
                     ));
         }
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay);
     }
 
 
@@ -143,7 +142,7 @@ export class CleanupService extends BaseService {
                     ));
         }
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay);
     }
 
 }
