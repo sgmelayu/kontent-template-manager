@@ -9,6 +9,7 @@ import { ICleanupData } from 'src/services';
 
 import { BaseComponent } from '../core/base.component';
 import { CleanupConfirmComponent } from './cleanup-confirm.component';
+import { environment } from 'src/environments/environment';
 
 interface ICleanupItem {
   type: 'Content type' | 'Content item' | 'Asset' | 'Taxonomy',
@@ -41,8 +42,8 @@ export class CleanupComponent extends BaseComponent {
     super(dependencies, cdr);
 
     this.formGroup = this.fb.group({
-      projectId: ['ede994d8-bb05-01b5-9c33-8b65e7372306', Validators.required],
-      cmApiKey: ['eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84', Validators.required],
+      projectId: [environment.defaultProjects.targetProjectId, Validators.required],
+      cmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
     });
   }
 

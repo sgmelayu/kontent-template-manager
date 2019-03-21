@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { ComponentDependencies } from 'src/di';
 
 import { BaseComponent } from '../core/base.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +26,7 @@ export class ExportComponent extends BaseComponent {
     super(dependencies, cdr);
 
     this.formGroup = this.fb.group({
-      projectId: ['f249eb83-18fd-01b8-2db7-c561bcb1ed1e', Validators.required],
+      projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
     });
   }
 

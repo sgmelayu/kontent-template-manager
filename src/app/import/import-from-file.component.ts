@@ -9,6 +9,7 @@ import { ComponentDependencies } from 'src/di';
 import { IImportItem, IImportResult } from 'src/services';
 
 import { BaseComponent } from '../core/base.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,7 +29,7 @@ export class ImportFromFileComponent extends BaseComponent {
   }
 
   public get canSubmit(): boolean {
-    return this.formGroup.valid;
+    return this.formGroup.valid && (this.file ? true : false);
   }
 
   public importResult?: IImportResult | undefined = undefined;
@@ -40,8 +41,8 @@ export class ImportFromFileComponent extends BaseComponent {
     super(dependencies, cdr);
 
     this.formGroup = this.fb.group({
-      projectId: ['ede994d8-bb05-01b5-9c33-8b65e7372306', Validators.required],
-      cmApiKey: ['eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84', Validators.required],
+      projectId: [environment.defaultProjects.targetProjectId, Validators.required],
+      cmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
     });
   }
 
@@ -49,6 +50,7 @@ export class ImportFromFileComponent extends BaseComponent {
     const config = this.getConfig();
 
     if (config) {
+      this.resetErrors();
       this.importTriggered = true;
       super.startLoading();
       super.detectChanges();
@@ -84,11 +86,34 @@ export class ImportFromFileComponent extends BaseComponent {
   }
 
   public dropped(event: UploadEvent) {
+    if (!event.files) {
+      this.error = 'Invalid file'
+      super.detectChanges();
+      return;
+    }
+
+    if (event.files.length > 1) {
+      this.error = 'Only 1 file can be uploaded at a time';
+      super.detectChanges();
+      return;
+    }
+
     for (const droppedFile of event.files) {
       // Is it a file?
+      if (!droppedFile.fileEntry.isFile) {
+        this.error = 'Dropped item is not a file';
+        super.detectChanges();
+        return;
+      }
+
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
         fileEntry.file((file: File) => {
+          if (file.type !== 'application/zip') {
+            this.error = 'File has to be zip package';
+            super.detectChanges();
+            return;
+          }
           this.file = file;
           super.detectChanges();
         });

@@ -23,19 +23,19 @@
                 <mat-form-field class="push-top w-full-width">
                     <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
                 </mat-form-field>
+
+                <div class="push-top">
+                    <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
+                        <span></span>
+                    </file-drop>
+                    <div *ngIf="file" class="push-top" libTextCaption>
+                        <em>{{ file.name }} </em>
+                    </div>
+                </div>
             </mat-card-content>
         </mat-card>
 
         <div class="push-top">
-            <file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
-                <span>Drop export package</span>
-            </file-drop>
-            <div *ngIf="file" class="push-top" libTextCaption>
-                <em>{{ file.name }} </em>
-            </div>
-        </div>
-
-        <div class="push-top" *ngIf="!isLoading">
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
             <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
         </div>

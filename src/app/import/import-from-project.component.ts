@@ -8,6 +8,7 @@ import { ComponentDependencies } from 'src/di';
 import { IImportItem, IImportResult } from 'src/services';
 
 import { BaseComponent } from '../core/base.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,9 +39,9 @@ export class ImportFromProjectComponent extends BaseComponent {
     super(dependencies, cdr);
 
     this.formGroup = this.fb.group({
-      sourceProjectId: ['f249eb83-18fd-01b8-2db7-c561bcb1ed1e', Validators.required],
-      targetProjectId: ['ede994d8-bb05-01b5-9c33-8b65e7372306', Validators.required],
-      targetProjectCmApiKey: ['eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84', Validators.required],
+      sourceProjectId: [environment.defaultProjects.sourceProjectId, Validators.required],
+      targetProjectId: [environment.defaultProjects.targetProjectId, Validators.required],
+      targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
     });
   }
 
