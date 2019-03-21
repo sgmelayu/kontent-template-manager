@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
-import { DeliveryClient, IDeliveryClient, IDeliveryClientConfig } from 'kentico-cloud-delivery';
+import { ContentItem, DeliveryClient, FieldType, IDeliveryClient, IDeliveryClientConfig } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { IContentItemModel, IContentTypeModel, ITaxonomyModel } from '../shared/shared.models';
+import {
+    IAssetModel,
+    IContentItemModel,
+    IContentTypeModel,
+    ITaxonomyModel,
+    IEmbeddedAsset,
+} from '../shared/shared.models';
 
 @Injectable()
 export class DeliveryFetchService {
@@ -22,7 +28,7 @@ export class DeliveryFetchService {
             .pipe(
                 map(response => {
                     allTypes.push(...response.types.map(m => {
-                        return <IContentTypeModel> {
+                        return <IContentTypeModel>{
                             elements: m.elements,
                             system: m.system
                         }
@@ -50,7 +56,7 @@ export class DeliveryFetchService {
             .pipe(
                 map(response => {
                     taxonomies.push(...response.taxonomies.map(m => {
-                        return <ITaxonomyModel> {
+                        return <ITaxonomyModel>{
                             system: m.system,
                             terms: m.terms
                         }
@@ -79,10 +85,11 @@ export class DeliveryFetchService {
                 map(response => {
                     contentItems.push(...response.items.map(
                         m => {
-                            return <IContentItemModel> {
+                            return <IContentItemModel>{
                                 elements: m.elements,
-                                system: m.system
-                            }
+                                system: m.system,
+                                assets: this.extractAssets(m)
+                            };
                         }
                     ));
 
@@ -96,5 +103,26 @@ export class DeliveryFetchService {
 
     getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
         return new DeliveryClient(config);
+    }
+
+    private extractAssets(contentItem: ContentItem): IEmbeddedAsset[] {
+        const assets: IEmbeddedAsset[] = [];
+
+        for (const elementCodename of Object.keys(contentItem.elements)) {
+            const element = contentItem.elements[elementCodename];
+            if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
+                const fieldAssets = element.value as IAssetModel[];
+                for (const asset of fieldAssets) {
+                    assets.push({
+                        asset: asset,
+                        contentItemCodename: contentItem.system.codename,
+                        contentItemId: contentItem.system.id,
+                        fieldCodename: elementCodename
+                    });
+                }
+            }
+        }
+
+        return assets;
     }
 }

@@ -19,8 +19,9 @@ import {
     IContentItemModel,
     IMultipleChoiceOptionModel,
     ISlimContentItemModel,
+    IAssetModel,
 } from '../../shared/shared.models';
-import { IImportConfig, IImportContentItemsResult, IImportData } from '../import.models';
+import { IImportConfig, IImportContentItemsResult, IImportData, IAssetFromFile, IGetAssetData } from '../import.models';
 
 interface ICreateContentItemResult {
     contentItem?: ISlimContentItemModel,
@@ -46,9 +47,8 @@ export class ContentItemsImportService extends BaseService {
         const assets: ICMAssetModel[] = [];
 
         data.contentItems.forEach(contentItem => {
-            obs.push(this.createContentItem(contentItem, data.targetClient, config).pipe(
+            obs.push(this.createContentItem(data.assetsFromFile, contentItem, data.targetClient, config).pipe(
                 map((importResult) => {
-
                     if (!importResult.assets) {
                         throw Error(`Missing assets`);
                     }
@@ -78,7 +78,7 @@ export class ContentItemsImportService extends BaseService {
     }
 
 
-    private createContentItem(contentItem: IContentItemModel, targetClient: IContentManagementClient, data: IImportConfig): Observable<ICreateContentItemResult> {
+    private createContentItem(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<ICreateContentItemResult> {
         let result: ICreateContentItemResult = {
             assets: []
         };
@@ -104,7 +104,7 @@ export class ContentItemsImportService extends BaseService {
                         const element = contentItem.elements[elementCodename];
                         if (element.type) {
                             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                                obs.push(...this.createAssets(contentItem, element as IAssetFieldModel, targetClient, data).map(
+                                obs.push(...this.createAssets(assetsFromFile, contentItem, element as IAssetFieldModel, targetClient, config).map(
                                     m => m.pipe(map((assetResponse) => {
                                         createContentItemWithAssetsResult.assetResponses.push(assetResponse);
                                     })
@@ -131,7 +131,7 @@ export class ContentItemsImportService extends BaseService {
                     const createdContentItem = response.contentItemResponse.data;
                     const assets = response.assetResponses.map(m => m.data);
 
-                    data.processItem({
+                    config.processItem({
                         item: contentItem,
                         status: 'imported',
                         action: 'Add content item',
@@ -162,7 +162,7 @@ export class ContentItemsImportService extends BaseService {
                         throw Error(`Content item was not assigned`);
                     }
 
-                    data.processItem({
+                    config.processItem({
                         item: contentItem,
                         status: 'imported',
                         action: 'Add language variant',
@@ -175,83 +175,97 @@ export class ContentItemsImportService extends BaseService {
             );
     }
 
-    private createAssets(contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<AssetResponses.AddAssetResponse>[] {
+    private getAssetBlobFromUrl(asset: IAssetModel): Observable<IGetAssetData> {
+        return from(new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', asset.url);
+            xhr.responseType = 'blob';
+            xhr.onload = () => {
+                resolve({
+                    blog: xhr.response,
+                    asset: asset
+                });
+            }
+            xhr.send();
+        })) as Observable<IGetAssetData>;
+    }
+
+    private createAssets(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<AssetResponses.AddAssetResponse>[] {
         const obs: Observable<AssetResponses.AddAssetResponse>[] = [];
-        const loadImagesObs: Observable<any>[] = [];
+        const assetsToCreateObs: Observable<IGetAssetData>[] = [];
 
-        for (const asset of assetField.value) {
-            const loadImageObs = from(new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', asset.url);
-                xhr.responseType = 'blob';
-                xhr.onload = () => {
-                    resolve({
-                        response: xhr.response,
-                        asset: asset
-                    });
-                }
-                xhr.send();
-            }));
+        if (assetsFromFile.length > 0) {
+            // create assets only from file
+            const assetsForContentItem = assetsFromFile.filter(m => m.embeddedAsset.contentItemCodename === contentItem.system.codename);
+            for (const assetFromFile of assetsForContentItem) {
 
-            loadImagesObs.push(loadImageObs);
+                assetsToCreateObs.push(of(<IGetAssetData>{
+                    asset: assetFromFile.embeddedAsset.asset,
+                    blob: assetFromFile.data
+                }));
+            }
+
+        } else {
+            // create assets from urls from projects directly
+            for (const asset of assetField.value) {    
+                assetsToCreateObs.push(this.getAssetBlobFromUrl(asset));
+            }
         }
-
-        for (const imageObs of loadImagesObs) {
-            obs.push(
-                imageObs.pipe(
-                    flatMap(data => {
-                        const response = data.response;
-                        const asset: FieldModels.AssetModel = data.asset;
-
-                        const contentLength = response.size;
-                        const contentType = response.type;
-                        const fileBinary = response;
-
-                        return targetClient.uploadBinaryFile()
-                            .withData({
-                                binaryData: fileBinary,
-                                contentLength: contentLength,
-                                contentType: contentType,
-                                filename: asset.name
-                            }).toObservable().pipe(
-                                flatMap(response => {
-
-                                    config.processItem({
-                                        item: contentItem,
-                                        status: 'imported',
-                                        action: 'Upload binary file',
-                                        name: `[${response.data.type}] - ${response.data.id}`
-                                    });
-
-                                    return targetClient.addAsset().withData({
-                                        title: asset.name,
-                                        descriptions: [{
-                                            description: asset.description,
-                                            language: {
-                                                codename: contentItem.system.language
-                                            }
-                                        }],
-                                        fileReference: {
-                                            id: response.data.id,
-                                            type: response.data.type
-                                        },
-                                        externalId: asset.url,
-                                    }).toObservable()
-                                }),
-                                map((response) => {
-                                    config.processItem({
-                                        item: contentItem,
-                                        status: 'imported',
-                                        action: 'Add asset',
-                                        name: `[${response.data.type}] - ${response.data.id}`
-                                    });
-                                    return response;
-                                })
-                            )
-                    }
-                    )
-                ))
-        }
+            
+            for (const assetObs of assetsToCreateObs) {
+                obs.push(
+                    assetObs.pipe(
+                        flatMap(data => {
+                            const asset: FieldModels.AssetModel = data.asset;
+                            const contentLength = data.blob.size;
+                            const contentType = data.asset.type;
+                            const fileBinary = data.blob;
+    
+                            return targetClient.uploadBinaryFile()
+                                .withData({
+                                    binaryData: fileBinary,
+                                    contentLength: contentLength,
+                                    contentType: contentType,
+                                    filename: asset.name
+                                }).toObservable().pipe(
+                                    flatMap(response => {
+    
+                                        config.processItem({
+                                            item: contentItem,
+                                            status: 'imported',
+                                            action: 'Upload binary file',
+                                            name: `[${response.data.type}] - ${response.data.id}`
+                                        });
+    
+                                        return targetClient.addAsset().withData({
+                                            title: asset.name,
+                                            descriptions: [{
+                                                description: asset.description,
+                                                language: {
+                                                    codename: contentItem.system.language
+                                                }
+                                            }],
+                                            fileReference: {
+                                                id: response.data.id,
+                                                type: response.data.type
+                                            },
+                                            externalId: asset.url,
+                                        }).toObservable()
+                                    }),
+                                    map((response) => {
+                                        config.processItem({
+                                            item: contentItem,
+                                            status: 'imported',
+                                            action: 'Add asset',
+                                            name: `[${response.data.type}] - ${response.data.id}`
+                                        });
+                                        return response;
+                                    })
+                                )
+                        }
+                        )
+                    ))
+            }
 
         return obs;
     }

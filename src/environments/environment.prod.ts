@@ -11,7 +11,8 @@ export const environment = {
       packagePrefix: 'export_',
       contentItems: 'content-items.json',
       contentTypes: 'content-types.json',
-      taxonomies: 'taxonomies.json'
+      taxonomies: 'taxonomies.json',
+      assetsFolder: 'assets'
     }
   }
 };

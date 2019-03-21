@@ -79,6 +79,7 @@ export interface IContentItemModel {
         sitemapLocations: string[]
     };
     elements: IContentItemElementModel;
+    assets: IEmbeddedAsset[];
 }
 
 export interface IAssetFieldModel extends IFieldModel {
@@ -105,6 +106,13 @@ export interface IFieldModel {
     name: string;
     type: string;
     value: any;
+}
+
+export interface IEmbeddedAsset {
+    asset: IAssetModel;
+    fieldCodename: string;
+    contentItemCodename: string;
+    contentItemId: string;
 }
 
 export interface IAssetModel {

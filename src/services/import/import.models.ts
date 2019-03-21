@@ -4,9 +4,11 @@ import {
     ICMAssetModel,
     IContentItemModel,
     IContentTypeModel,
+    IEmbeddedAsset,
     ILanguageVariantModel,
     ISlimContentItemModel,
     ITaxonomyModel,
+    IAssetModel,
 } from '../shared/shared.models';
 
 export type ImportItemStatus = 'imported' | 'published';
@@ -60,9 +62,20 @@ export interface IPublishItemRequest {
     languageCodename: string;
 }
 
+export interface IAssetFromFile {
+    data: Blob;
+    embeddedAsset: IEmbeddedAsset;
+}
+
 export interface IImportData {
     targetClient: IContentManagementClient;
     contentTypes: IContentTypeModel[];
     contentItems: IContentItemModel[];
     taxonomies: ITaxonomyModel[];
+    assetsFromFile: IAssetFromFile[];
+}
+
+export interface IGetAssetData {
+    blob: Blob;
+    asset: IAssetModel;
 }

@@ -11,9 +11,10 @@ import { flatMap, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { observableHelper } from '../../utilities';
 import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
-import { IContentItemModel, IContentTypeModel, ITaxonomyModel } from '../shared/shared.models';
+import { IContentItemModel, IContentTypeModel, IEmbeddedAsset, ITaxonomyModel } from '../shared/shared.models';
 import { WorkflowService } from '../workflow/workflow.service';
 import {
+    IAssetFromFile,
     IImportConfig,
     IImportData,
     IImportFromFileConfig,
@@ -51,7 +52,8 @@ export class ImportService {
                     contentItems: [],
                     contentTypes: [],
                     taxonomies: [],
-                    targetClient: cmClient
+                    targetClient: cmClient,
+                    assetsFromFile: []
                 };
 
                 // taxonomies
@@ -77,9 +79,34 @@ export class ImportService {
                 // content items
                 obs.push(
                     this.readJsonFile(response, environment.export.filenames.contentItems).pipe(
-                        map(contentItemsString => {
+                        flatMap(contentItemsString => {
                             const contentItems = JSON.parse(contentItemsString) as IContentItemModel[];
                             importData.contentItems = contentItems;
+
+                            const obs: Observable<void>[] = [];
+                            // get assets from content items
+                            const assetsFromFile: IAssetFromFile[] = [];
+                            for (const contentItem of contentItems) {
+                                for (const asset of contentItem.assets) {
+                                    obs.push(
+                                        this.getAssetFile(response, asset).pipe(
+                                            map((assetFromFile) => {
+                                                assetsFromFile.push(assetFromFile);
+                                            })
+                                        )
+                                    )
+                                }
+
+                            }
+
+                            return observableHelper.zipObservables(obs).pipe(
+                                map(() => {
+                                    return assetsFromFile;
+                                })
+                            );
+                        }),
+                        map((assetsFromFile) => {
+                            importData.assetsFromFile = assetsFromFile;
                         })
                     )
                 );
@@ -160,6 +187,27 @@ export class ImportService {
         );
     }
 
+    private getAssetFile(response: any, asset: IEmbeddedAsset): Observable<IAssetFromFile> {
+        const files = response.files;
+        const assetsFolderName = environment.export.filenames.assetsFolder;
+
+        const fullFilePath = `${assetsFolderName}/${asset.contentItemCodename}/${asset.fieldCodename}/${asset.asset.name}`;
+        const assetFile = files[fullFilePath];
+
+        if (!assetFile) {
+            throw Error(`Invalid file '${fullFilePath}'`);
+        }
+
+        return from(assetFile.async('blob')).pipe(
+            map(data => {
+                return <IAssetFromFile>{
+                    data: data,
+                    embeddedAsset: asset
+                }
+            })
+        );
+    }
+
     private readJsonFile(response: any, filename: string): Observable<string> {
         const files = response.files;
         const file = files[filename];
@@ -183,7 +231,8 @@ export class ImportService {
             targetClient: targetContentManagementClient,
             contentTypes: [],
             contentItems: [],
-            taxonomies: []
+            taxonomies: [],
+            assetsFromFile: []
         };
 
         const obs: Observable<void>[] = [
