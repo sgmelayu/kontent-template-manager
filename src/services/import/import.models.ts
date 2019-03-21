@@ -1,17 +1,25 @@
-import { IContentManagementClient, ContentTypeModels, ContentItemModels, TaxonomyModels, LanguageVariantModels, AssetModels } from 'kentico-cloud-content-management';
-import { ContentItem, ContentType, TaxonomyGroup } from 'kentico-cloud-delivery';
+import { IContentManagementClient } from 'kentico-cloud-content-management';
+
+import {
+    ICMAssetModel,
+    IContentItemModel,
+    IContentTypeModel,
+    ILanguageVariantModel,
+    ISlimContentItemModel,
+    ITaxonomyModel,
+} from '../shared/shared.models';
 
 export type ImportItemStatus = 'imported' | 'published';
 
 export type ProcessItemEvent = (item: IImportItem) => void;
 
-export type ImportProcessedItemType = ContentItem | ContentType | TaxonomyGroup | string;
+export type ImportProcessedItemType = IContentItemModel | IContentTypeModel | ITaxonomyModel | string;
 
 export interface IImportItem {
     item: ImportProcessedItemType;
     status: ImportItemStatus;
-    action: 'Add content type' | 'Add content item' | 'Add taxonomy' | 'Add language variant' | 'Publish' | 
-        'Upload binary file' | 'Add asset';
+    action: 'Add content type' | 'Add content item' | 'Add taxonomy' | 'Add language variant' | 'Publish' |
+    'Upload binary file' | 'Add asset';
     name: string;
 }
 
@@ -33,18 +41,18 @@ export interface IImportConfig {
 }
 
 export interface IImportContentItemsResult {
-    contentItems: ContentItemModels.ContentItem[];
-    languageVariants: LanguageVariantModels.ContentItemLanguageVariant[];
-    assets: AssetModels.Asset[];
+    contentItems: ISlimContentItemModel[];
+    languageVariants: ILanguageVariantModel[];
+    assets: ICMAssetModel[];
 }
 
 export interface IImportResult {
-    importedContentTypes: ContentTypeModels.ContentType[];
-    importedContentItems: ContentItemModels.ContentItem[];
-    importedLanguageVariants: LanguageVariantModels.ContentItemLanguageVariant[],
-    importedTaxonomies: TaxonomyModels.Taxonomy[];
+    importedContentTypes: IContentTypeModel[];
+    importedContentItems: ISlimContentItemModel[];
+    importedLanguageVariants: ILanguageVariantModel[],
+    importedTaxonomies: ITaxonomyModel[];
     publishedItems: IPublishItemRequest[];
-    assets: AssetModels.Asset[];
+    assets: ICMAssetModel[];
 }
 
 export interface IPublishItemRequest {
@@ -54,7 +62,7 @@ export interface IPublishItemRequest {
 
 export interface IImportData {
     targetClient: IContentManagementClient;
-    contentTypes: ContentType[];
-    contentItems: ContentItem[];
-    taxonomies: TaxonomyGroup[];
+    contentTypes: IContentTypeModel[];
+    contentItems: IContentItemModel[];
+    taxonomies: ITaxonomyModel[];
 }

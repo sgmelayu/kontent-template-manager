@@ -1,8 +1,8 @@
-import { AssetModels, ContentItemModels, ContentTypeModels, TaxonomyModels } from 'kentico-cloud-content-management';
+import { ICMAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
 
 export interface ICleanupData {
-    contentItems: ContentItemModels.ContentItem[];
-    contentTypes: ContentTypeModels.ContentType[];
-    assets: AssetModels.Asset[];
-    taxonomies: TaxonomyModels.Taxonomy[];
+    contentItems: ISlimContentItemModel[];
+    contentTypes: IContentTypeModel[];
+    assets: ICMAssetModel[];
+    taxonomies: ITaxonomyModel[];
 }

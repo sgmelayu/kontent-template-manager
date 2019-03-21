@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { IContentManagementClient, TaxonomyModels } from 'kentico-cloud-content-management';
-import { TaxonomyGroup } from 'kentico-cloud-delivery';
+import { IContentManagementClient } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
-import { observableHelper } from 'src/utilities';
 
+import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
+import { ITaxonomyModel } from '../../shared/shared.models';
 import { IImportConfig, IImportData } from '../import.models';
 
 @Injectable()
@@ -15,9 +15,9 @@ export class TaxonomiesImportService extends BaseService {
         super();
     }
 
-    importTaxonomies(data: IImportData, config: IImportConfig): Observable<TaxonomyModels.Taxonomy[]> {
+    importTaxonomies(data: IImportData, config: IImportConfig): Observable<ITaxonomyModel[]> {
         const obs: Observable<void>[] = [];
-        const taxonomies: TaxonomyModels.Taxonomy[] = [];
+        const taxonomies: ITaxonomyModel[] = [];
 
         data.taxonomies.forEach(taxonomy => {
             obs.push(this.createTaxonomy(taxonomy, data.targetClient, config).pipe(
@@ -34,7 +34,7 @@ export class TaxonomiesImportService extends BaseService {
         );
     }
 
-    private createTaxonomy(taxonomy: TaxonomyGroup, targetClient: IContentManagementClient, data: IImportConfig): Observable<TaxonomyModels.Taxonomy> {
+    private createTaxonomy(taxonomy: ITaxonomyModel, targetClient: IContentManagementClient, data: IImportConfig): Observable<ITaxonomyModel> {
         return targetClient.addTaxonomy()
             .withData({
                 name: taxonomy.system.name,
@@ -50,7 +50,14 @@ export class TaxonomiesImportService extends BaseService {
                         action: 'Add taxonomy',
                         name: response.data.codename
                     })
-                    return response.data;
+                    return <ITaxonomyModel>{
+                        system: {
+                            codename: response.data.codename,
+                            id: response.data.id,
+                            name: response.data.name
+                        },
+                        terms: response.data.terms
+                    };
                 })
             );
     }

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MediaObserver } from '@angular/flex-layout';
 import { Router } from '@angular/router';
-import { CleanupService, ExportService, ImportService } from 'src/services';
+
+import { CleanupService, ExportService, ImportService } from '../services';
 
 @Injectable()
 export class ComponentDependencies {

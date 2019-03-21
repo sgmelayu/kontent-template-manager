@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { ContentItem, ContentType, IDeliveryClient, TaxonomyGroup, IDeliveryClientConfig, DeliveryClient } from 'kentico-cloud-delivery';
+import { DeliveryClient, IDeliveryClient, IDeliveryClientConfig } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import { IContentItemModel, IContentTypeModel, ITaxonomyModel } from '../shared/shared.models';
 
 @Injectable()
 export class DeliveryFetchService {
 
-
-    getAllTypes(projectId: string, allTypes: ContentType[], nextPageUrl?: string): Observable<ContentType[]> {
+    getAllTypes(projectId: string, allTypes: IContentTypeModel[], nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).types();
@@ -20,7 +21,12 @@ export class DeliveryFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    allTypes.push(...response.types);
+                    allTypes.push(...response.types.map(m => {
+                        return <IContentTypeModel> {
+                            elements: m.elements,
+                            system: m.system
+                        }
+                    }));
 
                     if (response.pagination.nextPage) {
                         this.getAllTypes(projectId, allTypes, response.pagination.nextPage);
@@ -30,7 +36,7 @@ export class DeliveryFetchService {
             );
     }
 
-    getAllTaxonomies(projectId: string, taxonomies: TaxonomyGroup[], nextPageUrl?: string): Observable<TaxonomyGroup[]> {
+    getAllTaxonomies(projectId: string, taxonomies: ITaxonomyModel[], nextPageUrl?: string): Observable<ITaxonomyModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).taxonomies();
@@ -43,7 +49,12 @@ export class DeliveryFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    taxonomies.push(...response.taxonomies);
+                    taxonomies.push(...response.taxonomies.map(m => {
+                        return <ITaxonomyModel> {
+                            system: m.system,
+                            terms: m.terms
+                        }
+                    }));
 
                     if (response.pagination.nextPage) {
                         this.getAllTaxonomies(projectId, taxonomies, response.pagination.nextPage);
@@ -53,7 +64,7 @@ export class DeliveryFetchService {
             );
     }
 
-    getAllContentItems(projectId: string, contentItems: ContentItem[], nextPageUrl?: string): Observable<ContentItem[]> {
+    getAllContentItems(projectId: string, contentItems: IContentItemModel[], nextPageUrl?: string): Observable<IContentItemModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).items();
@@ -66,7 +77,14 @@ export class DeliveryFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    contentItems.push(...response.items);
+                    contentItems.push(...response.items.map(
+                        m => {
+                            return <IContentItemModel> {
+                                elements: m.elements,
+                                system: m.system
+                            }
+                        }
+                    ));
 
                     if (response.pagination.nextPage) {
                         this.getAllContentItems(projectId, contentItems, response.pagination.nextPage);

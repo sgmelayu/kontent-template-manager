@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
-import { ComponentDependencies } from 'src/di';
-import { observableHelper } from 'src/utilities';
+
+import { ComponentDependencies } from '../../di';
+import { observableHelper } from '../../utilities';
 
 export abstract class BaseComponent implements OnDestroy {
 

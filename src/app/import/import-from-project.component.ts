@@ -4,11 +4,11 @@ import { List } from 'immutable';
 import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ComponentDependencies } from 'src/di';
-import { IImportItem, IImportResult } from 'src/services';
 
+import { ComponentDependencies } from '../../di';
+import { environment } from '../../environments/environment';
+import { IImportItem, IImportResult } from '../../services';
 import { BaseComponent } from '../core/base.component';
-import { environment } from 'src/environments/environment';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

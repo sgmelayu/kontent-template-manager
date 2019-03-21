@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { IContentManagementClient } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
-import { observableHelper } from 'src/utilities';
 
+import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import { IImportConfig, IPublishItemRequest } from '../import/import.models';
 
@@ -17,7 +17,6 @@ export class WorkflowService extends BaseService {
 
     publishContentItems(items: IPublishItemRequest[], client: IContentManagementClient, config: IImportConfig): Observable<IPublishItemRequest[]> {
         const obs: Observable<void>[] = [];
-
         for (const item of items) {
             obs.push(
                 client.publishOrScheduleLanguageVariant()

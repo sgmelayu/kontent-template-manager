@@ -1,25 +1,31 @@
 import { Injectable } from '@angular/core';
 import {
-    ContentItemModels,
+    AssetResponses,
+    ContentItemResponses,
     IContentManagementClient,
     LanguageVariantModels,
     SharedContracts,
-    AssetModels,
-    AssetResponses,
-    ContentItemResponses,
 } from 'kentico-cloud-content-management';
-import { ContentItem, FieldModels, Fields, FieldType } from 'kentico-cloud-delivery';
-import { Observable, of, from } from 'rxjs';
+import { FieldModels, FieldType } from 'kentico-cloud-delivery';
+import { from, Observable, of } from 'rxjs';
 import { delay, flatMap, map } from 'rxjs/operators';
-import { observableHelper } from 'src/utilities';
 
+import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
+import {
+    IAssetFieldModel,
+    ICMAssetModel,
+    IContentItemFieldModel,
+    IContentItemModel,
+    IMultipleChoiceOptionModel,
+    ISlimContentItemModel,
+} from '../../shared/shared.models';
 import { IImportConfig, IImportContentItemsResult, IImportData } from '../import.models';
 
 interface ICreateContentItemResult {
-    contentItem?: ContentItemModels.ContentItem;
+    contentItem?: ISlimContentItemModel,
     languageVariant?: LanguageVariantModels.ContentItemLanguageVariant;
-    assets?: AssetModels.Asset[];
+    assets?: ICMAssetModel[];
 }
 interface ICreateContentItemWithAssetsResult {
     contentItemResponse: ContentItemResponses.AddContentItemResponse;
@@ -35,13 +41,24 @@ export class ContentItemsImportService extends BaseService {
 
     importContentItems(data: IImportData, config: IImportConfig): Observable<IImportContentItemsResult> {
         const obs: Observable<void>[] = [];
-        const importedContentItems: ContentItemModels.ContentItem[] = [];
+        const importedContentItems: ISlimContentItemModel[] = [];
         const importedLanguageVariants: LanguageVariantModels.ContentItemLanguageVariant[] = [];
-        const assets: AssetModels.Asset[] = [];
+        const assets: ICMAssetModel[] = [];
 
         data.contentItems.forEach(contentItem => {
             obs.push(this.createContentItem(contentItem, data.targetClient, config).pipe(
                 map((importResult) => {
+
+                    if (!importResult.assets) {
+                        throw Error(`Missing assets`);
+                    }
+                    if (!importResult.contentItem) {
+                        throw Error(`Missing content item`);
+                    }
+                    if (!importResult.languageVariant) {
+                        throw Error(`Missing language variant`);
+                    }
+
                     importedContentItems.push(importResult.contentItem);
                     importedLanguageVariants.push(importResult.languageVariant);
                     assets.push(...importResult.assets);
@@ -61,7 +78,7 @@ export class ContentItemsImportService extends BaseService {
     }
 
 
-    private createContentItem(contentItem: ContentItem, targetClient: IContentManagementClient, data: IImportConfig): Observable<ICreateContentItemResult> {
+    private createContentItem(contentItem: IContentItemModel, targetClient: IContentManagementClient, data: IImportConfig): Observable<ICreateContentItemResult> {
         let result: ICreateContentItemResult = {
             assets: []
         };
@@ -84,15 +101,16 @@ export class ContentItemsImportService extends BaseService {
                     const obs: Observable<any>[] = [];
                     const elementKeys = Object.keys(contentItem.elements);
                     for (const elementCodename of elementKeys) {
-                        const element = contentItem[elementCodename] as FieldModels.IField;
+                        const element = contentItem.elements[elementCodename];
                         if (element.type) {
                             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                                obs.push(...this.createAssets(contentItem, element as Fields.AssetsField, targetClient, data).map(
+                                obs.push(...this.createAssets(contentItem, element as IAssetFieldModel, targetClient, data).map(
                                     m => m.pipe(map((assetResponse) => {
                                         createContentItemWithAssetsResult.assetResponses.push(assetResponse);
                                     })
-                                ))
-                            )};
+                                    ))
+                                )
+                            };
                         }
                     }
 
@@ -101,6 +119,9 @@ export class ContentItemsImportService extends BaseService {
                     }
 
                     return observableHelper.zipObservables(obs).pipe(map(() => {
+                        if (!result.assets) {
+                            throw Error(`Cannot assign assets`);
+                        }
                         result.assets.push(...createContentItemWithAssetsResult.assetResponses.map(m => m.data));
                         return createContentItemWithAssetsResult;
                     }))
@@ -117,7 +138,18 @@ export class ContentItemsImportService extends BaseService {
                         name: createdContentItem.codename
                     });
 
-                    result.contentItem = createdContentItem;
+                    result.contentItem = {
+                        codename: createdContentItem.codename,
+                        externalId: createdContentItem.externalId,
+                        id: createdContentItem.id,
+                        name: createdContentItem.name,
+                        sitemapLocations: createdContentItem.sitemapLocations,
+                        type: createdContentItem.type,
+                    };
+
+                    if (!contentItem.system.language) {
+                        throw Error(`Invalid language for item '${contentItem.system.language}'`);
+                    }
 
                     return targetClient.upsertLanguageVariant()
                         .byItemCodename(createdContentItem.codename)
@@ -126,6 +158,10 @@ export class ContentItemsImportService extends BaseService {
                         .toObservable();
                 }),
                 map(response => {
+                    if (!result.contentItem) {
+                        throw Error(`Content item was not assigned`);
+                    }
+
                     data.processItem({
                         item: contentItem,
                         status: 'imported',
@@ -139,12 +175,11 @@ export class ContentItemsImportService extends BaseService {
             );
     }
 
-    private createAssets(contentItem: ContentItem, assetField: Fields.AssetsField, targetClient: IContentManagementClient, config: IImportConfig): Observable<AssetResponses.AddAssetResponse>[] {
+    private createAssets(contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<AssetResponses.AddAssetResponse>[] {
         const obs: Observable<AssetResponses.AddAssetResponse>[] = [];
-
         const loadImagesObs: Observable<any>[] = [];
 
-        for (const asset of assetField.assets) {
+        for (const asset of assetField.value) {
             const loadImageObs = from(new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open('GET', asset.url);
@@ -221,30 +256,29 @@ export class ContentItemsImportService extends BaseService {
         return obs;
     }
 
-
-    private mapElementValue(field: FieldModels.IField | ContentItem[], assets: AssetModels.Asset[]): any {
-        if (Array.isArray(field)) {
-            const linkedItems = field as ContentItem[];
+    private mapElementValue(field: IContentItemFieldModel, assets: ICMAssetModel[]): any {
+        if (field.type.toLowerCase() === FieldType.ModularContent.toLowerCase()) {
+            const linkedItems = field.value as string[];
             return linkedItems.map(m => <SharedContracts.IReferenceObjectContract>{
-                codename: m.system.codename
+                codename: m
             });
         }
 
         const value = field.value;
 
         if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
-            const multipleChoiceField = field as Fields.MultipleChoiceField;
+            const multipleChoiceField = field.value as IMultipleChoiceOptionModel[];
 
-            return multipleChoiceField.options.map(multipleChoice => <SharedContracts.IReferenceObjectContract>{
-                codename: multipleChoice.codename
+            return multipleChoiceField.map(option => <SharedContracts.IReferenceObjectContract>{
+                codename: option.codename
             });
         }
 
         if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
             const assetIds: SharedContracts.IReferenceObjectContract[] = [];
-            const assetField = field as Fields.AssetsField;
+            const assetField = field as IAssetFieldModel;
 
-            for(const asset of assetField.assets) {
+            for (const asset of assetField.value) {
                 const newAssetId = assets.find(m => m.externalId === asset.url);
 
                 if (newAssetId) {
@@ -259,7 +293,7 @@ export class ContentItemsImportService extends BaseService {
         return value;
     }
 
-    private getElements(contentItem: ContentItem, assets: AssetModels.Asset[]): LanguageVariantModels.ILanguageVariantElementCodename[] {
+    private getElements(contentItem: IContentItemModel, assets: ICMAssetModel[]): LanguageVariantModels.ILanguageVariantElementCodename[] {
         const elements: LanguageVariantModels.ILanguageVariantElementCodename[] = [];
 
         const elementCodenames = Object.keys(contentItem.elements);
@@ -267,7 +301,7 @@ export class ContentItemsImportService extends BaseService {
         for (const elementCodename of elementCodenames) {
             elements.push({
                 codename: elementCodename,
-                value: this.mapElementValue(contentItem[elementCodename], assets)
+                value: this.mapElementValue(contentItem.elements[elementCodename], assets)
             });
         }
 

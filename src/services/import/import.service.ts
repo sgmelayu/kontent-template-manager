@@ -5,24 +5,13 @@ import {
     IContentManagementClient,
     IContentManagementClientConfig,
 } from 'kentico-cloud-content-management';
-import {
-    getParserAdapter,
-    ItemContracts,
-    ItemMapper,
-    TaxonomyContracts,
-    TaxonomyMapper,
-    TypeContracts,
-    TypeMapper,
-    TaxonomyGroup,
-    ContentType,
-    ContentItem,
-} from 'kentico-cloud-delivery';
 import { from, Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { observableHelper } from 'src/utilities';
 
+import { environment } from '../../environments/environment';
+import { observableHelper } from '../../utilities';
 import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
+import { IContentItemModel, IContentTypeModel, ITaxonomyModel } from '../shared/shared.models';
 import { WorkflowService } from '../workflow/workflow.service';
 import {
     IImportConfig,
@@ -38,12 +27,6 @@ import { TaxonomiesImportService } from './types/taxonomies-import.service';
 
 @Injectable()
 export class ImportService {
-
-    private taxonomyMapper: TaxonomyMapper = new TaxonomyMapper();
-    private typeMapper: TypeMapper = new TypeMapper();
-    private itemMapper: ItemMapper = new ItemMapper({
-        projectId: 'xxx'
-    }, getParserAdapter());
 
     constructor(
         private contentTypesImportService: ContentTypesImportService,
@@ -75,8 +58,7 @@ export class ImportService {
                 obs.push(
                     this.readJsonFile(response, environment.export.filenames.taxonomies).pipe(
                         map(taxonomiesString => {
-                            // careful - this is weak typing and the object is not actually instance of class
-                            const taxonomies = JSON.parse(taxonomiesString) as TaxonomyGroup[];
+                            const taxonomies = JSON.parse(taxonomiesString) as ITaxonomyModel[];
                             importData.taxonomies = taxonomies;
                         })
                     )
@@ -86,8 +68,7 @@ export class ImportService {
                 obs.push(
                     this.readJsonFile(response, environment.export.filenames.contentTypes).pipe(
                         map(contentTypesString => {
-                            // careful - this is weak typing and the object is not actually instance of class
-                            const contentTypes = JSON.parse(contentTypesString) as ContentType[];
+                            const contentTypes = JSON.parse(contentTypesString) as IContentTypeModel[];
                             importData.contentTypes = contentTypes;
                         })
                     )
@@ -97,9 +78,8 @@ export class ImportService {
                 obs.push(
                     this.readJsonFile(response, environment.export.filenames.contentItems).pipe(
                         map(contentItemsString => {
-                              // careful - this is weak typing and the object is not actually instance of class
-                              const contentItems = JSON.parse(contentItemsString) as ContentItem[];
-                              importData.contentItems = contentItems;
+                            const contentItems = JSON.parse(contentItemsString) as IContentItemModel[];
+                            importData.contentItems = contentItems;
                         })
                     )
                 );

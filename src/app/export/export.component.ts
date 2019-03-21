@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { map } from 'rxjs/operators';
-import { ComponentDependencies } from 'src/di';
 
+import { ComponentDependencies } from '../../di';
+import { environment } from '../../environments/environment';
 import { BaseComponent } from '../core/base.component';
-import { environment } from 'src/environments/environment';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

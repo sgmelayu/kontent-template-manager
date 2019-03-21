@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { ComponentDependencies } from 'src/di';
 
+import { ComponentDependencies } from '../../di';
 import { BaseComponent } from '../core/base.component';
 
 @Component({

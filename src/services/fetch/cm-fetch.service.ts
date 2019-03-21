@@ -1,22 +1,25 @@
 import { Injectable } from '@angular/core';
 import {
-    AssetModels,
-    ContentItemModels,
     ContentManagementClient,
-    ContentTypeModels,
+    ElementModels,
     IContentManagementClient,
     IContentManagementClientConfig,
-    LanguageVariantModels,
-    TaxonomyModels,
 } from 'kentico-cloud-content-management';
-import { ContentItem } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import {
+    ICMAssetModel,
+    IContentTypeElementModel,
+    IContentTypeModel,
+    ISlimContentItemModel,
+    ITaxonomyModel,
+} from '../shared/shared.models';
 
 @Injectable()
 export class CmFetchService {
 
-    getAllContentItems(projectId: string, apiKey: string, contentItems: ContentItemModels.ContentItem[], nextPageUrl?: string): Observable<ContentItemModels.ContentItem[]> {
+    getAllContentItems(projectId: string, apiKey: string, contentItems: ISlimContentItemModel[], nextPageUrl?: string): Observable<ISlimContentItemModel[]> {
         const query = this.getContentManagementClient(
             {
                 projectId: projectId,
@@ -32,7 +35,16 @@ export class CmFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    contentItems.push(...response.data.items);
+                    contentItems.push(...response.data.items.map(m => {
+                        return <ISlimContentItemModel>{
+                            codename: m.codename,
+                            externalId: m.externalId,
+                            id: m.id,
+                            name: m.name,
+                            sitemapLocations: m.sitemapLocations,
+                            type: m.type
+                        }
+                    }));
 
                     if (response.data.pagination.nextPage) {
                         this.getAllContentItems(projectId, apiKey, contentItems, response.data.pagination.nextPage);
@@ -42,24 +54,7 @@ export class CmFetchService {
             );
     }
 
-    getLanguageVariants(projectId: string, apiKey: string, itemCodename: string): Observable<LanguageVariantModels.ContentItemLanguageVariant[]> {
-        const query = this.getContentManagementClient(
-            {
-                projectId: projectId,
-                apiKey: apiKey
-            }
-        ).listLanguageVariants().byItemCodename(itemCodename);
-
-        return query
-            .toObservable()
-            .pipe(
-                map(response => {
-                    return response.data.variants;
-                })
-            );
-    }
-
-    getAllAssets(projectId: string, apiKey: string, assets: AssetModels.Asset[], nextPageUrl?: string): Observable<AssetModels.Asset[]> {
+    getAllAssets(projectId: string, apiKey: string, assets: ICMAssetModel[], nextPageUrl?: string): Observable<ICMAssetModel[]> {
         const query = this.getContentManagementClient(
             {
                 projectId: projectId,
@@ -75,7 +70,15 @@ export class CmFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    assets.push(...response.data.items);
+                    assets.push(...response.data.items.map(m => {
+                        return <ICMAssetModel>{
+                            externalId: m.externalId,
+                            fileName: m.fileName,
+                            id: m.id,
+                            title: m.title,
+                            type: m.type
+                        };
+                    }));
 
                     if (response.data.pagination.nextPage) {
                         this.getAllAssets(projectId, apiKey, assets, response.data.pagination.nextPage);
@@ -85,7 +88,7 @@ export class CmFetchService {
             );
     }
 
-    getAllTypes(projectId: string, apiKey: string, allTypes: ContentTypeModels.ContentType[], nextPageUrl?: string): Observable<ContentTypeModels.ContentType[]> {
+    getAllTypes(projectId: string, apiKey: string, allTypes: IContentTypeModel[], nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getContentManagementClient(
             {
                 projectId: projectId,
@@ -101,7 +104,47 @@ export class CmFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    allTypes.push(...response.data.types);
+                    allTypes.push(...response.data.types.map(m => {
+                        const elements: IContentTypeElementModel[] = [];
+
+                        m.elements.forEach(originalElement => {
+                            let processed = false;
+                            if (originalElement instanceof ElementModels.ElementModel) {
+                                elements.push({
+                                    codename: originalElement.codename,
+                                    name: originalElement.name,
+                                    options: [],
+                                    taxonomyGroup: undefined,
+                                    type: originalElement.type
+                                });
+                                processed = true;
+                            }
+                            if (originalElement instanceof ElementModels.MultipleChoiceElementModel) {
+                                elements.push({
+                                    codename: originalElement.codename,
+                                    name: originalElement.name,
+                                    options: originalElement.options,
+                                    taxonomyGroup: undefined,
+                                    type: originalElement.type,
+                                });
+                                processed = true;
+                            }
+
+                            if (!processed) {
+                                throw Error(`Unsupported element type for '${m.codename}' content type`);
+                            }
+
+                        });
+
+                        return <IContentTypeModel>{
+                            system: {
+                                codename: m.codename,
+                                id: m.id,
+                                name: m.name,
+                            },
+                            elements: elements
+                        }
+                    }));
 
                     if (response.data.pagination.nextPage) {
                         this.getAllTypes(projectId, apiKey, allTypes, response.data.pagination.nextPage);
@@ -111,7 +154,7 @@ export class CmFetchService {
             );
     }
 
-    getAllTaxonomies(projectId: string, apiKey: string, taxonomies: TaxonomyModels.Taxonomy[]): Observable<TaxonomyModels.Taxonomy[]> {
+    getAllTaxonomies(projectId: string, apiKey: string, taxonomies: ITaxonomyModel[]): Observable<ITaxonomyModel[]> {
         const query = this.getContentManagementClient(
             {
                 projectId: projectId,
@@ -123,7 +166,12 @@ export class CmFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    taxonomies.push(...response.data);
+                    taxonomies.push(...response.data.map(m => {
+                        return <ITaxonomyModel>{
+                            system: m,
+                            terms: m.terms
+                        }
+                    }));
 
                     return taxonomies;
                 })

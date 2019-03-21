@@ -4,12 +4,12 @@ import { MatDialog } from '@angular/material';
 import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ComponentDependencies } from 'src/di';
-import { ICleanupData } from 'src/services';
 
+import { ComponentDependencies } from '../../di';
+import { environment } from '../../environments/environment';
+import { ICleanupData } from '../../services';
 import { BaseComponent } from '../core/base.component';
 import { CleanupConfirmComponent } from './cleanup-confirm.component';
-import { environment } from 'src/environments/environment';
 
 interface ICleanupItem {
   type: 'Content type' | 'Content item' | 'Asset' | 'Taxonomy',
@@ -29,7 +29,7 @@ export class CleanupComponent extends BaseComponent {
   public cleanupData?: ICleanupData;
 
   public cleanupItems?: ICleanupItem[];
-   
+
   public get canSubmit(): boolean {
     return this.formGroup.valid;
   }
@@ -60,10 +60,6 @@ export class CleanupComponent extends BaseComponent {
     const config = this.getConfig();
 
     if (config) {
-      if (!this.cleanupData) {
-        throw Error(`Invalid cleanup data`);
-      }
-
       const dialogRef = this.dialog.open(CleanupConfirmComponent, {
         width: '400px',
         data: {}
@@ -71,10 +67,14 @@ export class CleanupComponent extends BaseComponent {
 
       dialogRef.afterClosed().subscribe(result => {
         if (dialogRef.componentInstance.confirmed) {
+
+          if (!this.cleanupData) {
+            throw Error(`Invalid cleanup data`);
+          }
+
           this.cleanupProject(config.projectId, config.apiKey, this.cleanupData);
         }
       });
-
     }
   }
 
@@ -91,14 +91,14 @@ export class CleanupComponent extends BaseComponent {
     items.push(...cleanupData.contentTypes.map(m => {
       return <ICleanupItem>{
         type: "Content type",
-        name: m.codename
+        name: m.system.codename
       }
     }));
 
     items.push(...cleanupData.taxonomies.map(m => {
       return <ICleanupItem>{
         type: "Taxonomy",
-        name: m.codename
+        name: m.system.codename
       }
     }));
 

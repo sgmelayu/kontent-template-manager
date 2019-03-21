@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DependenciesModule } from 'src/di';
 
+import { DependenciesModule } from '../../di';
 import { ExternalModule } from '../external';
 import { MasterLayoutComponent } from './master-layout.component';
 

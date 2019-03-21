@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ComponentDependencies } from 'src/di';
-import { environment } from 'src/environments/environment';
-import { stringHelper } from 'src/utilities';
 
+import { ComponentDependencies } from '../../di';
+import { environment } from '../../environments/environment';
+import { stringHelper } from '../../utilities';
 import { BaseComponent } from '../core/base.component';
 
 interface INavigationItem {

@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
 import { ContentTypeModels, ElementModels, IContentManagementClient } from 'kentico-cloud-content-management';
-import { ContentType, Element, FieldType } from 'kentico-cloud-delivery';
+import { FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
-import { observableHelper } from 'src/utilities';
+import { delay, map } from 'rxjs/operators';
 
-import { IImportConfig, IImportData } from '../import.models';
+import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
+import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
+import { IImportConfig, IImportData } from '../import.models';
 
 @Injectable()
-export class ContentTypesImportService extends BaseService{
+export class ContentTypesImportService extends BaseService {
 
     constructor() {
         super();
     }
 
-    importContentTypes(data: IImportData, config: IImportConfig): Observable<ContentTypeModels.ContentType[]> {
+    importContentTypes(data: IImportData, config: IImportConfig): Observable<IContentTypeModel[]> {
         const obs: Observable<void>[] = [];
-        const importedTypes: ContentTypeModels.ContentType[] = [];
+        const importedTypes: IContentTypeModel[] = [];
 
         data.contentTypes.forEach(contentType => {
             obs.push(this.createType(contentType, data.targetClient, config).pipe(
@@ -32,7 +33,7 @@ export class ContentTypesImportService extends BaseService{
         );
     }
 
-    private mapElementType(element: Element): ElementModels.ElementType | undefined {
+    private mapElementType(element: IContentTypeElementModel): ElementModels.ElementType | undefined {
         const type = element.type.toLowerCase();
         if (type === FieldType.Text.toLowerCase()) {
             return ElementModels.ElementType.text;
@@ -63,7 +64,7 @@ export class ContentTypesImportService extends BaseService{
         return undefined;
     }
 
-    private getElementMultipleChoiceOptions(element: Element): ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[] {
+    private getElementMultipleChoiceOptions(element: IContentTypeElementModel): ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[] {
         return element.options.map(m => {
             return <ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData>{
                 name: m.name
@@ -71,12 +72,12 @@ export class ContentTypesImportService extends BaseService{
         });
     }
 
-    private getElementData(element: Element): ContentTypeModels.IAddContentTypeElementData | undefined {
+    private getElementData(element: IContentTypeElementModel): ContentTypeModels.IAddContentTypeElementData | undefined {
         const elementType = this.mapElementType(element);
 
         if (elementType) {
-            let mode: ElementModels.ElementMode;
-            let options: ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[];
+            let mode: ElementModels.ElementMode | undefined = undefined;
+            let options: ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[] | undefined;
 
             if (elementType === ElementModels.ElementType.multipleChoice) {
                 mode = ElementModels.ElementMode.single;
@@ -99,7 +100,7 @@ export class ContentTypesImportService extends BaseService{
         return undefined;
     }
 
-    private createType(contentType: ContentType, targetClient: IContentManagementClient, data: IImportConfig): Observable<ContentTypeModels.ContentType> {
+    private createType(contentType: IContentTypeModel, targetClient: IContentManagementClient, data: IImportConfig): Observable<IContentTypeModel> {
         const mappedElements: ContentTypeModels.IAddContentTypeElementData[] = [];
         contentType.elements.forEach(sourceElement => {
             const mappedElementData = this.getElementData(sourceElement);
@@ -107,7 +108,7 @@ export class ContentTypesImportService extends BaseService{
                 mappedElements.push(mappedElementData);
             }
         });
-        
+
         return targetClient.addContentType()
             .withData({
                 name: contentType.system.name,
@@ -123,7 +124,14 @@ export class ContentTypesImportService extends BaseService{
                         action: 'Add content type',
                         name: response.data.codename
                     })
-                    return response.data;
+                    return <IContentTypeModel>{
+                        elements: response.data.elements,
+                        system: {
+                            codename: response.data.codename,
+                            id: response.data.id,
+                            name: response.data.name
+                        }
+                    };
                 })
             );
     }

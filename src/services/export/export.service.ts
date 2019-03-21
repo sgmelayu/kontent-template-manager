@@ -7,7 +7,7 @@ import { flatMap, map } from 'rxjs/operators';
 import { BaseService } from '../base-service';
 import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
 import { IExportJsonResult } from './export.models';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ExportService extends BaseService {
@@ -50,7 +50,7 @@ export class ExportService extends BaseService {
         zip.file(environment.export.filenames.contentItems, data.contentItems);
         zip.file(environment.export.filenames.taxonomies, data.taxonomies);
 
-        zip.generateAsync({ type: 'blob' }).then(function (content) {
+        zip.generateAsync({ type: 'blob' }).then((content: any) => {
             saveAs(content, `${environment.export.filenames.packagePrefix}${projectId}.zip`);
         });
     }

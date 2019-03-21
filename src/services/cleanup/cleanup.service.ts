@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
-    AssetModels,
-    ContentItemModels,
     ContentManagementClient,
-    ContentTypeModels,
     IContentManagementClient,
     IContentManagementClientConfig,
-    TaxonomyModels,
 } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { delay, flatMap, map } from 'rxjs/operators';
-import { observableHelper } from 'src/utilities';
 
+import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
+import { ICMAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
 import { ICleanupData } from './cleanup.models';
 
 @Injectable()
@@ -84,7 +81,7 @@ export class CleanupService extends BaseService {
         return new ContentManagementClient(config);
     }
 
-    private deleteAssets(client: IContentManagementClient, assets: AssetModels.Asset[]): Observable<void> {
+    private deleteAssets(client: IContentManagementClient, assets: ICMAssetModel[]): Observable<void> {
         const obs: Observable<void>[] = [];
 
         for (const asset of assets) {
@@ -100,12 +97,12 @@ export class CleanupService extends BaseService {
         return observableHelper.zipObservables(obs);
     }
 
-    private deleteContentTypes(client: IContentManagementClient, contentTypes: ContentTypeModels.ContentType[]): Observable<void> {
+    private deleteContentTypes(client: IContentManagementClient, contentTypes: IContentTypeModel[]): Observable<void> {
         const obs: Observable<void>[] = [];
 
         for (const type of contentTypes) {
             obs.push(
-                client.deleteContentType().byItemCodename(type.codename).toObservable()
+                client.deleteContentType().byItemCodename(type.system.codename).toObservable()
                     .pipe(
                         delay(this.cmRequestDelay),
                         map((response) => {
@@ -116,12 +113,12 @@ export class CleanupService extends BaseService {
         return observableHelper.zipObservables(obs);
     }
 
-    private deleteTaxonomies(client: IContentManagementClient, taxonomies: TaxonomyModels.Taxonomy[]): Observable<void> {
+    private deleteTaxonomies(client: IContentManagementClient, taxonomies: ITaxonomyModel[]): Observable<void> {
         const obs: Observable<void>[] = [];
 
         for (const taxonomy of taxonomies) {
             obs.push(
-                client.deleteTaxonomy().byTaxonomyCodename(taxonomy.codename).toObservable()
+                client.deleteTaxonomy().byTaxonomyCodename(taxonomy.system.codename).toObservable()
                     .pipe(
                         delay(this.cmRequestDelay),
                         map((response) => {
@@ -133,7 +130,7 @@ export class CleanupService extends BaseService {
     }
 
 
-    private deleteContentItems(client: IContentManagementClient, contentItems: ContentItemModels.ContentItem[]): Observable<void> {
+    private deleteContentItems(client: IContentManagementClient, contentItems: ISlimContentItemModel[]): Observable<void> {
         const obs: Observable<void>[] = [];
 
         for (const item of contentItems) {
