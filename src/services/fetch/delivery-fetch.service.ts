@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ContentItem, DeliveryClient, FieldType, IDeliveryClient, IDeliveryClientConfig } from 'kentico-cloud-delivery';
+import {
+    ContentItem,
+    DeliveryClient,
+    FieldType,
+    IDeliveryClient,
+    IDeliveryClientConfig,
+    ItemResponses,
+} from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import {
-    IAssetModel,
-    IContentItemModel,
-    IContentTypeModel,
-    ITaxonomyModel,
-    IEmbeddedAsset,
-} from '../shared/shared.models';
+import { IAssetModel, IContentItemModel, IContentTypeModel, IEmbeddedAsset, ITaxonomyModel } from '../shared/shared.models';
 
 @Injectable()
 export class DeliveryFetchService {
@@ -83,16 +84,25 @@ export class DeliveryFetchService {
             .toObservable()
             .pipe(
                 map(response => {
-                    contentItems.push(...response.items.map(
-                        m => {
-                            return <IContentItemModel>{
-                                elements: m.elements,
-                                system: m.system,
-                                assets: this.extractAssets(m),
-                                linkedItemCodenames: this.extractLinkedItemCodenames(m)
+
+                    for (const item of response.items) {
+
+                        if (!contentItems.find(m => m.system.codename === item.system.codename)) {
+                            const contentItem = <IContentItemModel>{
+                                elements: item.elements,
+                                system: item.system,
+                                assets: this.extractAssets(item),
+                                linkedItemCodenames: this.extractLinkedItemCodenames(item)
                             };
+
+                            contentItems.push(contentItem)
+
+                            // make sure that components are added to result as well - needed because of components in rich text elements
+                            this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
+
                         }
-                    ));
+                    }
+
 
                     if (response.pagination.nextPage) {
                         this.getAllContentItems(projectId, contentItems, response.pagination.nextPage);
@@ -104,6 +114,31 @@ export class DeliveryFetchService {
 
     getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
         return new DeliveryClient(config);
+    }
+
+    /**
+     * This is required because if rich text of item contains components, they are not fetched by standard delivery and need to be added from given response
+     */
+    private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<ContentItem>, contentItems: IContentItemModel[]): void {
+        for (const linkedItemCodename of linkedItemCodenames) {
+            const existingItem = contentItems.find(m => m.system.codename === linkedItemCodename);
+
+            if (!existingItem) {
+                // item is component, add it from response
+                const linkedItem = response.linkedItems[linkedItemCodename];
+
+                if (!linkedItem) {
+                    throw Error(`Could not find linked item with codename '${linkedItemCodename}' in response`);
+                }
+
+                contentItems.push({
+                    elements: linkedItem.elements,
+                    system: linkedItem.system,
+                    assets: this.extractAssets(linkedItem),
+                    linkedItemCodenames: this.extractLinkedItemCodenames(linkedItem)
+                });
+            }
+        }
     }
 
     private extractLinkedItemCodenames(contentItem: ContentItem): string[] {

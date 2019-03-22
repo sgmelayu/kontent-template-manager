@@ -8,6 +8,7 @@ import { ImportService } from './import/import.service';
 import { ContentItemsImportService } from './import/types/content-items-import.service';
 import { ContentTypesImportService } from './import/types/content-types-import.service';
 import { TaxonomiesImportService } from './import/types/taxonomies-import.service';
+import { ProcessingService } from './processing/processing.service';
 import { WorkflowService } from './workflow/workflow.service';
 
 @NgModule({
@@ -24,7 +25,8 @@ import { WorkflowService } from './workflow/workflow.service';
         TaxonomiesImportService,
         WorkflowService,
         CleanupService,
-        ExportService
+        ExportService,
+        ProcessingService
     ],
 })
 export class ServicesModule { }

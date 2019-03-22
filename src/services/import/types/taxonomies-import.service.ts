@@ -6,23 +6,29 @@ import { delay, map } from 'rxjs/operators';
 import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { ITaxonomyModel } from '../../shared/shared.models';
-import { IImportConfig, IImportData } from '../import.models';
+import { IImportConfig, IImportData, IImportTaxonomyResult } from '../import.models';
+import { ProcessingService } from '../../processing/processing.service';
 
 @Injectable()
 export class TaxonomiesImportService extends BaseService {
 
-    constructor() {
+    constructor(
+        private processingService: ProcessingService
+    ) {
         super();
     }
 
-    importTaxonomies(data: IImportData, config: IImportConfig): Observable<ITaxonomyModel[]> {
+    importTaxonomies(data: IImportData, config: IImportConfig): Observable<IImportTaxonomyResult[]> {
         const obs: Observable<void>[] = [];
-        const taxonomies: ITaxonomyModel[] = [];
+        const taxonomies: IImportTaxonomyResult[] = [];
 
         data.taxonomies.forEach(taxonomy => {
             obs.push(this.createTaxonomy(taxonomy, data.targetClient, config).pipe(
                 map((importedTaxonomy) => {
-                    taxonomies.push(importedTaxonomy);
+                    taxonomies.push({
+                        importedItem: importedTaxonomy,
+                        originalItem: taxonomy
+                    });
                 })
             ));
         });
@@ -44,12 +50,12 @@ export class TaxonomiesImportService extends BaseService {
             .pipe(
                 delay(this.cmRequestDelay),
                 map((response) => {
-                    data.processItem({
+                    this.processingService.addProcessedItem({
                         item: taxonomy,
                         status: 'imported',
                         action: 'Add taxonomy',
                         name: response.data.codename
-                    })
+                    });
                     return <ITaxonomyModel>{
                         system: {
                             codename: response.data.codename,

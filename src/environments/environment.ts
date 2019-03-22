@@ -7,7 +7,7 @@ export const environment = {
   appName: 'Import tool',
   defaultProjects: {
     //sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
-    sourceProjectId: '5a7f339f-17e9-005b-a0db-32b8f6ce2baf',
+    sourceProjectId: 'b062c2f0-1a33-0070-794f-b48fa8bc1899',
     targetProjectId: 'ede994d8-bb05-01b5-9c33-8b65e7372306',
     targetProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84'
   },

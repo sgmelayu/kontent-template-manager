@@ -11,6 +11,7 @@ import { ExportComponent } from './export/export.component';
 import { ImportFromFileComponent } from './import/import-from-file.component';
 import { ImportFromProjectComponent } from './import/import-from-project.component';
 import { MessageComponent } from './messages/message.component';
+import { ProcessedItemsComponents } from './processed-items/processed-items.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { MessageComponent } from './messages/message.component';
     CleanupComponent,
     CleanupConfirmComponent,
     MessageComponent,
-    ImportFromFileComponent
+    ImportFromFileComponent,
+    ProcessedItemsComponents
   ],
   entryComponents: [
     CleanupConfirmComponent

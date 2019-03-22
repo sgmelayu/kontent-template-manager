@@ -1,0 +1,10 @@
+<cdk-virtual-scroll-viewport itemSize="50" class="w-import-viewport">
+    <mat-list role="list">
+        <mat-list-item role="listitem" *cdkVirtualFor="let processedItem of processedItems">
+            <p>
+                <strong>{{ processedItem.action }}</strong>: {{ processedItem.name }}
+            </p>
+        </mat-list-item>
+    </mat-list>
+
+</cdk-virtual-scroll-viewport>

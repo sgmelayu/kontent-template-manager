@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { List } from 'immutable';
 import { CloudError } from 'kentico-cloud-core';
 import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { throwError } from 'rxjs';
@@ -8,7 +7,7 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
-import { IImportItem, IImportResult } from '../../services';
+import { IImportResult } from '../../services';
 import { BaseComponent } from '../core/base.component';
 
 @Component({
@@ -21,12 +20,7 @@ export class ImportFromFileComponent extends BaseComponent {
   public formGroup: FormGroup;
   public error?: string;
   public importTriggered: boolean = false;
-  private _processedItems: List<IImportItem> = List<IImportItem>([]);
   public file?: File;
-
-  public get processedItems(): IImportItem[] {
-    return this._processedItems.toArray();
-  }
 
   public get canSubmit(): boolean {
     return this.formGroup.valid && (this.file ? true : false);
@@ -59,10 +53,6 @@ export class ImportFromFileComponent extends BaseComponent {
         this.dependencies.importService.importFromFile({
           apiKey: config.apiKey,
           projectId: config.projectId,
-          processItem: (item => {
-            this._processedItems = this._processedItems.unshift(item);
-            super.detectChanges();
-          })
         }, config.file).pipe(
           map((importResult) => {
             super.stopLoading();

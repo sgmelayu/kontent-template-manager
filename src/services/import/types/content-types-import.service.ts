@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ContentTypeModels, ElementModels, IContentManagementClient } from 'kentico-cloud-content-management';
+import { ContentTypeModels, ElementModels, IContentManagementClient, SharedContracts } from 'kentico-cloud-content-management';
 import { FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
@@ -7,24 +7,29 @@ import { delay, map } from 'rxjs/operators';
 import { observableHelper, stringHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
-import { IImportConfig, IImportData } from '../import.models';
+import { IImportConfig, IImportData, IImportContentTypeResult } from '../import.models';
+import { ProcessingService } from '../../processing/processing.service';
 
 @Injectable()
 export class ContentTypesImportService extends BaseService {
 
-    constructor() {
+    constructor(
+        private processingService: ProcessingService
+    ) {
         super();
     }
 
-    importContentTypes(data: IImportData, config: IImportConfig): Observable<IContentTypeModel[]> {
+    importContentTypes(data: IImportData, config: IImportConfig): Observable<IImportContentTypeResult[]> {
         const obs: Observable<void>[] = [];
-        const importedTypes: IContentTypeModel[] = [];
+        const importedTypes: IImportContentTypeResult[] = [];
 
         data.contentTypes.forEach(contentType => {
             obs.push(this.createType(contentType, data.targetClient, config).pipe(
-                delay(this.cmRequestDelay),
                 map(importedType => {
-                    importedTypes.push(importedType)
+                    importedTypes.push({
+                        importedItem: importedType,
+                        originalItem: contentType
+                    })
                 })
             ));
         });
@@ -83,7 +88,7 @@ export class ContentTypesImportService extends BaseService {
                 if (textElem) {
                     element.depends_on = {
                         element: {
-                            external_id: (textElem as any)['external_id']
+                            external_id: textElem.external_id
                         }
                     }
                 } else {
@@ -100,6 +105,7 @@ export class ContentTypesImportService extends BaseService {
             let mode: ElementModels.ElementMode | undefined = undefined;
             let options: ContentTypeModels.IAddContentTypeElementMultipleChoiceElementOptionsData[] | undefined;
             let externalId = stringHelper.newGuid();
+            let taxonomyGroup: SharedContracts.IReferenceObjectContract | undefined;
 
             if (elementType === ElementModels.ElementType.multipleChoice) {
                 mode = ElementModels.ElementMode.single;
@@ -107,17 +113,26 @@ export class ContentTypesImportService extends BaseService {
             }
 
             if (elementType === ElementModels.ElementType.modularContent) {
-                mode = ElementModels.ElementMode.single;
+                mode = ElementModels.ElementMode.multiple;
             }
 
+            if (elementType === ElementModels.ElementType.taxonomy) {
+                if (!element.taxonomyGroup) {
+                    throw Error(`Element '${element.codename}' does not have taxonomy group assigned`);
+                }
+                taxonomyGroup = {
+                    codename: element.taxonomyGroup
+                };
+            }
 
             return <ContentTypeModels.IAddContentTypeElementData>{
-                name: element.name,
+                name: element.codename,
                 mode: mode,
                 guidelines: '',
                 options: options,
                 type: elementType,
-                external_id: externalId
+                external_id: externalId,
+                taxonomy_group: taxonomyGroup
             }
         }
 
@@ -145,12 +160,15 @@ export class ContentTypesImportService extends BaseService {
             .pipe(
                 delay(this.cmRequestDelay),
                 map((response) => {
-                    data.processItem({
-                        item: contentType,
-                        status: 'imported',
-                        action: 'Add content type',
-                        name: response.data.codename
-                    })
+                    this.processingService.addProcessedItem(
+                        {
+                            item: contentType,
+                            status: 'imported',
+                            action: 'Add content type',
+                            name: response.data.codename
+                        }
+                    );
+
                     return <IContentTypeModel>{
                         elements: response.data.elements,
                         system: {

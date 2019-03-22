@@ -1,6 +1,7 @@
-import { IContentManagementClient } from 'kentico-cloud-content-management';
+import { IContentManagementClient, ContentItemModels, ContentTypeModels, TaxonomyModels, AssetModels } from 'kentico-cloud-content-management';
 
 import {
+    IAssetModel,
     ICMAssetModel,
     IContentItemModel,
     IContentTypeModel,
@@ -8,53 +9,54 @@ import {
     ILanguageVariantModel,
     ISlimContentItemModel,
     ITaxonomyModel,
-    IAssetModel,
 } from '../shared/shared.models';
-
-export type ImportItemStatus = 'imported' | 'published';
-
-export type ProcessItemEvent = (item: IImportItem) => void;
-
-export type ImportProcessedItemType = IContentItemModel | IContentTypeModel | ITaxonomyModel | string;
-
-export interface IImportItem {
-    item: ImportProcessedItemType;
-    status: ImportItemStatus;
-    action: 'Add content type' | 'Add content item' | 'Add taxonomy' | 'Add language variant' | 'Publish' |
-    'Upload binary file' | 'Add asset';
-    name: string;
-}
 
 export interface IImportFromFileConfig {
     projectId: string;
     apiKey: string;
-    processItem: ProcessItemEvent;
 }
 
 export interface IImportFromProjectConfig {
     targetProjectId: string;
     targetProjectCmApiKey: string;
     sourceProjectId: string;
-    processItem: ProcessItemEvent;
 }
 
 export interface IImportConfig {
-    processItem: ProcessItemEvent;
+}
+
+export interface IImportContentItemResult {
+    originalItem: IContentItemModel;
+    importedItem: ContentItemModels.ContentItem;
+}
+
+export interface IImportContentTypeResult {
+    originalItem: IContentTypeModel;
+    importedItem: IContentTypeModel;
+}
+
+export interface IImportTaxonomyResult {
+    originalItem: ITaxonomyModel;
+    importedItem: ITaxonomyModel;
+}
+
+export interface IImportAssetResult {
+    importedItem: AssetModels.Asset;
 }
 
 export interface IImportContentItemsResult {
-    contentItems: ISlimContentItemModel[];
+    contentItems: IImportContentItemResult[];
     languageVariants: ILanguageVariantModel[];
-    assets: ICMAssetModel[];
+    assets: IImportAssetResult[];
 }
 
 export interface IImportResult {
-    importedContentTypes: IContentTypeModel[];
-    importedContentItems: ISlimContentItemModel[];
+    importedContentTypes: IImportContentTypeResult[];
+    importedContentItems: IImportContentItemResult[];
     importedLanguageVariants: ILanguageVariantModel[],
-    importedTaxonomies: ITaxonomyModel[];
+    importedTaxonomies: IImportTaxonomyResult[];
     publishedItems: IPublishItemRequest[];
-    assets: ICMAssetModel[];
+    assets: IImportAssetResult[];
 }
 
 export interface IPublishItemRequest {

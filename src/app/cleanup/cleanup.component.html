@@ -6,20 +6,20 @@
     <lib-message [type]="'error'" [text]="error"></lib-message>
 </div>
 
-<ng-container *ngIf="isLoading">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    <mat-card>
-        loading ...
-    </mat-card>
-</ng-container>
-
-
 <ng-container *ngIf="cleanupCompleted">
 
-    <div class="push-top">
+    <div class="push-top push-bottom">
         <lib-message [type]="'success'" [text]="'Project data successfully deleted'"></lib-message>
     </div>
 </ng-container>
+
+<ng-container *ngIf="isLoading || cleanupCompleted">
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+    <mat-card>
+        <lib-processed-items *ngIf="isLoading || cleanupCompleted"></lib-processed-items>
+    </mat-card>
+</ng-container>
+
 
 <ng-container *ngIf="cleanupItems && !isLoading && !cleanupCompleted">
 

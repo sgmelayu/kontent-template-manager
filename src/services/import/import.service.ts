@@ -118,9 +118,7 @@ export class ImportService {
                 );
             }),
             flatMap((importData) => {
-                return this.import(importData, {
-                    processItem: config.processItem
-                });
+                return this.import(importData, {});
             }),
             map(result => {
                 return result;
@@ -148,13 +146,13 @@ export class ImportService {
             publishedItems: [],
             assets: []
         };
-        return this.contentTypesImportService.importContentTypes(data, config).pipe(
+        return this.taxonomiesImportService.importTaxonomies(data, config).pipe(
             flatMap((response) => {
-                result.importedContentTypes = response;
+                result.importedTaxonomies = response;
 
-                return this.taxonomiesImportService.importTaxonomies(data, config).pipe(
+                return this.contentTypesImportService.importContentTypes(data, config).pipe(
                     map((response) => {
-                        result.importedTaxonomies = response;
+                        result.importedContentTypes = response;
                         return data;
                     })
                 )
@@ -170,9 +168,9 @@ export class ImportService {
                 )
             }),
             flatMap((data) => {
-                return this.workflowService.publishContentItems(data.contentItems.map(item => <IPublishItemRequest>{
-                    itemCodename: item.system.codename,
-                    languageCodename: item.system.language
+                return this.workflowService.publishContentItems(result.importedContentItems.map(item => <IPublishItemRequest>{
+                    itemCodename: item.importedItem.codename,
+                    languageCodename: item.originalItem.system.language
                 }), data.targetClient, config).pipe(
                     map((response) => {
                         result.publishedItems = response;

@@ -12,12 +12,14 @@ import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
 import { ICMAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
 import { ICleanupData } from './cleanup.models';
+import { ProcessingService } from '../processing/processing.service';
 
 @Injectable()
 export class CleanupService extends BaseService {
 
     constructor(
-        private cmFetchService: CmFetchService
+        private cmFetchService: CmFetchService,
+        private processingService: ProcessingService
     ) {
         super();
     }
@@ -90,6 +92,14 @@ export class CleanupService extends BaseService {
                     .pipe(
                         delay(this.cmRequestDelay),
                         map((response) => {
+                            this.processingService.addProcessedItem(
+                                {
+                                    item: asset.fileName,
+                                    status: 'deleted',
+                                    action: 'Delete asset',
+                                    name: asset.fileName
+                                }
+                            );
                         })
                     ));
         }
@@ -105,6 +115,14 @@ export class CleanupService extends BaseService {
                 client.deleteContentType().byItemCodename(type.system.codename).toObservable()
                     .pipe(
                         map((response) => {
+                            this.processingService.addProcessedItem(
+                                {
+                                    item: type.system.codename,
+                                    status: 'deleted',
+                                    action: 'Delete content type',
+                                    name: type.system.codename
+                                }
+                            );
                         })
                     ));
         }
@@ -121,6 +139,14 @@ export class CleanupService extends BaseService {
                     .pipe(
                         delay(this.cmRequestDelay),
                         map((response) => {
+                            this.processingService.addProcessedItem(
+                                {
+                                    item: taxonomy.system.codename,
+                                    status: 'deleted',
+                                    action: 'Delete taxonomy',
+                                    name: taxonomy.system.codename
+                                }
+                            );
                         })
                     ));
         }
@@ -138,6 +164,14 @@ export class CleanupService extends BaseService {
                     .pipe(
                         delay(this.cmRequestDelay),
                         map((response) => {
+                            this.processingService.addProcessedItem(
+                                {
+                                    item: item.codename,
+                                    status: 'deleted',
+                                    action: 'Delete content item',
+                                    name: item.codename
+                                }
+                            );
                         })
                     ));
         }

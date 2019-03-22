@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { List } from 'immutable';
 import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
-import { IImportItem, IImportResult } from '../../services';
+import { IImportResult } from '../../services';
 import { BaseComponent } from '../core/base.component';
 
 @Component({
@@ -20,11 +19,6 @@ export class ImportFromProjectComponent extends BaseComponent {
   public formGroup: FormGroup;
   public error?: string;
   public importTriggered: boolean = false;
-  private _processedItems: List<IImportItem> = List<IImportItem>([]);
-
-  public get processedItems(): IImportItem[] {
-    return this._processedItems.toArray();
-  }
 
   public get canSubmit(): boolean {
     return this.formGroup.valid;
@@ -65,10 +59,6 @@ export class ImportFromProjectComponent extends BaseComponent {
       sourceProjectId: sourceProjectId,
       targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
-      processItem: (item) => {
-        this._processedItems = this._processedItems.unshift(item);
-        super.detectChanges();
-      }
     }).pipe(
 
       map((importResult) => {

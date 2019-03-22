@@ -9,6 +9,8 @@ export * from './cleanup/cleanup.service';
 export * from './cleanup/cleanup.models';
 export * from './export/export.service';
 export * from './export/export.models';
+export * from './processing/processing.service';
+export * from './processing/processing-models';
 
 
 

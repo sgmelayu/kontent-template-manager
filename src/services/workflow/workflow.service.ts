@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { IContentManagementClient } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import { IImportConfig, IPublishItemRequest } from '../import/import.models';
+import { ProcessingService } from '../processing/processing.service';
 
 @Injectable()
 export class WorkflowService extends BaseService {
 
     constructor(
+        private processingService: ProcessingService
     ) {
         super();
     }
@@ -24,9 +26,8 @@ export class WorkflowService extends BaseService {
                     .byLanguageCodename(item.languageCodename)
                     .toObservable()
                     .pipe(
-                        delay(this.cmRequestDelay),
                         map(() => {
-                            config.processItem({
+                            this.processingService.addProcessedItem({
                                 item: item.itemCodename,
                                 status: 'published',
                                 action: 'Publish',
@@ -37,7 +38,7 @@ export class WorkflowService extends BaseService {
             );
         }
 
-        return observableHelper.zipObservables(obs).pipe(
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
             map(() => {
                 return items;
             })
