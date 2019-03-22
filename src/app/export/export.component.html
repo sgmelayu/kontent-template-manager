@@ -2,6 +2,10 @@
     <lib-message [type]="'error'" [text]="error"></lib-message>
 </div>
 
+<div class="push-bottom" *ngIf="success">
+    <lib-message [type]="'success'" [text]="'Data was exported successfully.'"></lib-message>
+</div>
+
 <ng-container *ngIf="isLoading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     <mat-card>
@@ -9,7 +13,7 @@
     </mat-card>
 </ng-container>
 
-<ng-container *ngIf="!isLoading">
+<ng-container *ngIf="!isLoading && !success">
 
     <h1>
         Export data

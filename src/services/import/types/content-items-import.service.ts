@@ -183,7 +183,7 @@ export class ContentItemsImportService extends BaseService {
             finalObs = of(createContentItemWithAssetsResult)
         }
 
-        finalObs = observableHelper.zipObservables(obs).pipe(map(() => {
+        finalObs = observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(map(() => {
             if (!result.assets) {
                 throw Error(`Cannot assign assets`);
             }
@@ -260,11 +260,13 @@ export class ContentItemsImportService extends BaseService {
             // create assets only from file
             const assetsForContentItem = assetsFromFile.filter(m => m.embeddedAsset.contentItemCodename === contentItem.system.codename);
             for (const assetFromFile of assetsForContentItem) {
-
-                assetsToCreateObs.push(of(<IGetAssetData>{
-                    asset: assetFromFile.embeddedAsset.asset,
-                    blob: assetFromFile.data
-                }));
+                if (!processedAssetsUrls.includes(assetFromFile.embeddedAsset.asset.url)) {
+                    assetsToCreateObs.push(of(<IGetAssetData>{
+                        asset: assetFromFile.embeddedAsset.asset,
+                        blob: assetFromFile.data
+                    }));
+                    processedAssetsUrls.push(assetFromFile.embeddedAsset.asset.url);
+                }
             }
         } else {
             // create assets from urls from projects directly
@@ -394,19 +396,11 @@ export class ContentItemsImportService extends BaseService {
 
         for (const elementCodename of elementCodenames) {
             elements.push({
-                codename: this.removeSnippetFromElementCodename(elementCodename),
+                codename: elementCodename,
                 value: this.mapElementValue(contentItem.elements[elementCodename], assets)
             });
         }
 
         return elements;
-    }
-
-    private removeSnippetFromElementCodename(codename: string): string {
-        const metadataIdentifier = '__';
-        if (codename.includes(metadataIdentifier)) {
-            //   return codename.toString().substring(codename.indexOf(metadataIdentifier) + 2);
-        }
-        return codename;
     }
 }

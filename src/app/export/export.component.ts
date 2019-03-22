@@ -14,6 +14,7 @@ export class ExportComponent extends BaseComponent {
 
   public formGroup: FormGroup;
   public error?: string;
+  public success: boolean = false;
 
   public get canSubmit(): boolean {
     return this.formGroup.valid;
@@ -35,10 +36,16 @@ export class ExportComponent extends BaseComponent {
     this.resetErrors();
 
     if (config) {
+      super.startLoading();
+      super.detectChanges();
       super.subscribeToObservable(
         this.dependencies.exportService.prepareAndDownloadPackage(config.projectId).pipe(
-          map(() => {
-
+          map((result) => {
+            this.dependencies.exportService.createAndDownloadZipFile(config.projectId, result, () => {
+              super.stopLoading();
+              this.success = true;
+              super.detectChanges();
+            });
           })
         )
       )
@@ -62,5 +69,6 @@ export class ExportComponent extends BaseComponent {
 
   private resetErrors(): void {
     this.error = undefined;
+    this.success = false;
   }
 }

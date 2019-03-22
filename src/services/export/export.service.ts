@@ -19,7 +19,7 @@ export class ExportService extends BaseService {
         super();
     }
 
-    prepareAndDownloadPackage(projectId: string): Observable<void> {
+    prepareAndDownloadPackage(projectId: string): Observable<IExportJsonResult> {
         const result: IExportJsonResult = {
             contentItems: '',
             contentTypes: '',
@@ -44,12 +44,12 @@ export class ExportService extends BaseService {
             map(taxonomies => {
                 result.taxonomies = JSON.stringify(taxonomies);
 
-                this.createAndDownloadZipFile(projectId, result);
+                return result;
             })
         )
     }
 
-    private createAndDownloadZipFile(projectId: string, data: IExportJsonResult): void {
+    createAndDownloadZipFile(projectId: string, data: IExportJsonResult, callback: (() => void)): void {
         var zip = new JSZip();
 
         zip.file(environment.export.filenames.contentTypes, data.contentTypes);
@@ -71,6 +71,7 @@ export class ExportService extends BaseService {
 
         zip.generateAsync({ type: 'blob' }).then((content: any) => {
             saveAs(content, `${environment.export.filenames.packagePrefix}${projectId}.zip`);
+            callback();
         });
     }
 
