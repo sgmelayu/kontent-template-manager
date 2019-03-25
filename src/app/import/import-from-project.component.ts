@@ -24,6 +24,23 @@ export class ImportFromProjectComponent extends BaseComponent {
     return this.formGroup.valid;
   }
 
+  public get parsedLanguages(): string[] {
+    const languagesValue = this.formGroup.controls['languages'].value as string | undefined;
+    if (!languagesValue) {
+      return [];
+    }
+    return languagesValue.split(';').map(m => m.trim());
+  }
+
+  public get languagesWarningMessage(): string | undefined {
+    if (this.parsedLanguages.length === 0) {
+      return undefined;
+    }
+
+    const languagesListHtml = `<ul>${this.parsedLanguages.map(m => `<li>${m}</li>`).join('')}</ul>`;
+    return `In order for import to work, make sure that your target project contains languages with following codenames: ${languagesListHtml}`;
+  }
+
   public importResult?: IImportResult | undefined = undefined;
 
   constructor(
@@ -35,6 +52,7 @@ export class ImportFromProjectComponent extends BaseComponent {
     this.formGroup = this.fb.group({
       sourceProjectId: [environment.defaultProjects.sourceProjectId, Validators.required],
       targetProjectId: [environment.defaultProjects.targetProjectId, Validators.required],
+      languages: [environment.defaultProjects.languages],
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
     });
   }
@@ -52,10 +70,12 @@ export class ImportFromProjectComponent extends BaseComponent {
     const sourceProjectId = this.formGroup.controls['sourceProjectId'].value;
     const targetProjectId = this.formGroup.controls['targetProjectId'].value;
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
+    const languages = this.parsedLanguages;
 
     super.startLoading();
 
     super.subscribeToObservable(this.dependencies.importService.importFromProject({
+      languages: languages,
       sourceProjectId: sourceProjectId,
       targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,

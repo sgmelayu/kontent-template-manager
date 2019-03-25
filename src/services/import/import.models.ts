@@ -1,14 +1,13 @@
 import {
     AssetModels,
     ContentItemModels,
-    ContentTypeModels,
     IContentManagementClient,
+    LanguageVariantModels,
 } from 'kentico-cloud-content-management';
 
 import {
     IAssetModel,
     IContentItemModel,
-    IContentTypeElementModel,
     IContentTypeModel,
     IEmbeddedAsset,
     ILanguageVariantModel,
@@ -21,6 +20,7 @@ export interface IImportFromFileConfig {
 }
 
 export interface IImportFromProjectConfig {
+    languages: string[],
     targetProjectId: string;
     targetProjectCmApiKey: string;
     sourceProjectId: string;
@@ -59,21 +59,32 @@ export interface IImportAssetResult {
 
 export interface IImportContentItemsResult {
     contentItems: IImportContentItemResult[];
-    languageVariants: ILanguageVariantModel[];
+    languageVariants: ICreateLanguageVariantResult[];
     assets: IImportAssetResult[];
 }
 
 export interface IImportResult {
     importedContentTypes: IImportContentTypeResult[];
     importedContentItems: IImportContentItemResult[];
-    importedLanguageVariants: ILanguageVariantModel[],
+    importedLanguageVariants: ICreateLanguageVariantResult[],
     importedTaxonomies: IImportTaxonomyResult[];
     publishedItems: IPublishItemRequest[];
     assets: IImportAssetResult[];
 }
 
+export interface ICreateLanguageVariantResult {
+    languageVariant: ILanguageVariantModel;
+    assets: IImportAssetResult[];
+    languageCodename: string;
+}
+
+export interface ICreateContentItemWithAssetsResult {
+    importedContentItem: ContentItemModels.ContentItem;
+    assetImportResult: IImportAssetResult[];
+}
+
 export interface IPublishItemRequest {
-    itemCodename: string;
+    itemId: string;
     languageCodename: string;
 }
 

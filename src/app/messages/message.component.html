@@ -3,19 +3,33 @@
         <div class="title">
             Error
         </div>
-        <div class="text">
+        <div class="text" *ngIf="text">
             {{ text }}
         </div>
+        <div class="text" *ngIf="html" [innerHtml]="html"></div>
     </div>
 </ng-container>
 
 <ng-container *ngIf="type === 'success'">
-        <div class="w-message success">
-            <div class="title">
-                Success
-            </div>
-            <div class="text">
-                {{ text }}
-            </div>
+    <div class="w-message success">
+        <div class="title">
+            Success
         </div>
-    </ng-container>
+        <div class="text" *ngIf="text">
+            {{ text }}
+        </div>
+        <div class="text" *ngIf="html" [innerHtml]="html"></div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="type === 'warning'">
+    <div class="w-message warning">
+        <div class="title">
+            Warning
+        </div>
+        <div class="text" *ngIf="text">
+            {{ text }}
+        </div>
+        <div class="text" *ngIf="html" [innerHtml]="html"></div>
+    </div>
+</ng-container>

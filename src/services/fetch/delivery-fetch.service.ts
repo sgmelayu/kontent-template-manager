@@ -10,6 +10,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { observableHelper } from '../../utilities';
 import { IAssetModel, IContentItemModel, IContentTypeModel, IEmbeddedAsset, ITaxonomyModel } from '../shared/shared.models';
 
 @Injectable()
@@ -72,49 +73,41 @@ export class DeliveryFetchService {
             );
     }
 
-    getAllContentItems(projectId: string, contentItems: IContentItemModel[], nextPageUrl?: string): Observable<IContentItemModel[]> {
-        const query = this.getDeliveryClient({
-            projectId: projectId
-        }).items();
+    getAllContentItems(projectId: string, languageCodenames: string[]): Observable<IContentItemModel[]> {
+        const contentItems: IContentItemModel[] = [];
+        const obs: Observable<void>[] = [];
 
-        if (nextPageUrl) {
-            query.withUrl(nextPageUrl);
+        if (languageCodenames.length === 0) {
+            // get content items in default language withous specifying any language param
+            return this.getContentItemsForLanguage(projectId, contentItems, undefined, undefined);
         }
 
-        return query
-            .toObservable()
-            .pipe(
-                map(response => {
-
-                    for (const item of response.items) {
-
-                        if (!contentItems.find(m => m.system.codename === item.system.codename)) {
-                            const contentItem = <IContentItemModel>{
-                                elements: item.elements,
-                                system: item.system,
-                                assets: this.extractAssets(item),
-                                linkedItemCodenames: this.extractLinkedItemCodenames(item)
-                            };
-
-                            contentItems.push(contentItem)
-
-                            // make sure that components are added to result as well - needed because of components in rich text elements
-                            this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
-
-                        }
-                    }
-
-
-                    if (response.pagination.nextPage) {
-                        this.getAllContentItems(projectId, contentItems, response.pagination.nextPage);
-                    }
-                    return contentItems;
-                })
+        for (const languageCodename of languageCodenames) {
+            obs.push(
+                this.getContentItemsForLanguage(projectId, [], languageCodename, undefined).pipe(
+                    map(response => {
+                        contentItems.push(...response);
+                    })
+                )
             );
+        }
+
+        return observableHelper.flatMapObservables(obs, 50).pipe(
+            map(() => {
+                return this.filterIdenticalContentItems(contentItems);
+            })
+        )
     }
 
     getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
         return new DeliveryClient(config);
+    }
+
+    private filterIdenticalContentItems(contentItems: IContentItemModel[]): IContentItemModel[] {
+        return contentItems.reduce((unique: IContentItemModel[], item) => {
+            const existingItem = unique.find(m => m.system.codename === item.system.codename && m.system.language === item.system.language);
+            return existingItem ? unique : [...unique, item]
+        }, []);
     }
 
     /**
@@ -140,6 +133,48 @@ export class DeliveryFetchService {
                 });
             }
         }
+    }
+
+    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
+        const query = this.getDeliveryClient({
+            projectId: projectId
+        }).items();
+
+        if (languageCodename) {
+            query.languageParameter(languageCodename);
+        }
+
+        if (nextPageUrl) {
+            query.withUrl(nextPageUrl);
+        }
+
+        return query
+            .toObservable()
+            .pipe(
+                map(response => {
+                    for (const item of response.items) {
+                        if (!contentItems.find(m => m.system.codename === item.system.codename)) {
+                            const contentItem = <IContentItemModel>{
+                                elements: item.elements,
+                                system: item.system,
+                                assets: this.extractAssets(item),
+                                linkedItemCodenames: this.extractLinkedItemCodenames(item)
+                            };
+
+                            contentItems.push(contentItem);
+
+                            // make sure that components are added to result as well - needed because of components in rich text elements
+                            this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
+
+                        }
+                    }
+
+                    if (response.pagination.nextPage) {
+                        this.getContentItemsForLanguage(projectId, contentItems, languageCodename, response.pagination.nextPage);
+                    }
+                    return contentItems;
+                })
+            );
     }
 
     private extractLinkedItemCodenames(contentItem: ContentItem): string[] {

@@ -12,7 +12,7 @@
         Source Project
     </div>
 
-    <form [formGroup]="formGroup">
+    <div [formGroup]="formGroup">
 
         <mat-card>
             <mat-card-content>
@@ -20,6 +20,14 @@
                     <input autocomplete="off" matInput placeholder="Project Id" formControlName="sourceProjectId"
                         required>
                 </mat-form-field>
+
+                <mat-form-field class="push-top w-full-width">
+                    <input autocomplete="off" matInput placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language." formControlName="languages">
+                </mat-form-field>
+
+                <div class="push-top" *ngIf="languagesWarningMessage">
+                    <lib-message [type]="'warning'" [html]="languagesWarningMessage"></lib-message>
+                </div>
             </mat-card-content>
         </mat-card>
 
@@ -45,7 +53,7 @@
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
             <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
         </div>
-    </form>
+    </div>
 </ng-container>
 
 <div class="push-top" *ngIf="importTriggered">

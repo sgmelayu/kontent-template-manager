@@ -22,16 +22,16 @@ export class WorkflowService extends BaseService {
         for (const item of items) {
             obs.push(
                 client.publishOrScheduleLanguageVariant()
-                    .byItemCodename(item.itemCodename)
+                    .byItemId(item.itemId)
                     .byLanguageCodename(item.languageCodename)
                     .toObservable()
                     .pipe(
                         map(() => {
                             this.processingService.addProcessedItem({
-                                item: item.itemCodename,
+                                item: item.itemId,
                                 status: 'published',
                                 action: 'Publish',
-                                name: `${item.itemCodename} [${item.languageCodename}]`
+                                name: `${item.itemId} [${item.languageCodename}]`
                             });
                         })
                     )

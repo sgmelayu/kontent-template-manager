@@ -23,12 +23,16 @@
         This function enables you to create <em>json</em> export package of data from given project
     </p>
 
-    <form [formGroup]="formGroup">
+    <div [formGroup]="formGroup">
         <mat-card class="push-top">
             <mat-card-content>
                 <mat-form-field class="w-full-width">
                     <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
                 </mat-form-field>
+
+                <mat-form-field class="push-top w-full-width">
+                        <input autocomplete="off" matInput placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language." formControlName="languages">
+                    </mat-form-field>
             </mat-card-content>
         </mat-card>
 
@@ -36,7 +40,6 @@
             <button *ngIf="canSubmit" (click)="handleExport()" mat-raised-button color="warn">Export data</button>
             <button disabled *ngIf="!canSubmit" (click)="handleExport()" mat-raised-button>Export data</button>
         </div>
-    </form>
-
+    </div>
 
 </ng-container>

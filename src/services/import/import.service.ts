@@ -171,14 +171,23 @@ export class ImportService {
                         result.importedContentItems = response.contentItems;
                         result.importedLanguageVariants = response.languageVariants;
                         result.assets = response.assets;
-                        return data;
+                        return result.importedLanguageVariants;
                     })
                 )
             }),
-            flatMap((data) => {
-                return this.workflowService.publishContentItems(result.importedContentItems.map(item => <IPublishItemRequest>{
-                    itemCodename: item.importedItem.codename,
-                    languageCodename: item.originalItem.system.language
+            flatMap((languageVariants) => {
+                console.log(languageVariants);
+                return this.workflowService.publishContentItems(languageVariants.map(languageVariantResult => {
+                    if (!languageVariantResult.languageVariant.item.id) {
+                        throw Error(`Cannot publish item because item id is missing`);
+                    }
+                    if (!languageVariantResult.languageCodename) {
+                        throw Error(`Cannot publish item because language id is missing for item '${languageVariantResult.languageVariant.item.id}'`);
+                    }
+                    return <IPublishItemRequest>{
+                        itemId: languageVariantResult.languageVariant.item.id,
+                        languageCodename: languageVariantResult.languageCodename
+                    }
                 }), data.targetClient, config).pipe(
                     map((response) => {
                         result.publishedItems = response;
@@ -247,7 +256,7 @@ export class ImportService {
                     data.contentTypes = response;
                 })
             ),
-            this.deliveryFetchService.getAllContentItems(config.sourceProjectId, []).pipe(
+            this.deliveryFetchService.getAllContentItems(config.sourceProjectId, config.languages).pipe(
                 map((response) => {
                     data.contentItems = response;
                 })

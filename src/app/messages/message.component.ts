@@ -11,7 +11,8 @@ import { BaseComponent } from '../core/base.component';
 export class MessageComponent extends BaseComponent {
 
   @Input() text?: string;
-  @Input() type: 'error' | 'success' = 'error';
+  @Input() html?: string;
+  @Input() type: 'error' | 'success' | 'warning' = 'error';
 
   constructor(
     dependencies: ComponentDependencies,

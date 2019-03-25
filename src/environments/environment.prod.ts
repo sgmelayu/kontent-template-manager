@@ -2,6 +2,7 @@ export const environment = {
   production: true,
   appName: 'KC Import tool',
   defaultProjects: {
+    languages: '',
     sourceProjectId: '',
     targetProjectId: '',
     targetProjectApiKey: ''

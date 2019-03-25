@@ -12,7 +12,7 @@
         Target project
     </div>
 
-    <form [formGroup]="formGroup">
+    <div [formGroup]="formGroup">
 
         <mat-card>
             <mat-card-content>
@@ -39,7 +39,7 @@
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
             <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
         </div>
-    </form>
+    </div>
 </ng-container>
 
 <div class="push-top" *ngIf="importTriggered">

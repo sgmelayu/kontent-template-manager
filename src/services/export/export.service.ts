@@ -19,7 +19,7 @@ export class ExportService extends BaseService {
         super();
     }
 
-    prepareAndDownloadPackage(projectId: string): Observable<IExportJsonResult> {
+    prepareAndDownloadPackage(projectId: string, languageCodenames: string[]): Observable<IExportJsonResult> {
         const result: IExportJsonResult = {
             contentItems: '',
             contentTypes: '',
@@ -31,7 +31,7 @@ export class ExportService extends BaseService {
             flatMap(types => {
                 result.contentTypes = JSON.stringify(types);
 
-                return this.deliveryFetchService.getAllContentItems(projectId, []);
+                return this.deliveryFetchService.getAllContentItems(projectId, languageCodenames);
             }),
             flatMap(contentItems => {
                 result.contentItems = JSON.stringify(contentItems);

@@ -22,6 +22,14 @@ export class ExportComponent extends BaseComponent {
     return this.formGroup.valid;
   }
 
+  public get parsedLanguages(): string[] {
+    const languagesValue = this.formGroup.controls['languages'].value as string | undefined;
+    if (!languagesValue) {
+      return [];
+    }
+    return languagesValue.split(';').map(m => m.trim());
+  }
+
   constructor(
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef,
@@ -30,6 +38,7 @@ export class ExportComponent extends BaseComponent {
 
     this.formGroup = this.fb.group({
       projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
+      languages: [environment.defaultProjects.languages],
     });
   }
 
@@ -41,7 +50,7 @@ export class ExportComponent extends BaseComponent {
       super.startLoading();
       super.detectChanges();
       super.subscribeToObservable(
-        this.dependencies.exportService.prepareAndDownloadPackage(config.projectId).pipe(
+        this.dependencies.exportService.prepareAndDownloadPackage(config.projectId, this.parsedLanguages).pipe(
           map((result) => {
             this.dependencies.exportService.createAndDownloadZipFile(config.projectId, result, () => {
               super.stopLoading();

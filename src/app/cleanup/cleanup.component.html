@@ -53,7 +53,7 @@
 
     <p>This action will delete all data in your project. Proceed with caution.</p>
 
-    <form [formGroup]="formGroup">
+    <div [formGroup]="formGroup">
 
         <div libTitle1>
             Project
@@ -77,5 +77,5 @@
             <button disabled *ngIf="!canSubmit" (click)="prepareCleanup()" mat-raised-button>Prepare cleanup
                 data</button>
         </div>
-    </form>
+    </div>
 </ng-container>
