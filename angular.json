@@ -41,7 +41,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "https://enngage.github.io/kc-import-tool/",
+              "baseHref": "https://enngage.github.io/kc-template-manager/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
