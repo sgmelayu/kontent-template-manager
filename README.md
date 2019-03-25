@@ -1,4 +1,4 @@
-## https://enngage.github.io/kc-import-tool/
+## https://enngage.github.io/kc-template-manager/
 
 ### Publishing app to GitHub pages
 
