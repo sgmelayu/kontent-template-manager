@@ -1,5 +1,8 @@
 export class StringHelper {
 
+    extractEverythingBefore(text: string, beforeString: string): string {
+        return text.substring(0, text.indexOf(beforeString))
+    }
 
     /**
      * Converts first char of the text to uppercase
@@ -135,30 +138,6 @@ export class StringHelper {
     }
 
     /**
-    * Shortens given text
-    * @param text text to shorten
-    * @param chars number of characters to keep
-    * @param addDots dots to be added if the text is shortened
-    */
-    shorten(text: string, chars: number, addDots?: boolean): string {
-        if (!text || !chars) {
-            return '';
-        }
-
-        if (text.length <= chars) {
-            return text;
-        }
-
-        let shortenedText = text.substr(0, chars);
-
-        if (addDots) {
-            shortenedText += '...';
-        }
-
-        return shortenedText;
-    }
-
-    /**
      * Checks if given value is string
      * @param value Value to check
      */
@@ -180,36 +159,6 @@ export class StringHelper {
             text = text.toString();
         }
         return text.replace(/<[^>]*>/g, '');
-    }
-
-    getPluralText(data: {
-        value?: number,
-        plural0: string,
-        plural1: string,
-        plural2: string,
-        plural5: string
-    }): string {
-        if (!data.value) {
-            return data.plural0;
-        }
-
-        if (data.value === 0) {
-            return data.plural0;
-        }
-
-        if (data.value === 1) {
-            return data.plural1;
-        }
-
-        if (data.value > 1 && data.value < 5) {
-            return data.plural2;
-        }
-
-        if (data.value >= 5) {
-            return data.plural5;
-        }
-
-        throw Error(`Invalid flow for plural text`);
     }
 
     newGuid(): string {

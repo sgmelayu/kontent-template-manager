@@ -142,6 +142,7 @@ export class CmFetchService {
                                 id: m.id,
                                 name: m.name,
                             },
+                            elementsWithOriginalCodename: [],
                             elements: elements
                         }
                     }));

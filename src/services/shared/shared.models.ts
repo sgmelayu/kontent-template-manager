@@ -1,3 +1,4 @@
+
 export interface ITaxonomyTermModel {
     name: string;
     codename: string;
@@ -17,7 +18,7 @@ export interface IContentTypeModel {
     system: {
         id: string,
         name: string,
-        codename: string
+        codename: string,
     };
     elements: IContentTypeElementModel[];
 }

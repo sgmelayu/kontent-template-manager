@@ -1,13 +1,17 @@
-import { IContentManagementClient, ContentItemModels, ContentTypeModels, TaxonomyModels, AssetModels } from 'kentico-cloud-content-management';
+import {
+    AssetModels,
+    ContentItemModels,
+    ContentTypeModels,
+    IContentManagementClient,
+} from 'kentico-cloud-content-management';
 
 import {
     IAssetModel,
-    ICMAssetModel,
     IContentItemModel,
+    IContentTypeElementModel,
     IContentTypeModel,
     IEmbeddedAsset,
     ILanguageVariantModel,
-    ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
 
@@ -23,6 +27,15 @@ export interface IImportFromProjectConfig {
 }
 
 export interface IImportConfig {
+}
+
+export interface IContentTypeImportPrerequisities {
+    taxonomies: IImportTaxonomyResult[];
+}
+
+export interface IContentItemImportPrerequisities {
+    taxonomies: IImportTaxonomyResult[];
+    contentTypes: IImportContentTypeResult[];
 }
 
 export interface IImportContentItemResult {

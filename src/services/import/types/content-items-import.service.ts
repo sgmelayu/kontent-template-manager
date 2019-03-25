@@ -23,6 +23,7 @@ import {
 } from '../../shared/shared.models';
 import {
     IAssetFromFile,
+    IContentItemImportPrerequisities,
     IGetAssetData,
     IImportAssetResult,
     IImportConfig,
@@ -50,17 +51,25 @@ export class ContentItemsImportService extends BaseService {
         super();
     }
 
-    importContentItems(data: IImportData, config: IImportConfig): Observable<IImportContentItemsResult> {
+    importContentItems(data: IImportData, prerequisities: IContentItemImportPrerequisities, config: IImportConfig): Observable<IImportContentItemsResult> {
         const obs: Observable<void>[] = [];
         const importedContentItems: IImportContentItemResult[] = [];
         const importedLanguageVariants: LanguageVariantModels.ContentItemLanguageVariant[] = [];
         const assets: IImportAssetResult[] = [];
         const processedAssetsUrls: string[] = [];
 
-        return this.prepareAllContentItemsWithoutLanguageVariants(data.targetClient, data).pipe(
+        return this.prepareAllContentItemsWithoutLanguageVariants(data.targetClient, data, prerequisities).pipe(
             flatMap((createdContentItems) => {
                 data.contentItems.forEach(contentItem => {
-                    obs.push(this.createLanguageVariants(data, data.assetsFromFile, contentItem, data.targetClient, config, processedAssetsUrls, createdContentItems).pipe(
+                    obs.push(this.createLanguageVariants({
+                        assetsFromFile: data.assetsFromFile,
+                        contentItem: contentItem,
+                        targetClient: data.targetClient,
+                        config: config,
+                        contentItems: createdContentItems,
+                        processedAssetUrls: processedAssetsUrls,
+                        prerequisities: prerequisities
+                    }).pipe(
                         map((importResult) => {
                             if (!importResult.assets) {
                                 throw Error(`Missing assets`);
@@ -92,12 +101,12 @@ export class ContentItemsImportService extends BaseService {
         );
     }
 
-    private prepareAllContentItemsWithoutLanguageVariants(targetClient: IContentManagementClient, data: IImportData): Observable<IImportContentItemResult[]> {
+    private prepareAllContentItemsWithoutLanguageVariants(targetClient: IContentManagementClient, data: IImportData, prerequisities: IContentItemImportPrerequisities): Observable<IImportContentItemResult[]> {
         const createdContentItems: IImportContentItemResult[] = [];
         const obs: Observable<void>[] = [];
 
         for (const item of data.contentItems) {
-            obs.push(this.addContentItem(targetClient, item).pipe(
+            obs.push(this.addContentItem(targetClient, item, prerequisities).pipe(
                 map(response => {
                     createdContentItems.push({
                         importedItem: response.data,
@@ -114,12 +123,18 @@ export class ContentItemsImportService extends BaseService {
         )
     }
 
-    private addContentItem(targetClient: IContentManagementClient, contentItem: IContentItemModel): Observable<ContentItemResponses.AddContentItemResponse> {
+    private addContentItem(targetClient: IContentManagementClient, contentItem: IContentItemModel, prerequisities: IContentItemImportPrerequisities): Observable<ContentItemResponses.AddContentItemResponse> {
+        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.codename === contentItem.system.type);
+
+        if (!candidateContentType) {
+            throw Error(`Could not find candidate content type '${contentItem.system.type}'. This was required by '${contentItem.system.codename}' content item.`);
+        }
+
         return targetClient.addContentItem()
             .withData({
                 name: contentItem.system.name,
                 type: {
-                    codename: contentItem.system.type
+                    codename: candidateContentType.importedItem.system.codename
                 },
             })
             .toObservable()
@@ -138,34 +153,38 @@ export class ContentItemsImportService extends BaseService {
     }
 
     private createLanguageVariants(
-        data: IImportData,
-        assetsFromFile: IAssetFromFile[],
-        contentItem: IContentItemModel,
-        targetClient: IContentManagementClient,
-        config: IImportConfig,
-        processedAssetUrls: string[],
-        contentItems: IImportContentItemResult[]): Observable<ICreateContentItemResult> {
+        data: {
+            assetsFromFile: IAssetFromFile[],
+            contentItem: IContentItemModel,
+            targetClient: IContentManagementClient,
+            config: IImportConfig,
+            processedAssetUrls: string[],
+            contentItems: IImportContentItemResult[],
+            prerequisities: IContentItemImportPrerequisities
+        }
+
+    ): Observable<ICreateContentItemResult> {
         let result: ICreateContentItemResult = {
             assets: []
         };
 
-        const contentItemOfLanguageVariant = contentItems.find(m => m.originalItem.system.codename === contentItem.system.codename);
+        const candidateContentItemForLanguageVariant = data.contentItems.find(m => m.originalItem.system.codename === data.contentItem.system.codename);
 
-        if (!contentItemOfLanguageVariant) {
-            throw Error(`Invalid parent item for '${contentItem.system.codename}' `);
+        if (!candidateContentItemForLanguageVariant) {
+            throw Error(`Cannot find candidate content item for langugage variant '${data.contentItem.system.codename}' `);
         }
         const createContentItemWithAssetsResult: ICreateContentItemWithAssetsResult = {
             assetImportResult: [],
-            importedContentItem: contentItemOfLanguageVariant.importedItem
+            importedContentItem: candidateContentItemForLanguageVariant.importedItem
         }
 
         const obs: Observable<any>[] = [];
-        const elementKeys = Object.keys(contentItem.elements);
+        const elementKeys = Object.keys(data.contentItem.elements);
         for (const elementCodename of elementKeys) {
-            const element = contentItem.elements[elementCodename];
+            const element = data.contentItem.elements[elementCodename];
             if (element.type) {
                 if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                    obs.push(...this.createAssets(assetsFromFile, contentItem, element as IAssetFieldModel, targetClient, config, processedAssetUrls).map(
+                    obs.push(...this.createAssets(data.assetsFromFile, data.contentItem, element as IAssetFieldModel, data.targetClient, data.config, data.processedAssetUrls).map(
                         m => m.pipe(map((assetResponse) => {
                             createContentItemWithAssetsResult.assetImportResult.push({
                                 importedItem: assetResponse.data
@@ -206,17 +225,17 @@ export class ContentItemsImportService extends BaseService {
 
                 result.contentItemImportResult = {
                     importedItem: response.importedContentItem,
-                    originalItem: contentItem
+                    originalItem: data.contentItem
                 };
 
-                if (!contentItem.system.language) {
-                    throw Error(`Invalid language for item '${contentItem.system.language}'`);
+                if (!data.contentItem.system.language) {
+                    throw Error(`Invalid language for item '${data.contentItem.system.language}'`);
                 }
 
-                return targetClient.upsertLanguageVariant()
+                return data.targetClient.upsertLanguageVariant()
                     .byItemCodename(createdContentItem.codename)
-                    .byLanguageCodename(contentItem.system.language)
-                    .withElementCodenames(this.getElements(contentItem, assets))
+                    .byLanguageCodename(data.contentItem.system.language)
+                    .withElementCodenames(this.getElements(data.contentItem, assets, data.prerequisities))
                     .toObservable();
             }),
             map(response => {
@@ -225,10 +244,10 @@ export class ContentItemsImportService extends BaseService {
                 }
 
                 this.processingService.addProcessedItem({
-                    item: contentItem,
+                    item: data.contentItem,
                     status: 'imported',
                     action: 'Add language variant',
-                    name: `${result.contentItemImportResult} [${contentItem.system.language}] | ${response.data.item.id}`
+                    name: `${result.contentItemImportResult.importedItem.codename} [${data.contentItem.system.language}] | ${response.data.item.id}`
                 });
 
                 result.languageVariant = response.data;
@@ -389,18 +408,47 @@ export class ContentItemsImportService extends BaseService {
         return value;
     }
 
-    private getElements(contentItem: IContentItemModel, assets: IImportAssetResult[]): LanguageVariantModels.ILanguageVariantElementCodename[] {
-        const elements: LanguageVariantModels.ILanguageVariantElementCodename[] = [];
+    private getElements(contentItem: IContentItemModel, assets: IImportAssetResult[], prerequisities: IContentItemImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {
+        const contentItemElements: LanguageVariantModels.ILanguageVariantElementCodename[] = [];
+        const contentItemElementCodenames = Object.keys(contentItem.elements);
 
-        const elementCodenames = Object.keys(contentItem.elements);
+        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.codename === contentItem.system.type);
 
-        for (const elementCodename of elementCodenames) {
-            elements.push({
-                codename: elementCodename,
+        if (!candidateContentType) {
+            throw Error(`Could not find candidate content type '${contentItem.system.type}'. This type is required by content item '${contentItem.system.codename}'`);
+        }
+
+        const originalElements = candidateContentType.originalItem.elements;
+        const importedElements = candidateContentType.importedItem.elements;
+
+        for (const elementCodename of contentItemElementCodenames) {
+            const originalElement = originalElements.find(m => m.codename === elementCodename);
+
+            if (!originalElement) {
+                throw Error(`Cannot find element '${elementCodename}' in original elements`);
+            }
+
+            const originalElementIndex = originalElements.findIndex(m => m.codename === elementCodename);
+
+            if (originalElementIndex === -1) {
+                throw Error(`Cannot find element with index '${originalElementIndex}' in original elements`);
+            }
+
+            // This is very dangerous because we are mapping elements based on their index
+            // and if KC API changes order of elements, this will be broken.
+            const importedElement = importedElements[originalElementIndex];
+
+            if (!importedElement) {
+                console.log(elementCodename, originalElement, candidateContentType);
+                throw Error(`Could not find candidate import element for element with codename '${originalElement.codename}'`);
+            }
+
+            contentItemElements.push({
+                codename: importedElement.codename,
                 value: this.mapElementValue(contentItem.elements[elementCodename], assets)
             });
         }
 
-        return elements;
+        return contentItemElements;
     }
 }

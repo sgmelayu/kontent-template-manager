@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { ContentTypeModels, ElementModels, IContentManagementClient, SharedContracts } from 'kentico-cloud-content-management';
+import {
+    ContentTypeModels,
+    ElementModels,
+    IContentManagementClient,
+    SharedContracts,
+} from 'kentico-cloud-content-management';
 import { FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 
 import { observableHelper, stringHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
-import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
-import { IImportConfig, IImportData, IImportContentTypeResult } from '../import.models';
 import { ProcessingService } from '../../processing/processing.service';
+import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
+import { IContentTypeImportPrerequisities, IImportConfig, IImportContentTypeResult, IImportData } from '../import.models';
 
 @Injectable()
 export class ContentTypesImportService extends BaseService {
@@ -19,12 +24,12 @@ export class ContentTypesImportService extends BaseService {
         super();
     }
 
-    importContentTypes(data: IImportData, config: IImportConfig): Observable<IImportContentTypeResult[]> {
+    importContentTypes(data: IImportData, prerequisities: IContentTypeImportPrerequisities, config: IImportConfig): Observable<IImportContentTypeResult[]> {
         const obs: Observable<void>[] = [];
         const importedTypes: IImportContentTypeResult[] = [];
 
         data.contentTypes.forEach(contentType => {
-            obs.push(this.createType(contentType, data.targetClient, config).pipe(
+            obs.push(this.createType(contentType, data.targetClient, prerequisities, config).pipe(
                 map(importedType => {
                     importedTypes.push({
                         importedItem: importedType,
@@ -41,6 +46,7 @@ export class ContentTypesImportService extends BaseService {
 
     private mapElementType(element: IContentTypeElementModel): ElementModels.ElementType | undefined {
         const type = element.type.toLowerCase();
+
         if (type === FieldType.Text.toLowerCase()) {
             return ElementModels.ElementType.text;
         }
@@ -98,7 +104,7 @@ export class ContentTypesImportService extends BaseService {
         }
     }
 
-    private getElementData(element: IContentTypeElementModel): ContentTypeModels.IAddContentTypeElementData | undefined {
+    private getElementData(element: IContentTypeElementModel, prerequisities: IContentTypeImportPrerequisities): ContentTypeModels.IAddContentTypeElementData | undefined {
         const elementType = this.mapElementType(element);
 
         if (elementType) {
@@ -120,13 +126,20 @@ export class ContentTypesImportService extends BaseService {
                 if (!element.taxonomyGroup) {
                     throw Error(`Element '${element.codename}' does not have taxonomy group assigned`);
                 }
+
+                const candidateTaxonomyGroup = prerequisities.taxonomies.find(m => m.originalItem.system.codename === element.taxonomyGroup);
+
+                if (!candidateTaxonomyGroup) {
+                    throw Error(`Cannto find candidate taxonomy group for element '${element.codename}' with taxonomy group set to '${element.taxonomyGroup}'`);
+                }
+
                 taxonomyGroup = {
-                    codename: element.taxonomyGroup
+                    codename: candidateTaxonomyGroup.importedItem.system.codename
                 };
             }
 
             return <ContentTypeModels.IAddContentTypeElementData>{
-                name: element.codename,
+                name: element.name,
                 mode: mode,
                 guidelines: '',
                 options: options,
@@ -139,10 +152,10 @@ export class ContentTypesImportService extends BaseService {
         return undefined;
     }
 
-    private createType(contentType: IContentTypeModel, targetClient: IContentManagementClient, data: IImportConfig): Observable<IContentTypeModel> {
+    private createType(contentType: IContentTypeModel, targetClient: IContentManagementClient, prerequisities: IContentTypeImportPrerequisities, data: IImportConfig): Observable<IContentTypeModel> {
         const mappedElements: ContentTypeModels.IAddContentTypeElementData[] = [];
         contentType.elements.forEach(sourceElement => {
-            const mappedElementData = this.getElementData(sourceElement);
+            const mappedElementData = this.getElementData(sourceElement, prerequisities);
             if (mappedElementData) {
                 mappedElements.push(mappedElementData);
             }

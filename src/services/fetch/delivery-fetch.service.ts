@@ -31,7 +31,8 @@ export class DeliveryFetchService {
                     allTypes.push(...response.types.map(m => {
                         return <IContentTypeModel>{
                             elements: m.elements,
-                            system: m.system
+                            system: m.system,
+                            elementsWithOriginalCodename: []
                         }
                     }));
 

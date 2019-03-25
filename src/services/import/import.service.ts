@@ -150,15 +150,23 @@ export class ImportService {
             flatMap((response) => {
                 result.importedTaxonomies = response;
 
-                return this.contentTypesImportService.importContentTypes(data, config).pipe(
+                return this.contentTypesImportService.importContentTypes(data, {
+                    taxonomies: response
+                }, config).pipe(
                     map((response) => {
                         result.importedContentTypes = response;
-                        return data;
+                        return {
+                            importedContentTypes: response,
+                            importedTaxonomies: result.importedTaxonomies
+                        };
                     })
                 )
             }),
-            flatMap((data) => {
-                return this.contentItemsImportService.importContentItems(data, config).pipe(
+            flatMap((response) => {
+                return this.contentItemsImportService.importContentItems(data, {
+                    contentTypes: response.importedContentTypes,
+                    taxonomies: response.importedTaxonomies
+                }, config).pipe(
                     map((response) => {
                         result.importedContentItems = response.contentItems;
                         result.importedLanguageVariants = response.languageVariants;
