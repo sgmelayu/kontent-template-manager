@@ -147,6 +147,21 @@ export class CleanupComponent extends BaseComponent {
           this.cleanupItems = this.getCleanupItems(cleanupData);
           super.stopLoading();
           super.detectChanges();
+        }),
+        catchError((error) => {
+          super.stopLoading();
+          if (error instanceof CloudError) {
+            this.error = error.message;
+          } else {
+            this.error = 'Import failed. See console for error details.';
+          }
+
+          // cleanup data because something might have been deleted already and same item
+          // cannot be deleted twice
+          this.cleanupData = undefined;
+          this.cleanupItems = undefined;
+
+          return throwError(error);
         })
       )
     );

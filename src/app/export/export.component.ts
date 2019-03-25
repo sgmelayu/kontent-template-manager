@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map } from 'rxjs/operators';
+import { CloudError } from 'kentico-cloud-core';
+import { throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
@@ -46,8 +48,17 @@ export class ExportComponent extends BaseComponent {
               this.success = true;
               super.detectChanges();
             });
+          }),
+          catchError((err) => {
+            if (err instanceof CloudError) {
+              this.error = err.message;
+            } else {
+              this.error = err;
+            }
+            super.stopLoading();
+            return throwError(err);
           })
-        )
+        ),
       )
     }
   }
