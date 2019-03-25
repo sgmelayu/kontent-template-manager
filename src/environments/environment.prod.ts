@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  appName: 'KC Import tool',
+  appName: 'Template manager',
   defaultProjects: {
     languages: '',
     sourceProjectId: '',
