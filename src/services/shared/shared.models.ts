@@ -111,6 +111,7 @@ export interface IFieldModel {
 }
 
 export interface IEmbeddedAsset {
+    languageCodename: string;
     asset: IAssetModel;
     fieldCodename: string;
     contentItemCodename: string;

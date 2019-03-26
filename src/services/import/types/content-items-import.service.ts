@@ -72,7 +72,6 @@ export class ContentItemsImportService extends BaseService {
 
                 return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
                     map(() => {
-                        console.log(importedLanguageVariants);
                         return <IImportContentItemsResult>{
                             contentItems: importedContentItems,
                             languageVariants: importedLanguageVariants,
@@ -156,7 +155,7 @@ export class ContentItemsImportService extends BaseService {
     ): Observable<ICreateLanguageVariantResult> {
         const tempResult = {
             assets: <IImportAssetResult[]>[],
-            languageVariant: <LanguageVariantModels.ContentItemLanguageVariant | undefined> undefined
+            languageVariant: <LanguageVariantModels.ContentItemLanguageVariant | undefined>undefined
         };
 
         const candidateContentItemForLanguageVariant = data.contentItems.find(m => m.originalItem.system.codename === data.contentItem.system.codename);
@@ -167,7 +166,7 @@ export class ContentItemsImportService extends BaseService {
         const contentItemWithAssetsResult: IContentItemWithAssetsResult = {
             assetImportResult: [],
             importedContentItem: candidateContentItemForLanguageVariant.importedItem
-        }
+        };
 
         const obs: Observable<any>[] = [];
         const elementKeys = Object.keys(data.contentItem.elements);
@@ -226,7 +225,7 @@ export class ContentItemsImportService extends BaseService {
                     item: data.contentItem,
                     status: 'imported',
                     action: 'Add language variant',
-                    name: `${response.data.item.codename} [${data.contentItem.system.language}] | ${response.data.item.id}`
+                    name: `${data.contentItem.system.codename} [${data.contentItem.system.language}]`
                 });
 
                 tempResult.languageVariant = response.data;
@@ -260,8 +259,8 @@ export class ContentItemsImportService extends BaseService {
         const assetsToCreateObs: Observable<IGetAssetData>[] = [];
 
         if (assetsFromFile.length > 0) {
-            // create assets only from file
-            const assetsForContentItem = assetsFromFile.filter(m => m.embeddedAsset.contentItemCodename === contentItem.system.codename);
+            // create assets from file
+            const assetsForContentItem = assetsFromFile.filter(m => m.embeddedAsset.contentItemCodename === contentItem.system.codename && m.embeddedAsset.languageCodename === contentItem.system.language);
             for (const assetFromFile of assetsForContentItem) {
                 if (!processedAssetsUrls.includes(assetFromFile.embeddedAsset.asset.url)) {
                     assetsToCreateObs.push(of(<IGetAssetData>{
@@ -311,7 +310,7 @@ export class ContentItemsImportService extends BaseService {
 
                                     return targetClient.addAsset().withData({
                                         title: asset.name,
-                                        descriptions: [], // we don't know the language of description
+                                        descriptions: [],
                                         fileReference: {
                                             id: response.data.id,
                                             type: response.data.type
@@ -352,13 +351,11 @@ export class ContentItemsImportService extends BaseService {
 
         const value = field.value;
 
-
         if (field.type.toLowerCase() === FieldType.RichText.toLowerCase()) {
             return this.fixInvalidHtmlInRichTextField(field.value);
         }
 
         if (field.type.toLowerCase() === FieldType.Taxonomy.toLowerCase()) {
-
             const taxonomyField = field.value as IMultipleChoiceOptionModel[];
             return taxonomyField.map(option => <SharedContracts.IReferenceObjectContract>{
                 codename: option.codename
@@ -379,7 +376,6 @@ export class ContentItemsImportService extends BaseService {
 
             for (const asset of assetField.value) {
                 const newAssetResult = assets.find(m => m.importedItem.externalId === asset.url);
-
                 if (newAssetResult) {
                     assetIds.push({
                         id: newAssetResult.importedItem.id
@@ -423,7 +419,6 @@ export class ContentItemsImportService extends BaseService {
             const importedElement = importedElements[originalElementIndex];
 
             if (!importedElement) {
-                console.log(elementCodename, originalElement, candidateContentType);
                 throw Error(`Could not find candidate import element for element with codename '${originalElement.codename}'`);
             }
 

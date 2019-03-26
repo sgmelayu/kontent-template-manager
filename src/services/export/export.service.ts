@@ -60,7 +60,8 @@ export class ExportService extends BaseService {
 
         for (const embeddedAsset of data.assets) {
             const assetItemSubfolder = assetsFolder.folder(embeddedAsset.contentItemCodename);
-            const assetFieldSubfolder = assetItemSubfolder.folder(embeddedAsset.fieldCodename);
+            const assetLanguageSubfolder = assetItemSubfolder.folder(embeddedAsset.languageCodename);
+            const assetFieldSubfolder = assetLanguageSubfolder.folder(embeddedAsset.fieldCodename);
             assetFieldSubfolder.file(
                 embeddedAsset.asset.name,
                 this.urlToPromise(embeddedAsset.asset.url),

@@ -176,7 +176,6 @@ export class ImportService {
                 )
             }),
             flatMap((languageVariants) => {
-                console.log(languageVariants);
                 return this.workflowService.publishContentItems(languageVariants.map(languageVariantResult => {
                     if (!languageVariantResult.languageVariant.item.id) {
                         throw Error(`Cannot publish item because item id is missing`);
@@ -206,7 +205,7 @@ export class ImportService {
         const files = response.files;
         const assetsFolderName = environment.export.filenames.assetsFolder;
 
-        const fullFilePath = `${assetsFolderName}/${asset.contentItemCodename}/${asset.fieldCodename}/${asset.asset.name}`;
+        const fullFilePath = `${assetsFolderName}/${asset.contentItemCodename}/${asset.languageCodename}/${asset.fieldCodename}/${asset.asset.name}`;
         const assetFile = files[fullFilePath];
 
         if (!assetFile) {

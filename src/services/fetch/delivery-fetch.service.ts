@@ -213,6 +213,7 @@ export class DeliveryFetchService {
                 const fieldAssets = element.value as IAssetModel[];
                 for (const asset of fieldAssets) {
                     assets.push({
+                        languageCodename: contentItem.system.language,
                         asset: asset,
                         contentItemCodename: contentItem.system.codename,
                         contentItemId: contentItem.system.id,
