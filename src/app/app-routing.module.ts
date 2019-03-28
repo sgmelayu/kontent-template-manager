@@ -5,6 +5,7 @@ import { CleanupComponent } from './cleanup/cleanup.component';
 import { ExportComponent } from './export/export.component';
 import { ImportFromFileComponent } from './import/import-from-file.component';
 import { ImportFromProjectComponent } from './import/import-from-project.component';
+import { MigrateContentItemsComponent } from './import/migrate-content-items.component';
 import { MasterLayoutComponent } from './layout';
 
 const routes: Routes = [
@@ -15,6 +16,7 @@ const routes: Routes = [
       { path: 'cleanup', component: CleanupComponent },
       { path: 'import-from-project', component: ImportFromProjectComponent },
       { path: 'import-from-file', component: ImportFromFileComponent },
+      { path: 'migrate-content-items', component: MigrateContentItemsComponent },
     ]
   },
 ];

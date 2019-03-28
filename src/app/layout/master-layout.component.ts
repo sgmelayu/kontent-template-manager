@@ -34,6 +34,11 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       icon: 'settings_backup_restore'
     },
     {
+      title: 'Migrate items between projects',
+      routerLink: '/migrate-content-items',
+      icon: 'sync'
+    },
+    {
       title: 'Export',
       routerLink: '/export',
       icon: 'cloud_download'

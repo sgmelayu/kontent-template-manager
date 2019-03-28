@@ -102,6 +102,12 @@ export interface IImportData {
     assetsFromFile: IAssetFromFile[];
 }
 
+export interface IMigrateContentItemsData {
+    contentItemsToMigrate: IContentItemModel[];
+    targetTaxonomies: ITaxonomyModel[];
+    targetContentTypes: IContentTypeModel[];
+}
+
 export interface IGetAssetData {
     blob: Blob;
     embeddedAsset: IEmbeddedAsset;

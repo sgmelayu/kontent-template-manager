@@ -40,21 +40,21 @@ export class ContentItemsImportService extends BaseService {
         super();
     }
 
-    importContentItems(data: IImportData, prerequisities: IContentItemImportPrerequisities, config: IImportConfig): Observable<IImportContentItemsResult> {
+    importContentItems(targetClient: IContentManagementClient, assetsFromFile: IAssetFromFile[], contentItems: IContentItemModel[], prerequisities: IContentItemImportPrerequisities, config: IImportConfig): Observable<IImportContentItemsResult> {
         const obs: Observable<void>[] = [];
         const importedContentItems: IImportContentItemResult[] = [];
         const importedLanguageVariants: ICreateLanguageVariantResult[] = [];
         const assets: IImportAssetResult[] = [];
 
-        return this.prepareAllContentItemsWithoutLanguageVariants(data.targetClient, data, prerequisities).pipe(
+        return this.prepareAllContentItemsWithoutLanguageVariants(targetClient, contentItems, prerequisities).pipe(
             flatMap((createdContentItems) => {
                 importedContentItems.push(...createdContentItems);
 
-                data.contentItems.forEach(contentItem => {
+                contentItems.forEach(contentItem => {
                     obs.push(this.createLanguageVariants({
-                        assetsFromFile: data.assetsFromFile,
+                        assetsFromFile: assetsFromFile,
                         contentItem: contentItem,
-                        targetClient: data.targetClient,
+                        targetClient: targetClient,
                         config: config,
                         contentItems: createdContentItems,
                         prerequisities: prerequisities
@@ -79,7 +79,7 @@ export class ContentItemsImportService extends BaseService {
         );
     }
 
-    private prepareAllContentItemsWithoutLanguageVariants(targetClient: IContentManagementClient, data: IImportData, prerequisities: IContentItemImportPrerequisities): Observable<IImportContentItemResult[]> {
+    private prepareAllContentItemsWithoutLanguageVariants(targetClient: IContentManagementClient, contentItems: IContentItemModel[], prerequisities: IContentItemImportPrerequisities): Observable<IImportContentItemResult[]> {
         const createdContentItems: IImportContentItemResult[] = [];
         const obs: Observable<void>[] = [];
 
@@ -87,7 +87,7 @@ export class ContentItemsImportService extends BaseService {
         // and it's fine to just create 'parent' content item once
         const processedContentItemCodenames: string[] = [];
 
-        for (const item of data.contentItems) {
+        for (const item of contentItems) {
             if (!processedContentItemCodenames.includes(item.system.codename)) {
                 obs.push(this.addContentItem(targetClient, item, prerequisities).pipe(
                     map(response => {

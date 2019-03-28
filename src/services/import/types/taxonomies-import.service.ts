@@ -5,9 +5,9 @@ import { delay, map } from 'rxjs/operators';
 
 import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
-import { ITaxonomyModel } from '../../shared/shared.models';
-import { IImportConfig, IImportData, IImportTaxonomyResult } from '../import.models';
 import { ProcessingService } from '../../processing/processing.service';
+import { ITaxonomyModel } from '../../shared/shared.models';
+import { IImportConfig, IImportTaxonomyResult } from '../import.models';
 
 @Injectable()
 export class TaxonomiesImportService extends BaseService {
@@ -18,14 +18,14 @@ export class TaxonomiesImportService extends BaseService {
         super();
     }
 
-    importTaxonomies(data: IImportData, config: IImportConfig): Observable<IImportTaxonomyResult[]> {
+    importTaxonomies(targetClient: IContentManagementClient, taxonomies: ITaxonomyModel[], config: IImportConfig): Observable<IImportTaxonomyResult[]> {
         const obs: Observable<void>[] = [];
-        const taxonomies: IImportTaxonomyResult[] = [];
+        const importedTaxonomies: IImportTaxonomyResult[] = [];
 
-        data.taxonomies.forEach(taxonomy => {
-            obs.push(this.createTaxonomy(taxonomy, data.targetClient, config).pipe(
+        taxonomies.forEach(taxonomy => {
+            obs.push(this.createTaxonomy(taxonomy, targetClient, config).pipe(
                 map((importedTaxonomy) => {
-                    taxonomies.push({
+                    importedTaxonomies.push({
                         importedItem: importedTaxonomy,
                         originalItem: taxonomy
                     });
@@ -35,7 +35,7 @@ export class TaxonomiesImportService extends BaseService {
 
         return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
             map(() => {
-                return taxonomies;
+                return importedTaxonomies;
             })
         );
     }

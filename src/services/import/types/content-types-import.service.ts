@@ -13,7 +13,7 @@ import { observableHelper, stringHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { ProcessingService } from '../../processing/processing.service';
 import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
-import { IContentTypeImportPrerequisities, IImportConfig, IImportContentTypeResult, IImportData } from '../import.models';
+import { IContentTypeImportPrerequisities, IImportConfig, IImportContentTypeResult } from '../import.models';
 
 @Injectable()
 export class ContentTypesImportService extends BaseService {
@@ -24,12 +24,12 @@ export class ContentTypesImportService extends BaseService {
         super();
     }
 
-    importContentTypes(data: IImportData, prerequisities: IContentTypeImportPrerequisities, config: IImportConfig): Observable<IImportContentTypeResult[]> {
+    importContentTypes(targetClient: IContentManagementClient, contentTypes: IContentTypeModel[], prerequisities: IContentTypeImportPrerequisities, config: IImportConfig): Observable<IImportContentTypeResult[]> {
         const obs: Observable<void>[] = [];
         const importedTypes: IImportContentTypeResult[] = [];
 
-        data.contentTypes.forEach(contentType => {
-            obs.push(this.createType(contentType, data.targetClient, prerequisities, config).pipe(
+        contentTypes.forEach(contentType => {
+            obs.push(this.createType(contentType, targetClient, prerequisities, config).pipe(
                 map(importedType => {
                     importedTypes.push({
                         importedItem: importedType,

@@ -21,6 +21,10 @@ import {
     IImportFromProjectConfig,
     IImportResult,
     IPublishItemRequest,
+    IImportContentItemsResult,
+    IMigrateContentItemsData,
+    IImportContentTypeResult,
+    IImportTaxonomyResult,
 } from './import.models';
 import { ContentItemsImportService } from './types/content-items-import.service';
 import { ContentTypesImportService } from './types/content-types-import.service';
@@ -137,6 +141,69 @@ export class ImportService {
         );
     }
 
+    importContentItems(config: IImportFromProjectConfig): Observable<IImportResult> {
+        const result: IImportResult = {
+            importedContentItems: [],
+            importedContentTypes: [],
+            importedLanguageVariants: [],
+            importedTaxonomies: [],
+            publishedItems: [],
+            assets: []
+        };
+
+        return this.getImportDataFromProject(config).pipe(
+            flatMap(data => {
+
+                return this.contentItemsImportService.importContentItems(
+                    data.targetClient,
+                    data.assetsFromFile,
+                    data.contentItems,
+                    {
+                        contentTypes: data.contentTypes.map(m => <IImportContentTypeResult> {
+                            importedItem: m,
+                            originalItem: m
+                        }),
+                        taxonomies: data.taxonomies.map(m => <IImportTaxonomyResult> {
+                            importedItem: m,
+                            originalItem: m
+                        })
+                    }, config).pipe(
+                        map(response => {
+                            result.importedContentItems = response.contentItems;
+                            result.assets = response.assets;
+                            result.importedLanguageVariants = response.languageVariants
+                            return {
+                                data: data,
+                                contentItemsResult: response
+                            }
+                        })
+                    );
+                }),
+                flatMap((response) => {
+                    return this.workflowService.publishContentItems(response.contentItemsResult.languageVariants.map(languageVariantResult => {
+                        if (!languageVariantResult.languageVariant.item.id) {
+                            throw Error(`Cannot publish item because item id is missing`);
+                        }
+                        if (!languageVariantResult.languageCodename) {
+                            throw Error(`Cannot publish item because language id is missing for item '${languageVariantResult.languageVariant.item.id}'`);
+                        }
+                        return <IPublishItemRequest>{
+                            itemId: languageVariantResult.languageVariant.item.id,
+                            languageCodename: languageVariantResult.languageCodename
+                        }
+                    }), response.data.targetClient, config).pipe(
+                        map((response) => {
+                            result.publishedItems = response;
+                            return response;
+                        })
+                    )
+                }),
+            map((response) => {
+                return result;
+            })
+        );
+    }
+
     import(data: IImportData, config: IImportConfig): Observable<IImportResult> {
         const result: IImportResult = {
             importedContentItems: [],
@@ -146,11 +213,11 @@ export class ImportService {
             publishedItems: [],
             assets: []
         };
-        return this.taxonomiesImportService.importTaxonomies(data, config).pipe(
+        return this.taxonomiesImportService.importTaxonomies(data.targetClient, data.taxonomies, config).pipe(
             flatMap((response) => {
                 result.importedTaxonomies = response;
 
-                return this.contentTypesImportService.importContentTypes(data, {
+                return this.contentTypesImportService.importContentTypes(data.targetClient, data.contentTypes, {
                     taxonomies: response
                 }, config).pipe(
                     map((response) => {
@@ -163,7 +230,7 @@ export class ImportService {
                 )
             }),
             flatMap((response) => {
-                return this.contentItemsImportService.importContentItems(data, {
+                return this.contentItemsImportService.importContentItems(data.targetClient, data.assetsFromFile, data.contentItems, {
                     contentTypes: response.importedContentTypes,
                     taxonomies: response.importedTaxonomies
                 }, config).pipe(

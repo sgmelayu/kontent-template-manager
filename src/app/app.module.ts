@@ -10,6 +10,7 @@ import { CoreModule } from './core/core.module';
 import { ExportComponent } from './export/export.component';
 import { ImportFromFileComponent } from './import/import-from-file.component';
 import { ImportFromProjectComponent } from './import/import-from-project.component';
+import { MigrateContentItemsComponent } from './import/migrate-content-items.component';
 import { MessageComponent } from './messages/message.component';
 import { ProcessedItemsComponents } from './processed-items/processed-items.component';
 
@@ -22,7 +23,8 @@ import { ProcessedItemsComponents } from './processed-items/processed-items.comp
     CleanupConfirmComponent,
     MessageComponent,
     ImportFromFileComponent,
-    ProcessedItemsComponents
+    ProcessedItemsComponents,
+    MigrateContentItemsComponent
   ],
   entryComponents: [
     CleanupConfirmComponent
