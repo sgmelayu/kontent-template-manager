@@ -55,6 +55,7 @@ export interface IImportTaxonomyResult {
 
 export interface IImportAssetResult {
     importedItem: AssetModels.Asset;
+    embeddedAsset: IEmbeddedAsset;
 }
 
 export interface IImportContentItemsResult {
@@ -103,5 +104,5 @@ export interface IImportData {
 
 export interface IGetAssetData {
     blob: Blob;
-    asset: IAssetModel;
+    embeddedAsset: IEmbeddedAsset;
 }

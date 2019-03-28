@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-    AssetResponses,
     ContentItemResponses,
     IContentManagementClient,
     LanguageVariantModels,
@@ -15,7 +14,6 @@ import { BaseService } from '../../base-service';
 import { ProcessingService } from '../../processing/processing.service';
 import {
     IAssetFieldModel,
-    IAssetModel,
     IContentItemFieldModel,
     IContentItemModel,
     IMultipleChoiceOptionModel,
@@ -47,7 +45,6 @@ export class ContentItemsImportService extends BaseService {
         const importedContentItems: IImportContentItemResult[] = [];
         const importedLanguageVariants: ICreateLanguageVariantResult[] = [];
         const assets: IImportAssetResult[] = [];
-        const processedAssetsUrls: string[] = [];
 
         return this.prepareAllContentItemsWithoutLanguageVariants(data.targetClient, data, prerequisities).pipe(
             flatMap((createdContentItems) => {
@@ -60,7 +57,6 @@ export class ContentItemsImportService extends BaseService {
                         targetClient: data.targetClient,
                         config: config,
                         contentItems: createdContentItems,
-                        processedAssetUrls: processedAssetsUrls,
                         prerequisities: prerequisities
                     }).pipe(
                         map((importResult) => {
@@ -147,7 +143,6 @@ export class ContentItemsImportService extends BaseService {
             contentItem: IContentItemModel,
             targetClient: IContentManagementClient,
             config: IImportConfig,
-            processedAssetUrls: string[],
             contentItems: IImportContentItemResult[],
             prerequisities: IContentItemImportPrerequisities
         }
@@ -174,10 +169,11 @@ export class ContentItemsImportService extends BaseService {
             const element = data.contentItem.elements[elementCodename];
             if (element.type) {
                 if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                    obs.push(...this.createAssets(data.assetsFromFile, data.contentItem, element as IAssetFieldModel, data.targetClient, data.config, data.processedAssetUrls).map(
+                    obs.push(...this.createAssets(data.assetsFromFile, data.contentItem, element as IAssetFieldModel, data.targetClient, data.config).map(
                         m => m.pipe(map((assetResponse) => {
                             contentItemWithAssetsResult.assetImportResult.push({
-                                importedItem: assetResponse.data
+                                importedItem: assetResponse.importedItem,
+                                embeddedAsset: assetResponse.embeddedAsset
                             });
                         })
                         ))
@@ -204,11 +200,6 @@ export class ContentItemsImportService extends BaseService {
         return finalObs.pipe(
             flatMap((response) => {
                 const createdContentItem = response.importedContentItem;
-                const assets = response.assetImportResult.map(m => {
-                    return <IImportAssetResult>{
-                        importedItem: m.importedItem
-                    }
-                });
 
                 if (!data.contentItem.system.language) {
                     throw Error(`Invalid language for item '${data.contentItem.system.language}'`);
@@ -217,7 +208,7 @@ export class ContentItemsImportService extends BaseService {
                 return data.targetClient.upsertLanguageVariant()
                     .byItemCodename(createdContentItem.codename)
                     .byLanguageCodename(data.contentItem.system.language)
-                    .withElementCodenames(this.getElements(data.contentItem, assets, data.prerequisities))
+                    .withElementCodenames(this.getElements(data.contentItem, response.assetImportResult, data.prerequisities))
                     .toObservable();
             }),
             map(response => {
@@ -239,45 +230,52 @@ export class ContentItemsImportService extends BaseService {
         );
     }
 
-    private getAssetBlobFromUrl(asset: IAssetModel): Observable<IGetAssetData> {
+    private getAssetBlobFromUrl(url: string): Observable<IGetAssetData> {
         return from(new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', asset.url);
+            xhr.open('GET', url);
             xhr.responseType = 'blob';
             xhr.onload = () => {
                 resolve({
                     blob: xhr.response,
-                    asset: asset
                 });
             }
             xhr.send();
         })) as Observable<IGetAssetData>;
     }
 
-    private createAssets(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig, processedAssetsUrls: string[]): Observable<AssetResponses.AddAssetResponse>[] {
-        const obs: Observable<AssetResponses.AddAssetResponse>[] = [];
+    private createAssets(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<IImportAssetResult>[] {
+        const obs: Observable<IImportAssetResult>[] = [];
         const assetsToCreateObs: Observable<IGetAssetData>[] = [];
 
         if (assetsFromFile.length > 0) {
             // create assets from file
             const assetsForContentItem = assetsFromFile.filter(m => m.embeddedAsset.contentItemCodename === contentItem.system.codename && m.embeddedAsset.languageCodename === contentItem.system.language);
             for (const assetFromFile of assetsForContentItem) {
-                if (!processedAssetsUrls.includes(assetFromFile.embeddedAsset.asset.url)) {
-                    assetsToCreateObs.push(of(<IGetAssetData>{
-                        asset: assetFromFile.embeddedAsset.asset,
-                        blob: assetFromFile.data
-                    }));
-                    processedAssetsUrls.push(assetFromFile.embeddedAsset.asset.url);
-                }
+                assetsToCreateObs.push(of(<IGetAssetData>{
+                    embeddedAsset: assetFromFile.embeddedAsset,
+                    blob: assetFromFile.data
+                }));
+
             }
         } else {
             // create assets from urls from projects directly
             for (const asset of assetField.value) {
                 // filter already processed urls to avoid duplicates   
-                if (!processedAssetsUrls.includes(asset.url)) {
-                    assetsToCreateObs.push(this.getAssetBlobFromUrl(asset));
-                    processedAssetsUrls.push(asset.url);
-                }
+                assetsToCreateObs.push(this.getAssetBlobFromUrl(asset.url).pipe(
+                    map(response => {
+                        return <IGetAssetData>{
+                            blob: response.blob,
+                            embeddedAsset: {
+                                asset: asset,
+                                contentItemCodename: contentItem.system.codename,
+                                contentItemId: contentItem.system.id,
+                                fieldCodename: assetField.name,
+                                languageCodename: contentItem.system.language
+                            }
+                        }
+                    })
+                ));
             }
         }
 
@@ -286,16 +284,16 @@ export class ContentItemsImportService extends BaseService {
                 assetObs.pipe(
                     delay(this.cmRequestDelay),
                     flatMap(data => {
-                        const asset: FieldModels.AssetModel = data.asset;
-                        const contentLength = data.asset.size;
-                        const contentType = data.asset.type;
+                        const asset: FieldModels.AssetModel = data.embeddedAsset.asset;
+                        const contentLength = asset.size;
+                        const contentType = asset.type;
                         const fileBinary = data.blob;
 
                         return targetClient.uploadBinaryFile()
                             .withData({
                                 binaryData: fileBinary,
-                                contentLength: contentLength,
                                 contentType: contentType,
+                                contentLength: contentLength,
                                 filename: asset.name
                             }).toObservable().pipe(
                                 delay(this.cmRequestDelay),
@@ -315,7 +313,7 @@ export class ContentItemsImportService extends BaseService {
                                             id: response.data.id,
                                             type: response.data.type
                                         },
-                                        externalId: asset.url,
+                                        // externalId: asset.url,
                                     }).toObservable()
                                 }),
                                 map((response) => {
@@ -325,7 +323,10 @@ export class ContentItemsImportService extends BaseService {
                                         action: 'Add asset',
                                         name: `[${response.data.type}] - ${response.data.id}`
                                     });
-                                    return response;
+                                    return <IImportAssetResult>{
+                                        importedItem: response.data,
+                                        embeddedAsset: data.embeddedAsset
+                                    };
                                 })
                             )
                     }
@@ -341,7 +342,7 @@ export class ContentItemsImportService extends BaseService {
         return html.replace(new RegExp('<br>', 'g'), '');
     }
 
-    private mapElementValue(field: IContentItemFieldModel, assets: IImportAssetResult[]): any {
+    private mapElementValue(contentItem: IContentItemModel, field: IContentItemFieldModel, importedAssets: IImportAssetResult[]): any {
         if (field.type.toLowerCase() === FieldType.ModularContent.toLowerCase()) {
             const linkedItems = field.value as string[];
             return linkedItems.map(m => <SharedContracts.IReferenceObjectContract>{
@@ -372,16 +373,15 @@ export class ContentItemsImportService extends BaseService {
 
         if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
             const assetIds: SharedContracts.IReferenceObjectContract[] = [];
-            const assetField = field as IAssetFieldModel;
+            const fieldAssets = importedAssets.filter(m =>
+                m.embeddedAsset.fieldCodename === field.name);
 
-            for (const asset of assetField.value) {
-                const newAssetResult = assets.find(m => m.importedItem.externalId === asset.url);
-                if (newAssetResult) {
-                    assetIds.push({
-                        id: newAssetResult.importedItem.id
-                    });
-                }
+            for (const fieldAsset of fieldAssets) {
+                assetIds.push({
+                    id: fieldAsset.importedItem.id
+                });
             }
+
             return assetIds;
         }
 
@@ -391,7 +391,6 @@ export class ContentItemsImportService extends BaseService {
     private getElements(contentItem: IContentItemModel, assets: IImportAssetResult[], prerequisities: IContentItemImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {
         const contentItemElements: LanguageVariantModels.ILanguageVariantElementCodename[] = [];
         const contentItemElementCodenames = Object.keys(contentItem.elements);
-
         const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.codename === contentItem.system.type);
 
         if (!candidateContentType) {
@@ -424,7 +423,7 @@ export class ContentItemsImportService extends BaseService {
 
             contentItemElements.push({
                 codename: importedElement.codename,
-                value: this.mapElementValue(contentItem.elements[elementCodename], assets)
+                value: this.mapElementValue(contentItem, contentItem.elements[elementCodename], assets)
             });
         }
 
