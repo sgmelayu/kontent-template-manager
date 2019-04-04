@@ -54,6 +54,7 @@ export class MigrateContentItemsComponent extends BaseComponent {
       targetProjectId: [environment.defaultProjects.targetProjectId, Validators.required],
       languages: [environment.defaultProjects.languages],
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
+      sourceProjectCmApiKey: [environment.defaultProjects.sourceProjectApiKey, Validators.required],
     });
   }
 
@@ -70,6 +71,7 @@ export class MigrateContentItemsComponent extends BaseComponent {
     const sourceProjectId = this.formGroup.controls['sourceProjectId'].value;
     const targetProjectId = this.formGroup.controls['targetProjectId'].value;
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
+    const sourceProjectCmApiKey = this.formGroup.controls['sourceProjectCmApiKey'].value;
     const languages = this.parsedLanguages;
 
     super.startLoading();
@@ -78,7 +80,8 @@ export class MigrateContentItemsComponent extends BaseComponent {
       languages: languages,
       sourceProjectId: sourceProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
-      targetProjectId: targetProjectId
+      targetProjectId: targetProjectId,
+      sourceProjectCmApiKey: sourceProjectCmApiKey
     }).pipe(
 
       map((importResult) => {

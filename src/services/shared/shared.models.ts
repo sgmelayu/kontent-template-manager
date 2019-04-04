@@ -26,18 +26,41 @@ export interface IContentTypeModel {
 export interface ICMAssetModel {
     id: string;
     fileName: string;
-    title: string | null;
+    title?: string;
     type: string;
     externalId?: string;
+    binaryData: Blob;
+
+    deliveryUrl: string;
 }
 
 export interface IContentTypeElementModel {
     [key: string]: any;
     codename: string;
-    type: string;
+    id: string;
+    type: ElementType;
     name?: string;
     taxonomyGroup?: string;
     options: IElementOptionModel[];
+    mode?: ElementMode;
+}
+
+export enum ElementMode {
+    single = 'single',
+    multiple = 'multiple'
+}
+export enum ElementType {
+    text = 'text',
+    richText = 'rich_text',
+    number = 'number',
+    multipleChoice = 'multiple_choice',
+    dateTime = 'date_time',
+    asset = 'asset',
+    modularContent = 'modular_content',
+    taxonomy = 'taxonomy',
+    urlSlug = 'url_slug',
+    guidelines = 'guidelines',
+    snippet = 'snippet'
 }
 
 export interface IElementOptionModel {
@@ -101,7 +124,15 @@ export interface IReferenceModel {
 
 export interface ILanguageVariantModel {
     item: IReferenceModel;
-    language: IReferenceModel
+    language: IReferenceModel;
+    elements: IContentItemElement[];
+    lastModified: Date;
+}
+
+export interface IContentItemElement {
+    element: IReferenceModel;
+    value: string | number | IReferenceModel[];
+    elementModel: IContentTypeElementModel;
 }
 
 export interface IFieldModel {

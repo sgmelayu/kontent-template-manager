@@ -1,10 +1,13 @@
-import { IEmbeddedAsset } from '../shared/shared.models';
+import { IEmbeddedAsset, ICMAssetModel } from '../shared/shared.models';
 
 export interface IExportJsonResult {
     contentTypes: string;
     contentItems: string;
     taxonomies: string;
-    assets: IEmbeddedAsset[];
+    assets: string;
+    languageVariants: string;
+
+    assetModels: ICMAssetModel[];
 }
 
 

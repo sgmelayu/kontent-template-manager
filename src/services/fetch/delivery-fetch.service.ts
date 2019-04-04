@@ -16,6 +16,7 @@ import { IAssetModel, IContentItemModel, IContentTypeModel, IEmbeddedAsset, ITax
 @Injectable()
 export class DeliveryFetchService {
 
+    /*
     getAllTypes(projectId: string, allTypes: IContentTypeModel[], nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
@@ -110,9 +111,7 @@ export class DeliveryFetchService {
         }, []);
     }
 
-    /**
-     * This is required because if rich text of item contains components, they are not fetched by standard delivery and need to be added from given response
-     */
+
     private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<ContentItem>, contentItems: IContentItemModel[]): void {
         for (const linkedItemCodename of linkedItemCodenames) {
             const existingItem = contentItems.find(m => m.system.codename === linkedItemCodename);
@@ -225,4 +224,5 @@ export class DeliveryFetchService {
 
         return assets;
     }
+    */
 }

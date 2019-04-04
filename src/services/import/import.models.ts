@@ -12,6 +12,8 @@ import {
     IEmbeddedAsset,
     ILanguageVariantModel,
     ITaxonomyModel,
+    ISlimContentItemModel,
+    ICMAssetModel,
 } from '../shared/shared.models';
 
 export interface IImportFromFileConfig {
@@ -20,12 +22,14 @@ export interface IImportFromFileConfig {
 }
 
 export interface IImportFromProjectConfig {
-    languages: string[],
+    languages: string[];
     targetProjectId: string;
     targetProjectCmApiKey: string;
     sourceProjectId: string;
+    sourceProjectCmApiKey: string;
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface IImportConfig {
 }
 
@@ -38,8 +42,14 @@ export interface IContentItemImportPrerequisities {
     contentTypes: IImportContentTypeResult[];
 }
 
+export interface ILanguageVariantsImportPrerequisities {
+    contentItems: IImportContentItemResult[];
+    taxonomies: IImportTaxonomyResult[];
+    contentTypes: IImportContentTypeResult[];
+}
+
 export interface IImportContentItemResult {
-    originalItem: IContentItemModel;
+    originalItem: ISlimContentItemModel;
     importedItem: ContentItemModels.ContentItem;
 }
 
@@ -55,28 +65,21 @@ export interface IImportTaxonomyResult {
 
 export interface IImportAssetResult {
     importedItem: AssetModels.Asset;
-    embeddedAsset: IEmbeddedAsset;
+    originalItem: ICMAssetModel;
 }
 
-export interface IImportContentItemsResult {
-    contentItems: IImportContentItemResult[];
-    languageVariants: ICreateLanguageVariantResult[];
-    assets: IImportAssetResult[];
+export interface IImportLanguageVariantsResult {
+    importedItem: LanguageVariantModels.ContentItemLanguageVariant;
+    originalItem: ILanguageVariantModel;
 }
 
 export interface IImportResult {
     importedContentTypes: IImportContentTypeResult[];
     importedContentItems: IImportContentItemResult[];
-    importedLanguageVariants: ICreateLanguageVariantResult[],
+    importedLanguageVariants: IImportLanguageVariantsResult[];
     importedTaxonomies: IImportTaxonomyResult[];
     publishedItems: IPublishItemRequest[];
-    assets: IImportAssetResult[];
-}
-
-export interface ICreateLanguageVariantResult {
-    languageVariant: ILanguageVariantModel;
-    assets: IImportAssetResult[];
-    languageCodename: string;
+    importedAssets: IImportAssetResult[];
 }
 
 export interface ICreateContentItemWithAssetsResult {
@@ -86,19 +89,22 @@ export interface ICreateContentItemWithAssetsResult {
 
 export interface IPublishItemRequest {
     itemId: string;
-    languageCodename: string;
+    languageId: string;
 }
 
 export interface IAssetFromFile {
     data: Blob;
-    embeddedAsset: IEmbeddedAsset;
+    embeddedAsset: ICMAssetModel;
 }
 
 export interface IImportData {
+    targetProjectId: string;
     targetClient: IContentManagementClient;
     contentTypes: IContentTypeModel[];
-    contentItems: IContentItemModel[];
+    contentItems: ISlimContentItemModel[];
+    languageVariants: ILanguageVariantModel[];
     taxonomies: ITaxonomyModel[];
+    assets: ICMAssetModel[];
     assetsFromFile: IAssetFromFile[];
 }
 
@@ -110,5 +116,5 @@ export interface IMigrateContentItemsData {
 
 export interface IGetAssetData {
     blob: Blob;
-    embeddedAsset: IEmbeddedAsset;
+    asset: ICMAssetModel;
 }

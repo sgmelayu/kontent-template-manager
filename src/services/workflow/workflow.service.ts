@@ -23,7 +23,7 @@ export class WorkflowService extends BaseService {
             obs.push(
                 client.publishOrScheduleLanguageVariant()
                     .byItemId(item.itemId)
-                    .byLanguageCodename(item.languageCodename)
+                    .byLanguageId(item.languageId)
                     .toObservable()
                     .pipe(
                         map(() => {
@@ -31,7 +31,7 @@ export class WorkflowService extends BaseService {
                                 item: item.itemId,
                                 status: 'published',
                                 action: 'Publish',
-                                name: `${item.itemId} [${item.languageCodename}]`
+                                name: `${item.itemId} [${item.languageId}]`
                             });
                         })
                     )

@@ -6,7 +6,7 @@
       "attribute",
       [
         "app",
-        "lib",
+        "lib"
       ],
       "camelCase"
     ],
@@ -15,7 +15,7 @@
       "element",
       [
         "app",
-        "lib",
+        "lib"
       ],
       "kebab-case"
     ]

@@ -8,16 +8,21 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { observableHelper } from '../../utilities';
+import { BaseService } from '../base-service';
 import {
     ICMAssetModel,
+    IContentItemElement,
     IContentTypeElementModel,
     IContentTypeModel,
+    ILanguageVariantModel,
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
 
 @Injectable()
-export class CmFetchService {
+export class CmFetchService extends BaseService {
+
 
     getAllContentItems(projectId: string, apiKey: string, contentItems: ISlimContentItemModel[], nextPageUrl?: string): Observable<ISlimContentItemModel[]> {
         const query = this.getContentManagementClient(
@@ -36,14 +41,14 @@ export class CmFetchService {
             .pipe(
                 map(response => {
                     contentItems.push(...response.data.items.map(m => {
-                        return <ISlimContentItemModel>{
+                        return <ISlimContentItemModel> {
                             codename: m.codename,
                             externalId: m.externalId,
                             id: m.id,
                             name: m.name,
                             sitemapLocations: m.sitemapLocations,
                             type: m.type
-                        }
+                        };
                     }));
 
                     if (response.data.pagination.nextPage) {
@@ -52,6 +57,68 @@ export class CmFetchService {
                     return contentItems;
                 })
             );
+    }
+
+    getLanguageVariantsForContentItems(projectId: string, apiKey: string, prerequisities: {
+        contentItems: ISlimContentItemModel[],
+        contentTypes: IContentTypeModel[],
+    }): Observable<ILanguageVariantModel[]> {
+        const client = this.getContentManagementClient(
+            {
+                projectId: projectId,
+                apiKey: apiKey
+            }
+        );
+
+        const languageVariants: ILanguageVariantModel[] = [];
+        const obs: Observable<void>[] = [];
+
+        for (const contentItem of prerequisities.contentItems) {
+            obs.push(client.listLanguageVariants()
+                .byItemCodename(contentItem.codename)
+                .toObservable()
+                .pipe(
+                    map(response => {
+                        languageVariants.push(...response.data.variants.map(variant => {
+                            return <ILanguageVariantModel> {
+                                elements: variant.elements.map(element => {
+                                    const contentType = prerequisities.contentTypes.find(s => s.system.id === contentItem.type.id);
+                                    if (!contentType) {
+                                        throw Error(`Could not find content type for content item '${contentItem.codename}'`);
+                                    }
+
+                                    const contentTypeElement = contentType.elements.find(s => s.id === element.element.id);
+
+                                    if (!contentTypeElement) {
+                                        throw Error(`Could not find content type element for content item '${contentItem.codename}' with id '${element.element.id}'`);
+                                    }
+
+                                    return <IContentItemElement> {
+                                        element: element.element,
+                                        value: element.value,
+                                        elementModel: contentTypeElement
+                                    };
+                                }),
+                                item: {
+                                    codename: variant.item.codename,
+                                    externalId: variant.item.externalId,
+                                    id: variant.item.id
+                                },
+                                language: {
+                                    codename: variant.language.codename,
+                                    externalId: variant.language.externalId,
+                                    id: variant.language.id
+                                },
+                                lastModified: variant.lastModified
+                            };
+                        }));
+                    })
+                ));
+        }
+
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(map(() => {
+            return languageVariants;
+        }));
     }
 
     getAllAssets(projectId: string, apiKey: string, assets: ICMAssetModel[], nextPageUrl?: string): Observable<ICMAssetModel[]> {
@@ -71,12 +138,13 @@ export class CmFetchService {
             .pipe(
                 map(response => {
                     assets.push(...response.data.items.map(m => {
-                        return <ICMAssetModel>{
+                        return <ICMAssetModel> {
                             externalId: m.externalId,
                             fileName: m.fileName,
                             id: m.id,
                             title: m.title,
-                            type: m.type
+                            type: m.type,
+                            deliveryUrl: this.constructDeliveryAssetUrl(projectId, m.fileReference.id, m.fileName)
                         };
                     }));
 
@@ -115,7 +183,9 @@ export class CmFetchService {
                                     name: originalElement.name,
                                     options: [],
                                     taxonomyGroup: undefined,
-                                    type: originalElement.type
+                                    type: originalElement.type,
+                                    id: originalElement.id,
+                                    mode: undefined
                                 });
                                 processed = true;
                             }
@@ -126,6 +196,8 @@ export class CmFetchService {
                                     options: originalElement.options,
                                     taxonomyGroup: undefined,
                                     type: originalElement.type,
+                                    id: originalElement.id,
+                                    mode: originalElement.mode
                                 });
                                 processed = true;
                             }
@@ -136,7 +208,7 @@ export class CmFetchService {
 
                         });
 
-                        return <IContentTypeModel>{
+                        return <IContentTypeModel> {
                             system: {
                                 codename: m.codename,
                                 id: m.id,
@@ -144,7 +216,7 @@ export class CmFetchService {
                             },
                             elementsWithOriginalCodename: [],
                             elements: elements
-                        }
+                        };
                     }));
 
                     if (response.data.pagination.nextPage) {
@@ -168,10 +240,10 @@ export class CmFetchService {
             .pipe(
                 map(response => {
                     taxonomies.push(...response.data.map(m => {
-                        return <ITaxonomyModel>{
+                        return <ITaxonomyModel> {
                             system: m,
                             terms: m.terms
-                        }
+                        };
                     }));
 
                     return taxonomies;
@@ -182,4 +254,37 @@ export class CmFetchService {
     getContentManagementClient(config: IContentManagementClientConfig): IContentManagementClient {
         return new ContentManagementClient(config);
     }
+
+    private getDataCenterFromProject(projectId: string): 'EU' | 'US' | 'AU' {
+        const dataCenterIdentifier = projectId.substr(14, 2);
+
+        if (dataCenterIdentifier === '00') {
+            return 'US';
+        }
+
+        if (dataCenterIdentifier === '01') {
+            return 'EU';
+        }
+
+        if (dataCenterIdentifier === '02') {
+            return 'AU';
+        }
+
+        return 'US';
+    }
+
+    private constructDeliveryAssetUrl(projectId: string, fileId: string, assetFilename: string): string {
+        const dataCenter = this.getDataCenterFromProject(projectId);
+        let dataCenterIdentifier = 'us-01';
+
+        if (dataCenter === 'EU') {
+            dataCenterIdentifier = 'eu-01';
+        }
+        if (dataCenter === 'AU') {
+            dataCenterIdentifier = 'au-01';
+        }
+
+        return `https://assets-${dataCenterIdentifier}.kc-usercontent.com/${projectId}/${fileId}/${assetFilename}`;
+    }
+
 }

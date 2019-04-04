@@ -7,64 +7,81 @@ import { flatMap, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { BaseService } from '../base-service';
-import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
+import { CmFetchService } from '../fetch/cm-fetch.service';
+import { IContentTypeModel } from '../shared/shared.models';
 import { IExportJsonResult } from './export.models';
 
 @Injectable()
 export class ExportService extends BaseService {
 
     constructor(
-        private deliveryFetchService: DeliveryFetchService
+        private cmFetchService: CmFetchService
     ) {
         super();
     }
 
-    prepareAndDownloadPackage(projectId: string, languageCodenames: string[]): Observable<IExportJsonResult> {
+    prepareAndDownloadPackage(projectId: string, projectApiKey: string, languageCodenames: string[]): Observable<IExportJsonResult> {
+        const contentTypes: IContentTypeModel[] = [];
         const result: IExportJsonResult = {
             contentItems: '',
             contentTypes: '',
             taxonomies: '',
-            assets: []
+            assets: '',
+            languageVariants: '',
+            assetModels: []
         };
 
-        return this.deliveryFetchService.getAllTypes(projectId, []).pipe(
+        return this.cmFetchService.getAllTypes(projectId, projectApiKey, []).pipe(
             flatMap(types => {
                 result.contentTypes = JSON.stringify(types);
+                contentTypes.push(...types);
 
-                return this.deliveryFetchService.getAllContentItems(projectId, languageCodenames);
+                return this.cmFetchService.getAllContentItems(projectId, projectApiKey, []);
             }),
             flatMap(contentItems => {
                 result.contentItems = JSON.stringify(contentItems);
 
-                for (const contentItem of contentItems) {
-                    result.assets.push(...contentItem.assets);
-                }
-                return this.deliveryFetchService.getAllTaxonomies(projectId, []);
+                return this.cmFetchService.getLanguageVariantsForContentItems(projectId, projectApiKey, {
+                    contentItems: contentItems,
+                    contentTypes: contentTypes
+                });
             }),
-            map(taxonomies => {
+            flatMap(languageVariants => {
+                result.languageVariants = JSON.stringify(languageVariants);
+
+                return this.cmFetchService.getAllTaxonomies(projectId, projectApiKey, []);
+            }),
+            flatMap(taxonomies => {
                 result.taxonomies = JSON.stringify(taxonomies);
+
+                return this.cmFetchService.getAllAssets(projectId, projectApiKey, []);
+            }),
+            map(assets => {
+                result.assets = JSON.stringify(assets);
+                result.assetModels.push(...assets);
 
                 return result;
             })
-        )
+        );
     }
 
     createAndDownloadZipFile(projectId: string, data: IExportJsonResult, callback: (() => void)): void {
-        var zip = new JSZip();
+        const zip = new JSZip();
 
         zip.file(environment.export.filenames.contentTypes, data.contentTypes);
         zip.file(environment.export.filenames.contentItems, data.contentItems);
         zip.file(environment.export.filenames.taxonomies, data.taxonomies);
+        zip.file(environment.export.filenames.assets, data.assets);
+        zip.file(environment.export.filenames.languageVariants, data.languageVariants);
 
         const assetsFolder = zip.folder(environment.export.filenames.assetsFolder);
 
-        for (const embeddedAsset of data.assets) {
-            const assetItemSubfolder = assetsFolder.folder(embeddedAsset.contentItemCodename);
-            const assetLanguageSubfolder = assetItemSubfolder.folder(embeddedAsset.languageCodename);
-            const assetFieldSubfolder = assetLanguageSubfolder.folder(embeddedAsset.fieldCodename);
-            assetFieldSubfolder.file(
-                embeddedAsset.asset.name,
-                this.urlToPromise(embeddedAsset.asset.url),
+        for (const asset of data.assetModels) {
+            const assetSubFolder = assetsFolder.folder(asset.id);
+            const assetFilename = asset.fileName;
+            assetSubFolder.file(
+                assetFilename,
+                this.urlToPromise(asset.deliveryUrl),
                 {
                     binary: true
                 });
@@ -77,8 +94,8 @@ export class ExportService extends BaseService {
     }
 
     private urlToPromise(url: string): Promise<any> {
-        return new Promise(function (resolve, reject) {
-            JSZipUtils.getBinaryContent(url, function (err: any, data: any) {
+        return new Promise((resolve, reject) => {
+            JSZipUtils.getBinaryContent(url, (err: any, data: any) => {
                 if (err) {
                     reject(err);
                 } else {
