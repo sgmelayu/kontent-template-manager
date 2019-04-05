@@ -38,7 +38,7 @@ import { LanguageVariantsImportService } from './types/language-variants-import.
 import { TaxonomiesImportService } from './types/taxonomies-import.service';
 
 @Injectable()
-export class ImportService {
+export class ImportwithCMService {
 
     constructor(
         private contentTypesImportService: ContentTypesImportService,
@@ -227,19 +227,18 @@ export class ImportService {
                     })
                 );
             }),
-            /*
             flatMap(() => {
                 return this.languageVariantsImportService.importLanguageVariants(data.targetClient, data.languageVariants, {
                     contentTypes: result.importedContentTypes,
                     taxonomies: result.importedTaxonomies,
-                    contentItems: result.importedContentItems
+                    contentItems: result.importedContentItems,
+                    assets: result.importedAssets
                 }, config).pipe(
                     map((response) => {
                         result.importedLanguageVariants = response;
                     })
                 )
             }),
-            */
             flatMap(() => {
                 return this.workflowService.publishContentItems(result.importedLanguageVariants.map(languageVariantResult => {
                     if (!languageVariantResult.importedItem.item.id) {

@@ -6,14 +6,12 @@ import {
 } from 'kentico-cloud-content-management';
 
 import {
-    IAssetModel,
+    ICMAssetModel,
     IContentItemModel,
     IContentTypeModel,
-    IEmbeddedAsset,
     ILanguageVariantModel,
-    ITaxonomyModel,
     ISlimContentItemModel,
-    ICMAssetModel,
+    ITaxonomyModel,
 } from '../shared/shared.models';
 
 export interface IImportFromFileConfig {
@@ -43,6 +41,7 @@ export interface IContentItemImportPrerequisities {
 }
 
 export interface ILanguageVariantsImportPrerequisities {
+    assets: IImportAssetResult[];
     contentItems: IImportContentItemResult[];
     taxonomies: IImportTaxonomyResult[];
     contentTypes: IImportContentTypeResult[];
@@ -80,11 +79,6 @@ export interface IImportResult {
     importedTaxonomies: IImportTaxonomyResult[];
     publishedItems: IPublishItemRequest[];
     importedAssets: IImportAssetResult[];
-}
-
-export interface ICreateContentItemWithAssetsResult {
-    importedContentItem: ContentItemModels.ContentItem;
-    assetImportResult: IImportAssetResult[];
 }
 
 export interface IPublishItemRequest {

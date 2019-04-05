@@ -16,7 +16,6 @@ import { IAssetModel, IContentItemModel, IContentTypeModel, IEmbeddedAsset, ITax
 @Injectable()
 export class DeliveryFetchService {
 
-    /*
     getAllTypes(projectId: string, allTypes: IContentTypeModel[], nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
@@ -32,9 +31,14 @@ export class DeliveryFetchService {
                 map(response => {
                     allTypes.push(...response.types.map(m => {
                         return <IContentTypeModel>{
+
                             elements: m.elements,
-                            system: m.system,
-                            elementsWithOriginalCodename: []
+                            system: {
+                                codename: m.system.id,
+                                id: m.system.id,
+                                name: m.system.name
+                            }
+
                         }
                     }));
 
@@ -98,6 +102,25 @@ export class DeliveryFetchService {
                 return this.filterIdenticalContentItems(contentItems);
             })
         )
+    }
+
+    getContentItemByCodename(projectId: string, codename: string): Observable<IContentItemModel> {
+        return this.getDeliveryClient({
+            projectId: projectId
+        })
+            .item(codename)
+            .toObservable().pipe(
+                map(response => {
+                    const item = response.item;
+
+                    return <IContentItemModel>{
+                        elements: item.elements,
+                        system: item.system,
+                        assets: this.extractAssets(item),
+                        linkedItemCodenames: this.extractLinkedItemCodenames(item)
+                    };
+                })
+            )
     }
 
     getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
@@ -224,5 +247,4 @@ export class DeliveryFetchService {
 
         return assets;
     }
-    */
 }

@@ -19,10 +19,16 @@ import {
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
+import { DeliveryFetchService } from './delivery-fetch.service';
 
 @Injectable()
 export class CmFetchService extends BaseService {
 
+    constructor(
+        private deliveryFetchService: DeliveryFetchService
+    ) {
+        super()
+    }
 
     getAllContentItems(projectId: string, apiKey: string, contentItems: ISlimContentItemModel[], nextPageUrl?: string): Observable<ISlimContentItemModel[]> {
         const query = this.getContentManagementClient(
@@ -74,7 +80,9 @@ export class CmFetchService extends BaseService {
         const obs: Observable<void>[] = [];
 
         for (const contentItem of prerequisities.contentItems) {
-            obs.push(client.listLanguageVariants()
+            obs.push(
+
+                client.listLanguageVariants()
                 .byItemCodename(contentItem.codename)
                 .toObservable()
                 .pipe(
@@ -109,7 +117,8 @@ export class CmFetchService extends BaseService {
                                     externalId: variant.language.externalId,
                                     id: variant.language.id
                                 },
-                                lastModified: variant.lastModified
+                                lastModified: variant.lastModified,
+                                languageCodename: ''
                             };
                         }));
                     })

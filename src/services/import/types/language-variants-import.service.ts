@@ -1,35 +1,27 @@
 import { Injectable } from '@angular/core';
-import {
-    ContentItemResponses,
-    IContentManagementClient,
-    LanguageVariantModels,
-    SharedContracts,
-} from 'kentico-cloud-content-management';
-import { FieldModels, FieldType } from 'kentico-cloud-delivery';
-import { from, Observable, of } from 'rxjs';
-import { delay, flatMap, map } from 'rxjs/operators';
+import { IContentManagementClient, LanguageVariantModels, SharedContracts } from 'kentico-cloud-content-management';
+import { FieldType } from 'kentico-cloud-delivery';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { ProcessingService } from '../../processing/processing.service';
 import {
-    IAssetFieldModel,
     IContentItemFieldModel,
     IContentItemModel,
-    IMultipleChoiceOptionModel,
     ILanguageVariantModel,
+    IMultipleChoiceOptionModel,
+    ElementType,
+    IContentItemElement,
 } from '../../shared/shared.models';
 import {
-    IAssetFromFile,
-    IContentItemImportPrerequisities,
-    ICreateContentItemWithAssetsResult as IContentItemWithAssetsResult,
-    IGetAssetData,
     IImportAssetResult,
     IImportConfig,
-    IImportContentItemResult,
     IImportLanguageVariantsResult,
-    IImportData,
     ILanguageVariantsImportPrerequisities,
+    IImportContentItemResult,
+    IImportContentTypeResult,
 } from '../import.models';
 
 @Injectable()
@@ -41,316 +33,190 @@ export class LanguageVariantsImportService extends BaseService {
         super();
     }
 
-    /*
-    importLanguageVariants(targetClient: IContentManagementClient, languageVariants: ILanguageVariantModel[], prerequisities: ILanguageVariantsImportPrerequisities, config: IImportConfig): Observable<IImportLanguageVariantsResult[]> {
+
+    importLanguageVariants(
+        targetClient: IContentManagementClient,
+        languageVariants: ILanguageVariantModel[],
+        prerequisities: ILanguageVariantsImportPrerequisities,
+        config: IImportConfig): Observable<IImportLanguageVariantsResult[]> {
+
         const obs: Observable<void>[] = [];
-        const importedLanguageVariants: ICreateLanguageVariantResult[] = [];
-        const assets: IImportAssetResult[] = [];
+        const importedLanguageVariants: IImportLanguageVariantsResult[] = [];
 
-        return this.createLanguageVariants(targetClient, languageVariants, prerequisities).pipe(
-            flatMap((createdContentItems) => {
-                importedContentItems.push(...createdContentItems);
+        for (const languageVariant of languageVariants) {
+            obs.push(this.createLanguageVariants({
+                languageVariant: languageVariant,
+                targetClient: targetClient,
+                config: config,
+                prerequisities: prerequisities
+            }).pipe(
+                map((importResult) => {
+                    importedLanguageVariants.push(importResult);
+                })
+            ));
+        }
 
-                languageVariants.forEach(contentItem => {
-                    obs.push(this.createLanguageVariants({
-                        assetsFromFile: assetsFromFile,
-                        contentItem: contentItem,
-                        targetClient: targetClient,
-                        config: config,
-                        contentItems: createdContentItems,
-                        prerequisities: prerequisities
-                    }).pipe(
-                        map((importResult) => {
-                            importedLanguageVariants.push(importResult);
-                            assets.push(...importResult.assets);
-                        })
-                    ));
-                });
-
-                return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
-                    map(() => {
-                        return <IImportLanguageVariantsResult>{
-                            contentItems: importedContentItems,
-                            languageVariants: importedLanguageVariants,
-                            assets: assets,
-                        }
-                    })
-                );
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
+            map(() => {
+                return importedLanguageVariants;
             })
         );
     }
 
     private createLanguageVariants(
         data: {
-            assetsFromFile: IAssetFromFile[],
-            contentItem: IContentItemModel,
+            languageVariant: ILanguageVariantModel,
             targetClient: IContentManagementClient,
             config: IImportConfig,
-            contentItems: IImportContentItemResult[],
-            prerequisities: IContentItemImportPrerequisities
+            prerequisities: ILanguageVariantsImportPrerequisities
         }
 
-    ): Observable<ICreateLanguageVariantResult> {
-        const tempResult = {
-            assets: <IImportAssetResult[]>[],
-            languageVariant: <LanguageVariantModels.ContentItemLanguageVariant | undefined>undefined
-        };
-
-        const candidateContentItemForLanguageVariant = data.contentItems.find(m => m.originalItem.system.codename === data.contentItem.system.codename);
+    ): Observable<IImportLanguageVariantsResult> {
+        const candidateContentItemForLanguageVariant = data.prerequisities.contentItems.find(m => m.originalItem.id === data.languageVariant.item.id);
 
         if (!candidateContentItemForLanguageVariant) {
-            throw Error(`Cannot find candidate content item for langugage variant '${data.contentItem.system.codename}' `);
-        }
-        const contentItemWithAssetsResult: IContentItemWithAssetsResult = {
-            assetImportResult: [],
-            importedContentItem: candidateContentItemForLanguageVariant.importedItem
-        };
-
-        const obs: Observable<any>[] = [];
-        const elementKeys = Object.keys(data.contentItem.elements);
-        for (const elementCodename of elementKeys) {
-            const element = data.contentItem.elements[elementCodename];
-            if (element.type) {
-                if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                    obs.push(...this.createAssets(data.assetsFromFile, data.contentItem, element as IAssetFieldModel, data.targetClient, data.config).map(
-                        m => m.pipe(map((assetResponse) => {
-                            contentItemWithAssetsResult.assetImportResult.push({
-                                importedItem: assetResponse.importedItem,
-                                originalItem: assetResponse.originalItem
-                            });
-                        })
-                        ))
-                    )
-                };
-            }
+            throw Error(`Cannot find candidate content item (parent) for language variant with id '${data.languageVariant.item.id}' `);
         }
 
-        let finalObs: Observable<IContentItemWithAssetsResult>;
+        const languageId = data.languageVariant.language.id;
 
-        if (obs.length === 0) {
-            finalObs = of(contentItemWithAssetsResult)
+        if (!languageId) {
+            throw Error(`Invalid language id for language variant '${data.languageVariant.item.id}'`);
         }
 
-        finalObs = observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(map(() => {
-            tempResult.assets.push(...contentItemWithAssetsResult.assetImportResult.map(m => {
-                return <IImportAssetResult>{
-                    importedItem: m.importedItem
-                }
-            }));
-            return contentItemWithAssetsResult;
-        }))
+        return data.targetClient.upsertLanguageVariant()
+            .byItemId(candidateContentItemForLanguageVariant.importedItem.id)
+            .byLanguageCodename(languageId)
+            .withElementCodenames(this.getElements(candidateContentItemForLanguageVariant, data.languageVariant, data.prerequisities))
+            .toObservable().pipe(
+                map(response => {
+                    this.processingService.addProcessedItem({
+                        item: data.languageVariant,
+                        status: 'imported',
+                        action: 'Add language variant',
+                        name: `${response.data.item.codename} [${response.data.language.codename}]`
+                    });
 
-        return finalObs.pipe(
-            flatMap((response) => {
-                const createdContentItem = response.importedContentItem;
-
-                if (!data.contentItem.system.language) {
-                    throw Error(`Invalid language for item '${data.contentItem.system.language}'`);
-                }
-
-                return data.targetClient.upsertLanguageVariant()
-                    .byItemCodename(createdContentItem.codename)
-                    .byLanguageCodename(data.contentItem.system.language)
-                    .withElementCodenames(this.getElements(data.contentItem, response.assetImportResult, data.prerequisities))
-                    .toObservable();
-            }),
-            map(response => {
-                this.processingService.addProcessedItem({
-                    item: data.contentItem,
-                    status: 'imported',
-                    action: 'Add language variant',
-                    name: `${data.contentItem.system.codename} [${data.contentItem.system.language}]`
-                });
-
-                tempResult.languageVariant = response.data;
-
-                return <ICreateLanguageVariantResult>{
-                    assets: tempResult.assets,
-                    languageVariant: tempResult.languageVariant,
-                    languageCodename: data.contentItem.system.language
-                };
-            })
-        );
-    }
-
-    private getAssetBlobFromUrl(url: string): Observable<IGetAssetData> {
-        return from(new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', url);
-            xhr.responseType = 'blob';
-            xhr.onload = () => {
-                resolve({
-                    blob: xhr.response,
-                });
-            }
-            xhr.send();
-        })) as Observable<IGetAssetData>;
-    }
-
-    private createAssets(assetsFromFile: IAssetFromFile[], contentItem: IContentItemModel, assetField: IAssetFieldModel, targetClient: IContentManagementClient, config: IImportConfig): Observable<IImportAssetResult>[] {
-        const obs: Observable<IImportAssetResult>[] = [];
-        const assetsToCreateObs: Observable<IGetAssetData>[] = [];
-
-        if (assetsFromFile.length > 0) {
-            // create assets from file
-            const assetsForContentItem = assetsFromFile.filter(m => m.embeddedAsset.contentItemCodename === contentItem.system.codename && m.embeddedAsset.languageCodename === contentItem.system.language);
-            for (const assetFromFile of assetsForContentItem) {
-                assetsToCreateObs.push(of(<IGetAssetData>{
-                    embeddedAsset: assetFromFile.embeddedAsset,
-                    blob: assetFromFile.data
-                }));
-
-            }
-        } else {
-            // create assets from urls from projects directly
-            for (const asset of assetField.value) {
-                // filter already processed urls to avoid duplicates   
-                assetsToCreateObs.push(this.getAssetBlobFromUrl(asset.url).pipe(
-                    map(response => {
-                        return <IGetAssetData>{
-                            blob: response.blob,
-                            embeddedAsset: {
-                                asset: asset,
-                                contentItemCodename: contentItem.system.codename,
-                                contentItemId: contentItem.system.id,
-                                fieldCodename: assetField.name,
-                                languageCodename: contentItem.system.language
-                            }
-                        }
-                    })
-                ));
-            }
-        }
-
-        for (const assetObs of assetsToCreateObs) {
-            obs.push(
-                assetObs.pipe(
-                    delay(this.cmRequestDelay),
-                    flatMap(data => {
-                        const asset: FieldModels.AssetModel = data.embeddedAsset.asset;
-                        const contentLength = asset.size;
-                        const contentType = asset.type;
-                        const fileBinary = data.blob;
-
-                        return targetClient.uploadBinaryFile()
-                            .withData({
-                                binaryData: fileBinary,
-                                contentType: contentType,
-                                contentLength: contentLength,
-                                filename: asset.name
-                            }).toObservable().pipe(
-                                delay(this.cmRequestDelay),
-                                flatMap(response => {
-
-                                    this.processingService.addProcessedItem({
-                                        item: contentItem,
-                                        status: 'imported',
-                                        action: 'Upload binary file',
-                                        name: `[${response.data.type}] - ${response.data.id}`
-                                    });
-
-                                    return targetClient.addAsset().withData({
-                                        title: asset.name,
-                                        descriptions: [],
-                                        fileReference: {
-                                            id: response.data.id,
-                                            type: response.data.type
-                                        },
-                                        // externalId: asset.url,
-                                    }).toObservable()
-                                }),
-                                map((response) => {
-                                    this.processingService.addProcessedItem({
-                                        item: contentItem,
-                                        status: 'imported',
-                                        action: 'Add asset',
-                                        name: `[${response.data.type}] - ${response.data.id}`
-                                    });
-                                    return <IImportAssetResult>{
-                                        importedItem: response.data,
-                                        originalItem: data.embeddedAsset
-                                    };
-                                })
-                            )
+                    return <IImportLanguageVariantsResult>{
+                        importedItem: response.data,
+                        originalItem: data.languageVariant
                     }
-                    )
-                ))
-        }
-
-        return obs;
+                })
+            )
     }
 
     private fixInvalidHtmlInRichTextField(html: string): string {
-        // because Kentico's sample project contains invalid values... 
+        // because sample project contains invalid html
         return html.replace(new RegExp('<br>', 'g'), '');
     }
 
-    private mapElementValue(contentItem: IContentItemModel, field: IContentItemFieldModel, importedAssets: IImportAssetResult[]): any {
-        if (field.type.toLowerCase() === FieldType.ModularContent.toLowerCase()) {
-            const linkedItems = field.value as string[];
-            return linkedItems.map(m => <SharedContracts.IReferenceObjectContract>{
-                codename: m
-            });
+    private mapElementValue(contentType: IImportContentTypeResult, languageVariant: ILanguageVariantModel, field: IContentItemElement, prerequisities: ILanguageVariantsImportPrerequisities): any {
+        if (field.elementModel.type === ElementType.modularContent) {
+            const currentLinkedItems = field.value as SharedContracts.IReferenceObjectContract[];
+            const newLinkedItems: SharedContracts.IReferenceObjectContract[] = [];
+
+            for (const currentLinkedItem of currentLinkedItems) {
+                const candidateLinkedItem = prerequisities.contentItems.find(m => m.originalItem.id === currentLinkedItem.id);
+
+                if (!candidateLinkedItem) {
+                    throw Error(`Cannot find linked item with id '${currentLinkedItem.id}'`);
+                }
+
+                newLinkedItems.push({
+                    id: candidateLinkedItem.importedItem.id
+                });
+            }
+
+           return newLinkedItems;
         }
 
         const value = field.value;
 
-        if (field.type.toLowerCase() === FieldType.RichText.toLowerCase()) {
-            return this.fixInvalidHtmlInRichTextField(field.value);
+        if (field.elementModel.type === ElementType.richText) {
+            return this.fixInvalidHtmlInRichTextField(field.value as string);
         }
 
-        if (field.type.toLowerCase() === FieldType.Taxonomy.toLowerCase()) {
-            const taxonomyField = field.value as IMultipleChoiceOptionModel[];
-            return taxonomyField.map(option => <SharedContracts.IReferenceObjectContract>{
-                codename: option.codename
-            });
-        }
+        if (field.elementModel.type === ElementType.taxonomy) {
+            const currentTaxonomies = field.value as SharedContracts.IReferenceObjectContract[];
+            const newTaxonomies: SharedContracts.IReferenceObjectContract[] = [];
 
-        if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
-            const multipleChoiceField = field.value as IMultipleChoiceOptionModel[];
+            for (const currentTaxonomy of currentTaxonomies) {
+                const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.id === currentTaxonomy.id);
 
-            return multipleChoiceField.map(option => <SharedContracts.IReferenceObjectContract>{
-                codename: option.codename
-            });
-        }
+                if (!candidateTaxonomy) {
+                    throw Error(`Cannot find taxonomy with id '${currentTaxonomy.id}'`);
+                }
 
-        if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-            const assetIds: SharedContracts.IReferenceObjectContract[] = [];
-            const fieldAssets = importedAssets.filter(m =>
-                m.originalItem.fieldCodename === field.name);
-
-            for (const fieldAsset of fieldAssets) {
-                assetIds.push({
-                    id: fieldAsset.importedItem.id
+                newTaxonomies.push({
+                    id: candidateTaxonomy.importedItem.system.id
                 });
             }
 
-            return assetIds;
+           return newTaxonomies;
+        }
+
+        if (field.elementModel.type === ElementType.multipleChoice) {
+            const currentOptions = field.value as SharedContracts.IReferenceObjectContract[];
+            const newOptions: SharedContracts.IReferenceObjectContract[] = [];
+
+            const originalElement = contentType.originalItem.elements.find(m => m.codename === field.elementModel.codename);
+            if (!originalElement) {
+                throw Error(`Invalid original element`);
+            }
+            console.log(field);
+            console.log(originalElement);
+
+            for (const currentOption of currentOptions) {
+                newOptions.push({
+                    id: currentOption.id
+                });
+            }
+
+           return newOptions;
+        }
+
+        if (field.elementModel.type === ElementType.asset) {
+            const currentAssets = field.value as SharedContracts.IReferenceObjectContract[];
+            const newAssets: SharedContracts.IReferenceObjectContract[] = [];
+
+            for (const currentAsset of currentAssets) {
+                const candidateAsset = prerequisities.assets.find(m => m.originalItem.id === currentAsset.id);
+
+                if (!candidateAsset) {
+                    throw Error(`Cannot find asset with id '${currentAsset}'`);
+                }
+
+                newAssets.push({
+                    id: candidateAsset.importedItem.id
+                });
+            }
+
+           return newAssets;
         }
 
         return value;
     }
 
-    private getElements(contentItem: IContentItemModel, assets: IImportAssetResult[], prerequisities: IContentItemImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {
+    private getElements(contentItem: IImportContentItemResult, languageVariant: ILanguageVariantModel, prerequisities: ILanguageVariantsImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {
         const contentItemElements: LanguageVariantModels.ILanguageVariantElementCodename[] = [];
-        const contentItemElementCodenames = Object.keys(contentItem.elements);
-        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.codename === contentItem.system.type);
+
+        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.id === contentItem.originalItem.type.id);
 
         if (!candidateContentType) {
-            throw Error(`Could not find candidate content type '${contentItem.system.type}'. This type is required by content item '${contentItem.system.codename}'`);
+            throw Error(`Could not find candidate content type '${contentItem.originalItem.type.id}'. This type is required by content item '${languageVariant.item.id}'`);
         }
 
         const originalElements = candidateContentType.originalItem.elements;
         const importedElements = candidateContentType.importedItem.elements;
 
-        for (const elementCodename of contentItemElementCodenames) {
-            const originalElement = originalElements.find(m => m.codename === elementCodename);
+        for (const elementData of languageVariant.elements) {
+            const originalElement = originalElements.find(m => m.codename === elementData.elementModel.codename);
 
             if (!originalElement) {
-                throw Error(`Cannot find element '${elementCodename}' in original elements`);
+                throw Error(`Cannot find element '${elementData.elementModel.codename}' in original elements`);
             }
 
-            const originalElementIndex = originalElements.findIndex(m => m.codename === elementCodename);
+            const originalElementIndex = originalElements.findIndex(m => m.codename === elementData.elementModel.codename);
 
             if (originalElementIndex === -1) {
                 throw Error(`Cannot find element with index '${originalElementIndex}' in original elements`);
@@ -366,11 +232,11 @@ export class LanguageVariantsImportService extends BaseService {
 
             contentItemElements.push({
                 codename: importedElement.codename,
-                value: this.mapElementValue(contentItem, contentItem.elements[elementCodename], assets)
+                value: this.mapElementValue(candidateContentType, languageVariant, elementData, prerequisities)
             });
         }
 
         return contentItemElements;
     }
-    */
+
 }

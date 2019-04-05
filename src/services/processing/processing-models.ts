@@ -1,8 +1,14 @@
-import { IContentItemModel, IContentTypeModel, ITaxonomyModel, ISlimContentItemModel } from '../shared/shared.models';
+import {
+    IContentItemModel,
+    IContentTypeModel,
+    ILanguageVariantModel,
+    ISlimContentItemModel,
+    ITaxonomyModel,
+} from '../shared/shared.models';
 
 export type ImportItemStatus = 'imported' | 'published' | 'deleted';
 
-export type ImportProcessedItemType = IContentItemModel | IContentTypeModel | ITaxonomyModel | ISlimContentItemModel | string;
+export type ImportProcessedItemType = IContentItemModel | IContentTypeModel | ITaxonomyModel | ISlimContentItemModel | string | ILanguageVariantModel;
 
 export interface IImportItem {
     item: ImportProcessedItemType;
