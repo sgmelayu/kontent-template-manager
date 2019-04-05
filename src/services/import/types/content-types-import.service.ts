@@ -12,7 +12,7 @@ import { delay, map } from 'rxjs/operators';
 import { observableHelper, stringHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { ProcessingService } from '../../processing/processing.service';
-import { IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
+import { ElementType, IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
 import { IContentTypeImportPrerequisities, IImportConfig, IImportContentTypeResult } from '../import.models';
 
 @Injectable()
@@ -45,33 +45,33 @@ export class ContentTypesImportService extends BaseService {
     }
 
     private mapElementType(element: IContentTypeElementModel): ElementModels.ElementType | undefined {
-        const type = element.type.toLowerCase();
+        const type = element.type;
 
-        if (type === FieldType.Text.toLowerCase()) {
+        if (type === ElementType.text) {
             return ElementModels.ElementType.text;
         }
-        if (type === FieldType.Number.toLowerCase()) {
+        if (type === ElementType.number) {
             return ElementModels.ElementType.number;
         }
-        if (type === FieldType.Asset.toLowerCase()) {
+        if (type === ElementType.asset) {
             return ElementModels.ElementType.asset;
         }
-        if (type === FieldType.DateTime.toLowerCase()) {
+        if (type === ElementType.dateTime) {
             return ElementModels.ElementType.dateTime;
         }
-        if (type === FieldType.RichText.toLowerCase()) {
+        if (type === ElementType.richText) {
             return ElementModels.ElementType.richText;
         }
-        if (type === FieldType.UrlSlug.toLowerCase()) {
+        if (type === ElementType.urlSlug) {
             return ElementModels.ElementType.urlSlug;
         }
-        if (type === FieldType.MultipleChoice.toLowerCase()) {
+        if (type === ElementType.multipleChoice) {
             return ElementModels.ElementType.multipleChoice;
         }
-        if (type === FieldType.ModularContent.toLowerCase()) {
+        if (type === ElementType.modularContent) {
             return ElementModels.ElementType.modularContent;
         }
-        if (type === FieldType.Taxonomy.toLowerCase()) {
+        if (type === ElementType.taxonomy) {
             return ElementModels.ElementType.taxonomy;
         }
 
@@ -89,17 +89,13 @@ export class ContentTypesImportService extends BaseService {
 
     private fixUrlSlugElem(elements: ContentTypeModels.IAddContentTypeElementData[]): void {
         for (const element of elements) {
-            if (element.type.toLowerCase() === FieldType.UrlSlug.toLowerCase()) {
-                const textElem = elements.find(m => m.type.toLowerCase() === FieldType.Text.toLowerCase());
-                if (textElem) {
-                    element.depends_on = {
-                        element: {
-                            external_id: textElem.external_id
-                        }
-                    }
-                } else {
-                    throw Error(`Could not get any depending element for url slug field`);
+            if (element.type === ElementType.urlSlug) {
+                const newDependsOn = element.depends_on;
+                if (newDependsOn) {
+                    element.depends_on = newDependsOn;
                 }
+            } else {
+                throw Error(`Could not get any depending element for url slug field`);
             }
         }
     }

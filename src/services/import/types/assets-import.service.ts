@@ -157,7 +157,6 @@ export class AssetsImportService extends BaseService {
                                 id: response.data.id,
                                 type: response.data.type
                             },
-                            // externalId: asset.url,
                         }).toObservable();
                     }),
                     map((response) => {
