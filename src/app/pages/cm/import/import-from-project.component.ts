@@ -54,7 +54,6 @@ export class ImportFromProjectComponent extends BaseComponent {
       targetProjectId: [environment.defaultProjects.targetProjectId, Validators.required],
       languages: [environment.defaultProjects.languages],
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
-      sourceProjectCmApiKey: [environment.defaultProjects.sourceProjectApiKey, Validators.required],
     });
   }
 
@@ -71,17 +70,15 @@ export class ImportFromProjectComponent extends BaseComponent {
     const sourceProjectId = this.formGroup.controls['sourceProjectId'].value;
     const targetProjectId = this.formGroup.controls['targetProjectId'].value;
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
-    const sourceProjectCmApiKey = this.formGroup.controls['sourceProjectCmApiKey'].value;
     const languages = this.parsedLanguages;
 
     super.startLoading();
 
-    super.subscribeToObservable(this.dependencies.importWithCMService.importFromProject({
+    super.subscribeToObservable(this.dependencies.importService.importFromProjectWithDeliveryApi({
       languages: languages,
       sourceProjectId: sourceProjectId,
       targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
-      sourceProjectCmApiKey: sourceProjectCmApiKey
     }).pipe(
 
       map((importResult) => {

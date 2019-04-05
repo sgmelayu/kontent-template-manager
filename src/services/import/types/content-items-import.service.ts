@@ -59,10 +59,9 @@ export class ContentItemsImportService extends BaseService {
         targetClient: IContentManagementClient,
         contentItem: ISlimContentItemModel,
         prerequisities: IContentItemImportPrerequisities): Observable<ContentItemResponses.AddContentItemResponse> {
-        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.id === contentItem.type.id);
-
+        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.codename === contentItem.typeCodename);
         if (!candidateContentType) {
-            throw Error(`Could not find candidate content type with id '${contentItem.type.id}'. This was required by '${contentItem.codename}' content item.`);
+            throw Error(`Could not find candidate content type '${contentItem.typeCodename}'. This was required by '${contentItem.codename}' content item.`);
         }
 
         return targetClient.addContentItem()

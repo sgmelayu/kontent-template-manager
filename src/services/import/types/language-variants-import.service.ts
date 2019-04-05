@@ -14,6 +14,8 @@ import {
     IMultipleChoiceOptionModel,
     ElementType,
     IContentItemElement,
+    IAssetElementValue,
+    IMultipleChoiceElementValue,
 } from '../../shared/shared.models';
 import {
     IImportAssetResult,
@@ -72,21 +74,21 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
     ): Observable<IImportLanguageVariantsResult> {
-        const candidateContentItemForLanguageVariant = data.prerequisities.contentItems.find(m => m.originalItem.id === data.languageVariant.item.id);
+        const candidateContentItemForLanguageVariant = data.prerequisities.contentItems.find(m => m.originalItem.codename === data.languageVariant.itemCodename);
 
         if (!candidateContentItemForLanguageVariant) {
-            throw Error(`Cannot find candidate content item (parent) for language variant with id '${data.languageVariant.item.id}' `);
+            throw Error(`Cannot find candidate content item (parent) for language variant with id '${data.languageVariant.itemCodename}' `);
         }
 
-        const languageId = data.languageVariant.language.id;
+        const languageCodename = data.languageVariant.languageCodename
 
-        if (!languageId) {
-            throw Error(`Invalid language id for language variant '${data.languageVariant.item.id}'`);
+        if (!languageCodename) {
+            throw Error(`Invalid language for language variant '${data.languageVariant.itemCodename}'`);
         }
 
         return data.targetClient.upsertLanguageVariant()
             .byItemId(candidateContentItemForLanguageVariant.importedItem.id)
-            .byLanguageCodename(languageId)
+            .byLanguageCodename(languageCodename)
             .withElementCodenames(this.getElements(candidateContentItemForLanguageVariant, data.languageVariant, data.prerequisities))
             .toObservable().pipe(
                 map(response => {
@@ -94,7 +96,7 @@ export class LanguageVariantsImportService extends BaseService {
                         item: data.languageVariant,
                         status: 'imported',
                         action: 'Add language variant',
-                        name: `${response.data.item.codename} [${response.data.language.codename}]`
+                        name: `${data.languageVariant.itemCodename} [${data.languageVariant.languageCodename}]`
                     });
 
                     return <IImportLanguageVariantsResult>{
@@ -112,18 +114,17 @@ export class LanguageVariantsImportService extends BaseService {
 
     private mapElementValue(contentType: IImportContentTypeResult, languageVariant: ILanguageVariantModel, field: IContentItemElement, prerequisities: ILanguageVariantsImportPrerequisities): any {
         if (field.elementModel.type === ElementType.modularContent) {
-            const currentLinkedItems = field.value as SharedContracts.IReferenceObjectContract[];
+            const linkedItemCodenames = field.value as string[];
             const newLinkedItems: SharedContracts.IReferenceObjectContract[] = [];
-
-            for (const currentLinkedItem of currentLinkedItems) {
-                const candidateLinkedItem = prerequisities.contentItems.find(m => m.originalItem.id === currentLinkedItem.id);
+            for (const currentLinkedItem of linkedItemCodenames) {
+                const candidateLinkedItem = prerequisities.contentItems.find(m => m.originalItem.codename === currentLinkedItem);
 
                 if (!candidateLinkedItem) {
-                    throw Error(`Cannot find linked item with id '${currentLinkedItem.id}'`);
+                    throw Error(`Cannot find linked item '${currentLinkedItem}'. This was requested by '${languageVariant.itemCodename}'`);
                 }
 
                 newLinkedItems.push({
-                    id: candidateLinkedItem.importedItem.id
+                    codename: candidateLinkedItem.importedItem.codename
                 });
             }
 
@@ -137,18 +138,18 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         if (field.elementModel.type === ElementType.taxonomy) {
-            const currentTaxonomies = field.value as SharedContracts.IReferenceObjectContract[];
+            const currentTaxonomies = field.value as string[];
             const newTaxonomies: SharedContracts.IReferenceObjectContract[] = [];
 
-            for (const currentTaxonomy of currentTaxonomies) {
-                const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.id === currentTaxonomy.id);
+            for (const currentTaxonomyCodename of currentTaxonomies) {
+                const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === currentTaxonomyCodename);
 
                 if (!candidateTaxonomy) {
-                    throw Error(`Cannot find taxonomy with id '${currentTaxonomy.id}'`);
+                    throw Error(`Cannot find taxonomy with id '${currentTaxonomyCodename}'`);
                 }
 
                 newTaxonomies.push({
-                    id: candidateTaxonomy.importedItem.system.id
+                    codename: candidateTaxonomy.importedItem.system.codename
                 });
             }
 
@@ -156,19 +157,17 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         if (field.elementModel.type === ElementType.multipleChoice) {
-            const currentOptions = field.value as SharedContracts.IReferenceObjectContract[];
+            const currentOptions = field.value as IMultipleChoiceElementValue[];
             const newOptions: SharedContracts.IReferenceObjectContract[] = [];
 
             const originalElement = contentType.originalItem.elements.find(m => m.codename === field.elementModel.codename);
             if (!originalElement) {
                 throw Error(`Invalid original element`);
             }
-            console.log(field);
-            console.log(originalElement);
 
             for (const currentOption of currentOptions) {
                 newOptions.push({
-                    id: currentOption.id
+                    codename: currentOption.codename
                 });
             }
 
@@ -176,14 +175,14 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         if (field.elementModel.type === ElementType.asset) {
-            const currentAssets = field.value as SharedContracts.IReferenceObjectContract[];
+            const currentAssets = field.value as IAssetElementValue[];
             const newAssets: SharedContracts.IReferenceObjectContract[] = [];
 
             for (const currentAsset of currentAssets) {
-                const candidateAsset = prerequisities.assets.find(m => m.originalItem.id === currentAsset.id);
+                const candidateAsset = prerequisities.assets.find(m => m.originalItem.deliveryUrl === currentAsset.url);
 
                 if (!candidateAsset) {
-                    throw Error(`Cannot find asset with id '${currentAsset}'`);
+                    throw Error(`Cannot find asset with url '${currentAsset.url}'`);
                 }
 
                 newAssets.push({
@@ -200,10 +199,10 @@ export class LanguageVariantsImportService extends BaseService {
     private getElements(contentItem: IImportContentItemResult, languageVariant: ILanguageVariantModel, prerequisities: ILanguageVariantsImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {
         const contentItemElements: LanguageVariantModels.ILanguageVariantElementCodename[] = [];
 
-        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.id === contentItem.originalItem.type.id);
+        const candidateContentType = prerequisities.contentTypes.find(m => m.originalItem.system.codename === contentItem.originalItem.typeCodename);
 
         if (!candidateContentType) {
-            throw Error(`Could not find candidate content type '${contentItem.originalItem.type.id}'. This type is required by content item '${languageVariant.item.id}'`);
+            throw Error(`Could not find candidate content type '${contentItem.originalItem.typeCodename}'. This type is required by content item '${languageVariant.itemCodename}'`);
         }
 
         const originalElements = candidateContentType.originalItem.elements;

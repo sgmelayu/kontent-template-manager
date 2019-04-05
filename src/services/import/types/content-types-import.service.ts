@@ -89,13 +89,28 @@ export class ContentTypesImportService extends BaseService {
 
     private fixUrlSlugElem(elements: ContentTypeModels.IAddContentTypeElementData[]): void {
         for (const element of elements) {
+            let dependsOn: ContentTypeModels.IAddContentTypeElementDependsOnData | undefined = undefined;
+
             if (element.type === ElementType.urlSlug) {
-                const newDependsOn = element.depends_on;
-                if (newDependsOn) {
-                    element.depends_on = newDependsOn;
+                if (element.depends_on) {
+                    dependsOn = element.depends_on;
+                } else {
+                    // try finding first text field to use as depends on reference
+                    const textElem = elements.find(m => m.type.toLowerCase() === FieldType.Text.toLowerCase());
+                    if (textElem) {
+                        dependsOn = {
+                            element: {
+                                external_id: textElem.external_id
+                            }
+                        }
+                    }
                 }
-            } else {
-                throw Error(`Could not get any depending element for url slug field`);
+
+                if (!dependsOn) {
+                    throw Error(`Could not get any depending element for url slug field`);
+                }
+
+                element.depends_on = dependsOn;
             }
         }
     }

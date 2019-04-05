@@ -50,7 +50,7 @@ export class ImportFromFileComponent extends BaseComponent {
       super.detectChanges();
 
       super.subscribeToObservable(
-        this.dependencies.importWithCMService.importFromFile({
+        this.dependencies.importService.importFromFile({
           apiKey: config.apiKey,
           projectId: config.projectId,
         }, config.file).pipe(

@@ -5,8 +5,7 @@ import { Router } from '@angular/router';
 import {
     CleanupService,
     ExportService,
-    ImportwithCMService,
-    ImportWithDeliveryService,
+    ImportService,
     ProcessingService,
 } from '../services';
 
@@ -14,8 +13,7 @@ import {
 export class ComponentDependencies {
 
     constructor(
-        public importWithCMService: ImportwithCMService,
-        public importWithDeliveryService: ImportWithDeliveryService,
+        public importService: ImportService,
         public cleanupService: CleanupService,
         public exportService: ExportService,
         public processingService: ProcessingService,

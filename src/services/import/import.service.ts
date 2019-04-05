@@ -26,19 +26,20 @@ import {
     IImportContentTypeResult,
     IImportData,
     IImportFromFileConfig,
-    IImportFromProjectConfig,
     IImportResult,
     IImportTaxonomyResult,
     IPublishItemRequest,
+    IImportFromProjectWithDeliveryConfig,
 } from './import.models';
 import { AssetsImportService } from './types/assets-import.service';
 import { ContentItemsImportService } from './types/content-items-import.service';
 import { ContentTypesImportService } from './types/content-types-import.service';
 import { LanguageVariantsImportService } from './types/language-variants-import.service';
 import { TaxonomiesImportService } from './types/taxonomies-import.service';
+import { ExportService } from '../export/export.service';
 
 @Injectable()
-export class ImportwithCMService {
+export class ImportService {
 
     constructor(
         private contentTypesImportService: ContentTypesImportService,
@@ -47,6 +48,7 @@ export class ImportwithCMService {
         private deliveryFetchService: DeliveryFetchService,
         private cmFetchService: CmFetchService,
         private workflowService: WorkflowService,
+        private exportService: ExportService,
         private languageVariantsImportService: LanguageVariantsImportService,
         private assetsImportService: AssetsImportService
     ) {
@@ -141,8 +143,8 @@ export class ImportwithCMService {
         );
     }
 
-    importFromProject(config: IImportFromProjectConfig): Observable<IImportResult> {
-        return this.getImportDataFromProject(config).pipe(
+    importFromProjectWithDeliveryApi(config: IImportFromProjectWithDeliveryConfig): Observable<IImportResult> {
+        return this.exportService.exportDataFromProjectUsingDeliveryApi(config).pipe(
             flatMap(data => {
                 return this.import(data, config);
             }),
@@ -152,7 +154,7 @@ export class ImportwithCMService {
         );
     }
 
-    importContentItems(config: IImportFromProjectConfig): Observable<IImportResult> {
+    importContentItemsWithDeliveryApi(config: IImportFromProjectWithDeliveryConfig): Observable<IImportResult> {
         const result: IImportResult = {
             importedContentItems: [],
             importedContentTypes: [],
@@ -162,7 +164,7 @@ export class ImportwithCMService {
             importedAssets: []
         };
 
-        return this.getImportDataFromProject(config).pipe(
+        return this.exportService.exportDataFromProjectUsingDeliveryApi(config).pipe(
             flatMap(data => {
                 return this.contentItemsImportService.importContentItems(
                     data.targetClient,
@@ -295,65 +297,6 @@ export class ImportwithCMService {
 
         return from(file.async('text')).pipe(
             map(data => data as string)
-        );
-    }
-
-    private getImportDataFromProject(config: IImportFromProjectConfig): Observable<IImportData> {
-        const sourceContentManagementClient = this.getContentManagementClient({
-            projectId: config.sourceProjectId,
-            apiKey: config.sourceProjectCmApiKey
-        });
-
-        const targetContentManagementClient = this.getContentManagementClient({
-            projectId: config.targetProjectId,
-            apiKey: config.targetProjectCmApiKey
-        });
-
-        const data: IImportData = {
-            targetClient: targetContentManagementClient,
-            contentTypes: [],
-            contentItems: [],
-            taxonomies: [],
-            assetsFromFile: [],
-            languageVariants: [],
-            assets: [],
-            targetProjectId: config.targetProjectId
-        };
-
-        const obs: Observable<void>[] = [
-            this.cmFetchService.getAllAssets(config.sourceProjectId, config.sourceProjectCmApiKey, []).pipe(
-                map((response) => {
-                    data.assets = response;
-                })
-            ),
-            this.cmFetchService.getAllTypes(config.sourceProjectId, config.sourceProjectCmApiKey, []).pipe(
-                map((response) => {
-                    data.contentTypes = response;
-                })
-            ),
-            this.cmFetchService.getAllContentItems(config.sourceProjectId, config.sourceProjectCmApiKey, []).pipe(
-                map((response) => {
-                    data.contentItems = response;
-                })
-            ),
-            this.cmFetchService.getAllTaxonomies(config.sourceProjectId, config.sourceProjectCmApiKey, []).pipe(
-                map((response) => {
-                    data.taxonomies = response;
-                })
-            ),
-        ];
-
-        return observableHelper.zipObservables(obs).pipe(
-            flatMap(() => {
-                return this.cmFetchService.getLanguageVariantsForContentItems(config.sourceProjectId, config.sourceProjectCmApiKey, {
-                    contentItems: data.contentItems,
-                    contentTypes: data.contentTypes
-                });
-            }),
-            map(response => {
-                data.languageVariants = response;
-                return data;
-            })
         );
     }
 

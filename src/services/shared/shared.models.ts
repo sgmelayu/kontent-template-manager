@@ -37,7 +37,6 @@ export interface ICMAssetModel {
 export interface IContentTypeElementModel {
     [key: string]: any;
     codename: string;
-    id: string;
     type: ElementType;
     name?: string;
     taxonomyGroup?: string;
@@ -83,13 +82,15 @@ export interface ISlimContentItemModel {
     id: string;
     name: string;
     codename: string;
-    type: {
-        id: string;
-    };
-    sitemapLocations: [{
-        id: string;
-    }];
+    typeId?: string;
+    typeCodename: string;
     externalId?: string;
+}
+
+export interface IDeliveryContentItemsResult {
+    contentItems: ISlimContentItemModel[];
+    assets: ICMAssetModel[];
+    languageVariants: ILanguageVariantModel[];
 }
 
 export interface IContentItemModel {
@@ -123,15 +124,30 @@ export interface IReferenceModel {
 }
 
 export interface ILanguageVariantModel {
-    item: IReferenceModel;
-    language: IReferenceModel;
+    itemId: string;
+    itemCodename: string;
+    languageCodename: string;
     elements: IContentItemElement[];
-    lastModified: Date;
 }
 
+export interface IAssetElementValue {
+    name: string;
+    type: string;
+    size: number;
+    description: string;
+    url: string;
+}
+
+export interface IMultipleChoiceElementValue {
+    codename: string;
+    name: string;
+}
+
+export type IElementValue = undefined | string | number | string[] | IMultipleChoiceElementValue[] | IAssetElementValue[];
+
 export interface IContentItemElement {
-    element: IReferenceModel;
-    value: string | number | IReferenceModel[];
+    elementCodename: string;
+    value: IElementValue;
     elementModel: IContentTypeElementModel;
 }
 

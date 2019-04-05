@@ -19,12 +19,19 @@ export interface IImportFromFileConfig {
     apiKey: string;
 }
 
-export interface IImportFromProjectConfig {
+export interface IImportFromProjectWithCMConfig {
     languages: string[];
     targetProjectId: string;
     targetProjectCmApiKey: string;
     sourceProjectId: string;
     sourceProjectCmApiKey: string;
+}
+
+export interface IImportFromProjectWithDeliveryConfig {
+    languages: string[];
+    targetProjectId: string;
+    targetProjectCmApiKey: string;
+    sourceProjectId: string;
 }
 
 // tslint:disable-next-line:no-empty-interface

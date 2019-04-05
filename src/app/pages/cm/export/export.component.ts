@@ -39,7 +39,6 @@ export class ExportComponent extends BaseComponent {
     this.formGroup = this.fb.group({
       projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
       languages: [environment.defaultProjects.languages],
-      sourceProjectCmApiKey: [environment.defaultProjects.sourceProjectApiKey, Validators.required],
     });
   }
 
@@ -51,7 +50,7 @@ export class ExportComponent extends BaseComponent {
       super.startLoading();
       super.detectChanges();
       super.subscribeToObservable(
-        this.dependencies.exportService.prepareAndDownloadPackage(config.projectId, config.apiKey, this.parsedLanguages).pipe(
+        this.dependencies.exportService.preparePackageWithDeliveryApi(config.projectId, this.parsedLanguages).pipe(
           map((result) => {
             this.dependencies.exportService.createAndDownloadZipFile(config.projectId, result, () => {
               super.stopLoading();
@@ -75,7 +74,6 @@ export class ExportComponent extends BaseComponent {
 
   private getConfig(): {
     projectId: string,
-    apiKey: string;
   } | undefined {
     const projectId = this.formGroup.controls['projectId'].value;
 
@@ -84,16 +82,8 @@ export class ExportComponent extends BaseComponent {
       return;
     }
 
-    const sourceProjectCmApiKey = this.formGroup.controls['sourceProjectCmApiKey'].value;
-
-    if (!sourceProjectCmApiKey) {
-      this.error = 'Invalid project API key';
-      return;
-    }
-
     return {
       projectId: projectId,
-      apiKey: sourceProjectCmApiKey
     };
   }
 

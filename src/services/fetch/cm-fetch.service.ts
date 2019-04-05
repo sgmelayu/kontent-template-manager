@@ -47,13 +47,15 @@ export class CmFetchService extends BaseService {
             .pipe(
                 map(response => {
                     contentItems.push(...response.data.items.map(m => {
-                        return <ISlimContentItemModel> {
+                        return <ISlimContentItemModel>{
                             codename: m.codename,
                             externalId: m.externalId,
                             id: m.id,
                             name: m.name,
                             sitemapLocations: m.sitemapLocations,
-                            type: m.type
+                            type: m.type,
+                            typeId: m.type.id,
+                            typeCodename: 'notSupported'
                         };
                     }));
 
@@ -83,46 +85,52 @@ export class CmFetchService extends BaseService {
             obs.push(
 
                 client.listLanguageVariants()
-                .byItemCodename(contentItem.codename)
-                .toObservable()
-                .pipe(
-                    map(response => {
-                        languageVariants.push(...response.data.variants.map(variant => {
-                            return <ILanguageVariantModel> {
-                                elements: variant.elements.map(element => {
-                                    const contentType = prerequisities.contentTypes.find(s => s.system.id === contentItem.type.id);
-                                    if (!contentType) {
-                                        throw Error(`Could not find content type for content item '${contentItem.codename}'`);
-                                    }
+                    .byItemCodename(contentItem.codename)
+                    .toObservable()
+                    .pipe(
+                        map(response => {
+                            languageVariants.push(...response.data.variants.map(variant => {
+                                return <ILanguageVariantModel>{
+                                    elements: variant.elements.map(element => {
+                                        const contentType = prerequisities.contentTypes.find(s => s.system.codename === contentItem.typeCodename);
+                                        if (!contentType) {
+                                            throw Error(`Could not find content type for content item '${contentItem.codename}'`);
+                                        }
 
-                                    const contentTypeElement = contentType.elements.find(s => s.id === element.element.id);
+                                        const contentTypeElement = contentType.elements.find(s => s.id === element.element.id);
 
-                                    if (!contentTypeElement) {
-                                        throw Error(`Could not find content type element for content item '${contentItem.codename}' with id '${element.element.id}'`);
-                                    }
+                                        if (!contentTypeElement) {
+                                            throw Error(`Could not find content type element for content item '${contentItem.codename}' with id '${element.element.id}'`);
+                                        }
 
-                                    return <IContentItemElement> {
-                                        element: element.element,
-                                        value: element.value,
-                                        elementModel: contentTypeElement
-                                    };
-                                }),
-                                item: {
-                                    codename: variant.item.codename,
-                                    externalId: variant.item.externalId,
-                                    id: variant.item.id
-                                },
-                                language: {
-                                    codename: variant.language.codename,
-                                    externalId: variant.language.externalId,
-                                    id: variant.language.id
-                                },
-                                lastModified: variant.lastModified,
-                                languageCodename: ''
-                            };
-                        }));
-                    })
-                ));
+                                        let fieldValue: undefined | string | number | string[];
+
+                                        if (Array.isArray(element.value)) {
+                                            fieldValue = element.value.map(m => {
+                                                if (!m.codename) {
+                                                    throw Error(`Codename is required`);
+                                                }
+                                                return m.codename;
+                                            });
+                                        } else {
+                                            fieldValue = element.value;
+                                        }
+
+                                        return <IContentItemElement>{
+                                            element: element.element,
+                                            value: fieldValue,
+                                            elementModel: contentTypeElement,
+                                            elementCodename: element.element.codename
+                                        };
+                                    }),
+                                    itemCodename: contentItem.codename,
+                                    itemId: contentItem.id,
+                                    lastModified: variant.lastModified,
+                                    languageCodename: 'notSupported'
+                                };
+                            }));
+                        })
+                    ));
         }
 
         return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(map(() => {
@@ -147,7 +155,7 @@ export class CmFetchService extends BaseService {
             .pipe(
                 map(response => {
                     assets.push(...response.data.items.map(m => {
-                        return <ICMAssetModel> {
+                        return <ICMAssetModel>{
                             externalId: m.externalId,
                             fileName: m.fileName,
                             id: m.id,
@@ -217,7 +225,7 @@ export class CmFetchService extends BaseService {
 
                         });
 
-                        return <IContentTypeModel> {
+                        return <IContentTypeModel>{
                             system: {
                                 codename: m.codename,
                                 id: m.id,
@@ -249,7 +257,7 @@ export class CmFetchService extends BaseService {
             .pipe(
                 map(response => {
                     taxonomies.push(...response.data.map(m => {
-                        return <ITaxonomyModel> {
+                        return <ITaxonomyModel>{
                             system: m,
                             terms: m.terms
                         };

@@ -25,7 +25,7 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public navigationItems: INavigationItem[] = [
     {
-      title: 'Content management API',
+      title: 'Import',
       type: 'section'
     },
     {
@@ -41,6 +41,10 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'link'
     },
     {
+      title: 'Item migration',
+      type: 'section'
+    },
+    {
       title: 'Migrate items between projects',
       routerLink: '/migrate-content-items',
       icon: 'sync',
@@ -48,12 +52,6 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
     },
     {
       title: 'Export',
-      routerLink: '/export',
-      icon: 'cloud_download',
-      type: 'link'
-    },
-    {
-      title: 'Delivery API',
       type: 'section'
     },
     {
