@@ -4,36 +4,22 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CleanupConfirmComponent } from './cleanup/cleanup-confirm.component';
-import { CleanupComponent } from './cleanup/cleanup.component';
+
 import { CoreModule } from './core/core.module';
-import { ExportComponent } from './export/export.component';
-import { ImportFromFileComponent } from './import/import-from-file.component';
-import { ImportFromProjectComponent } from './import/import-from-project.component';
-import { MigrateContentItemsComponent } from './import/migrate-content-items.component';
-import { MessageComponent } from './messages/message.component';
-import { ProcessedItemsComponents } from './processed-items/processed-items.component';
+import { PagesModule } from './pages/pages.module';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    ImportFromProjectComponent,
-    ExportComponent,
-    CleanupComponent,
-    CleanupConfirmComponent,
-    MessageComponent,
-    ImportFromFileComponent,
-    ProcessedItemsComponents,
-    MigrateContentItemsComponent
   ],
-  entryComponents: [
-    CleanupConfirmComponent
-  ],
+
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    CoreModule
+    CoreModule,
+    PagesModule
   ],
   providers: [],
   bootstrap: [AppComponent]

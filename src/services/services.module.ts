@@ -4,7 +4,8 @@ import { CleanupService } from './cleanup/cleanup.service';
 import { ExportService } from './export/export.service';
 import { CmFetchService } from './fetch/cm-fetch.service';
 import { DeliveryFetchService } from './fetch/delivery-fetch.service';
-import { ImportService } from './import/import.service';
+import { ImportwithCMService } from './import/import-with-cm-service';
+import { ImportWithDeliveryService } from './import/import-with-delivery-service';
 import { AssetsImportService } from './import/types/assets-import.service';
 import { ContentItemsImportService } from './import/types/content-items-import.service';
 import { ContentTypesImportService } from './import/types/content-types-import.service';
@@ -21,7 +22,8 @@ import { WorkflowService } from './workflow/workflow.service';
     providers: [
         DeliveryFetchService,
         CmFetchService,
-        ImportService,
+        ImportWithDeliveryService,
+        ImportwithCMService,
         ContentTypesImportService,
         ContentItemsImportService,
         TaxonomiesImportService,

@@ -5,10 +5,10 @@ import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../di';
-import { environment } from '../../environments/environment';
-import { ICleanupData } from '../../services';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../../di';
+import { environment } from '../../../../environments/environment';
+import { ICleanupData } from '../../../../services';
+import { BaseComponent } from '../../../core/base.component';
 import { CleanupConfirmComponent } from './cleanup-confirm.component';
 
 interface ICleanupItem {

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
-import { ComponentDependencies } from '../../di';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../../di';
+import { BaseComponent } from '../../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

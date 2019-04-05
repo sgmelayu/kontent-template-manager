@@ -17,7 +17,6 @@ import { MasterLayoutComponent } from './master-layout.component';
     ExternalModule
   ],
   providers: [
-
   ],
 })
 export class LayoutModule { }

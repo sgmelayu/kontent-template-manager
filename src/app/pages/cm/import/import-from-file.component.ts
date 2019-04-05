@@ -5,10 +5,10 @@ import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../di';
-import { environment } from '../../environments/environment';
-import { IImportResult } from '../../services';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../../di';
+import { environment } from '../../../../environments/environment';
+import { IImportResult } from '../../../../services';
+import { BaseComponent } from '../../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +50,7 @@ export class ImportFromFileComponent extends BaseComponent {
       super.detectChanges();
 
       super.subscribeToObservable(
-        this.dependencies.importService.importFromFile({
+        this.dependencies.importWithCMService.importFromFile({
           apiKey: config.apiKey,
           projectId: config.projectId,
         }, config.file).pipe(
