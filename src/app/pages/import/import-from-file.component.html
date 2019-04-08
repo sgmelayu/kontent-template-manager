@@ -1,94 +1,68 @@
 <h1>
-    Import from file
+    Import from export package
 </h1>
 
 <div class="push-bottom" *ngIf="error">
     <lib-message [type]="'error'" [text]="error"></lib-message>
 </div>
 
-<ng-container *ngIf="!isLoading && !importCompleted">
+<ng-container *ngIf="step === 'initial'" [formGroup]="formGroup">
 
-    <div libTitle1>
-        Target project
+    <div libTitle1 class="push-top">
+        Target Project
     </div>
 
-    <div [formGroup]="formGroup">
+    <mat-card>
+        <mat-card-content>
+            <mat-form-field class="w-full-width">
+                <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
+            </mat-form-field>
 
-        <mat-card>
-            <mat-card-content>
-                <mat-form-field class="w-full-width">
-                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
-                </mat-form-field>
+            <mat-form-field class="push-top w-full-width">
+                <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
+            </mat-form-field>
 
-                <mat-form-field class="push-top w-full-width">
-                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
-                </mat-form-field>
-
-                <div class="push-top">
-                    <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
-                        <span></span>
-                    </file-drop>
-                    <div *ngIf="file" class="push-top" libTextCaption>
-                        <em>{{ file.name }} </em>
-                    </div>
+            <div class="push-top">
+                <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
+                    <span></span>
+                </file-drop>
+                <div *ngIf="file" class="push-top" libTextCaption>
+                    <em>{{ file.name }} </em>
                 </div>
-            </mat-card-content>
-        </mat-card>
+            </div>
+        </mat-card-content>
+    </mat-card>
 
-        <div libTitle1 class="push-top">
-            Configuration
-        </div>
+    <div libTitle1 class="push-top">
+        Configuration
+    </div>
 
-        <mat-card>
-            <mat-card-content>
-                <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
-            </mat-card-content>
-        </mat-card>
+    <mat-card>
+        <mat-card-content>
+            <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
+        </mat-card-content>
+    </mat-card>
 
-        <div class="push-top">
-            <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
-            <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
-        </div>
+    <div class="push-top" *ngIf="!isLoading">
+        <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handlePreview()">Prepare import
+            data</button>
+        <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Prepare import data</button>
     </div>
 </ng-container>
 
-<div class="push-top" *ngIf="importTriggered">
+<ng-container *ngIf="step === 'preview'">
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
-    <div *ngIf="importCompleted">
-
-        <lib-message [type]="'success'" [text]="'Data was imported successfully'"></lib-message>
-
-        <div libTitle1 class="push-top">
-            Overview of imported items:
-        </div>
-
-        <mat-card *ngIf="importResult" class="push-top push-bottom">
-            <div>
-                <mat-list role="list">
-                    <mat-list-item role="listitem">
-                        <strong>{{ importResult.importedContentTypes.length }}</strong>&nbsp;content types imported
-                    </mat-list-item>
-                    <mat-list-item role="listitem">
-                        <strong>{{ importResult.importedTaxonomies.length }}</strong>&nbsp;taxonomies imported
-                    </mat-list-item>
-                    <mat-list-item role="listitem">
-                        <strong>{{ importResult.importedContentItems.length }}</strong>&nbsp;content items imported
-                    </mat-list-item>
-                    <mat-list-item role="listitem">
-                        <strong>{{ importResult.importedLanguageVariants.length }}</strong>&nbsp;language variants
-                        imported
-                    </mat-list-item>
-                    <mat-list-item role="listitem">
-                        <strong>{{ importResult.importedAssets.length }}</strong>&nbsp;imported assets
-                    </mat-list-item>
-                    <mat-list-item role="listitem">
-                        <strong>{{ importResult.publishedItems.length }}</strong>&nbsp;published content items
-                    </mat-list-item>
-                </mat-list>
-            </div>
-        </mat-card>
+    <div class="push-bottom" *ngIf="!isLoading">
+        <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Proceed with import</button>
+        <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Proceed with import</button>
     </div>
 
+    <lib-import-data-preview [importData]="importData"></lib-import-data-preview>
+
+</ng-container>
+
+<ng-container *ngIf="step === 'importing'">
     <div libTitle1>
         Processed items
     </div>
@@ -97,5 +71,38 @@
     <mat-card>
         <lib-processed-items *ngIf="isLoading || importCompleted"></lib-processed-items>
     </mat-card>
+</ng-container>
 
-</div>
+<ng-container *ngIf="step === 'completed'">
+    <lib-message [type]="'success'" [text]="'Data was imported successfully'"></lib-message>
+
+    <div libTitle1 class="push-top">
+        Overview of imported items:
+    </div>
+
+    <mat-card *ngIf="importResult" class="push-top push-bottom">
+        <div>
+            <mat-list role="list">
+                <mat-list-item role="listitem">
+                    <strong>{{ importResult.importedContentTypes.length }}</strong>&nbsp;content types imported
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <strong>{{ importResult.importedTaxonomies.length }}</strong>&nbsp;taxonomies imported
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <strong>{{ importResult.importedContentItems.length }}</strong>&nbsp;content items imported
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <strong>{{ importResult.importedLanguageVariants.length }}</strong>&nbsp;language variants
+                    imported
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <strong>{{ importResult.importedAssets.length }}</strong>&nbsp;imported assets
+                </mat-list-item>
+                <mat-list-item role="listitem">
+                    <strong>{{ importResult.publishedItems.length }}</strong>&nbsp;published content items
+                </mat-list-item>
+            </mat-list>
+        </div>
+    </mat-card>
+</ng-container>

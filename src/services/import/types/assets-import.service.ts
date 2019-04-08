@@ -18,8 +18,8 @@ export class AssetsImportService extends BaseService {
         super();
     }
 
-    importAssets(sourceProjectId: string, targetClient: IContentManagementClient, assets: ICMAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
-        return this.importAssetsFromModels(sourceProjectId, targetClient, assets).pipe(
+    importAssets(targetClient: IContentManagementClient, assets: ICMAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
+        return this.importAssetsFromModels(targetClient, assets).pipe(
             map((createdContentItems) => {
                 return createdContentItems;
             })
@@ -30,7 +30,7 @@ export class AssetsImportService extends BaseService {
         return from([]);
     }
 
-    private importAssetsFromModels(sourceProjectId: string, targetClient: IContentManagementClient, assets: ICMAssetModel[]): Observable<IImportAssetResult[]> {
+    private importAssetsFromModels(targetClient: IContentManagementClient, assets: ICMAssetModel[]): Observable<IImportAssetResult[]> {
         const createdAssets: IImportAssetResult[] = [];
         const assetsToCreateObs: Observable<IGetAssetData>[] = [];
         const obs: Observable<void>[] = [];

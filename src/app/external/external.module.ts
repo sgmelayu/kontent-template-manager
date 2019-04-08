@@ -16,6 +16,7 @@ import {
   MatToolbarModule,
 } from '@angular/material';
 import { FileDropModule } from 'ngx-file-drop';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
   imports: [
@@ -35,7 +36,8 @@ import { FileDropModule } from 'ngx-file-drop';
     MatListModule,
     MatDialogModule,
     FileDropModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    NgxJsonViewerModule
   ],
 })
 export class ExternalModule { }

@@ -6,7 +6,7 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
-import { IImportResult } from '../../../services';
+import { IImportData, IImportFromProjectWithDeliveryConfig, IImportResult } from '../../../services';
 import { BaseComponent } from '../../core/base.component';
 
 @Component({
@@ -15,10 +15,10 @@ import { BaseComponent } from '../../core/base.component';
 })
 export class ImportFromProjectComponent extends BaseComponent {
 
-  public importCompleted: boolean = false;
   public formGroup: FormGroup;
   public error?: string;
-  public importTriggered: boolean = false;
+  public importData?: IImportData;
+  public step: 'initial' | 'preview' | 'importing' | 'completed' = 'initial'
 
   public get canSubmit(): boolean {
     return this.formGroup.valid;
@@ -58,48 +58,105 @@ export class ImportFromProjectComponent extends BaseComponent {
     });
   }
 
+  handlePreview(): void {
+    const config = this.getConfig();
+
+    if (config) {
+      this.resetErrors();
+      this.step = "preview";
+      super.startLoading();
+      super.detectChanges();
+
+      super.subscribeToObservable(
+        this.dependencies.exportService.getImportDataWithDeliveryApi(config)
+          .pipe(
+            map((importData) => {
+              this.importData = importData;
+              super.stopLoading();
+              super.detectChanges();
+            }),
+            catchError((error) => {
+              super.stopLoading();
+              if (error instanceof CloudError) {
+                this.error = error.message;
+              } else {
+                this.error = 'Import failed. See console for error details.';
+              }
+              super.detectChanges();
+              return throwError(error);
+            })
+          )
+      )
+    }
+  }
+
   handleImport(): void {
     this.resetErrors();
-
-    this.importTriggered = true;
 
     if (!this.formGroup.valid) {
       this.error = 'Form is not valid';
       return;
     }
 
+    const config = this.getConfig();
+
+    if (config && this.importData) {
+
+      this.step = 'importing';
+
+      super.startLoading();
+
+      super.subscribeToObservable(this.dependencies.importService.import(this.importData, config).pipe(
+
+        map((importResult) => {
+          super.stopLoading();
+          this.step = 'completed';
+          this.importResult = importResult;
+          super.detectChanges();
+        }),
+        catchError((error) => {
+          super.stopLoading();
+          if (error instanceof CloudError) {
+            this.error = error.message;
+          } else {
+            this.error = 'Import failed. See console for error details.';
+          }
+          super.detectChanges();
+          return throwError(error);
+        })
+      ));
+    }
+  }
+
+  private getConfig(): IImportFromProjectWithDeliveryConfig | undefined {
     const sourceProjectId = this.formGroup.controls['sourceProjectId'].value;
     const targetProjectId = this.formGroup.controls['targetProjectId'].value;
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
     const publishAllItems = this.formGroup.controls['publishAllItems'].value;
     const languages = this.parsedLanguages;
 
-    super.startLoading();
+    if (!sourceProjectId) {
+      this.error = 'Invalid source project id';
+      return;
+    }
 
-    super.subscribeToObservable(this.dependencies.importService.importFromProjectWithDeliveryApi({
+    if (!targetProjectId) {
+      this.error = 'Invalid target project id';
+      return;
+    }
+
+    if (!targetProjectCmApiKey) {
+      this.error = 'Invalid api key';
+      return;
+    }
+
+    return <IImportFromProjectWithDeliveryConfig>{
       languages: languages,
+      publishAllItems: publishAllItems,
       sourceProjectId: sourceProjectId,
-      targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
-      publishAllItems: publishAllItems
-    }).pipe(
-
-      map((importResult) => {
-        super.stopLoading();
-        this.importCompleted = true;
-        this.importResult = importResult;
-      }),
-      catchError((error) => {
-        super.stopLoading();
-        if (error instanceof CloudError) {
-          this.error = error.message;
-        } else {
-          this.error = 'Import failed. See console for error details.';
-        }
-        super.detectChanges();
-        return throwError(error);
-      })
-    ))
+      targetProjectId: targetProjectId
+    };
   }
 
   private resetErrors(): void {

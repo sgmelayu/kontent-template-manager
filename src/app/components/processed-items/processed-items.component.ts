@@ -11,7 +11,7 @@ import { BaseComponent } from '../../core/base.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './processed-items.component.html',
 })
-export class ProcessedItemsComponents extends BaseComponent implements OnInit {
+export class ProcessedItemsComponent extends BaseComponent implements OnInit {
 
   private _processedItems: List<IImportItem> = List<IImportItem>([]);
 

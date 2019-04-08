@@ -17,6 +17,7 @@ import {
 export interface IImportFromFileConfig extends IImportConfig {
     projectId: string;
     apiKey: string;
+    file: File;
 }
 
 export interface IImportFromProjectWithCMConfig extends IImportConfig {

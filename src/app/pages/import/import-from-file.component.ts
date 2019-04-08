@@ -7,7 +7,7 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
-import { IImportResult } from '../../../services';
+import { IImportData, IImportFromFileConfig, IImportResult } from '../../../services';
 import { BaseComponent } from '../../core/base.component';
 
 @Component({
@@ -16,11 +16,12 @@ import { BaseComponent } from '../../core/base.component';
 })
 export class ImportFromFileComponent extends BaseComponent {
 
-  public importCompleted: boolean = false;
   public formGroup: FormGroup;
   public error?: string;
-  public importTriggered: boolean = false;
   public file?: File;
+  public importData?: IImportData;
+
+  public step: 'initial' | 'preview' | 'importing' | 'completed' = 'initial'
 
   public get canSubmit(): boolean {
     return this.formGroup.valid && (this.file ? true : false);
@@ -41,24 +42,52 @@ export class ImportFromFileComponent extends BaseComponent {
     });
   }
 
-  handleImport(): void {
+  handlePreview(): void {
     const config = this.getConfig();
 
     if (config) {
       this.resetErrors();
-      this.importTriggered = true;
+      this.step = "preview";
       super.startLoading();
       super.detectChanges();
 
       super.subscribeToObservable(
-        this.dependencies.importService.importFromFile({
-          apiKey: config.apiKey,
-          projectId: config.projectId,
-          publishAllItems: config.publishAllItems
-        }, config.file).pipe(
+        this.dependencies.exportService.getImportDataFromFile(config)
+          .pipe(
+            map((importData) => {
+              this.importData = importData;
+              super.stopLoading();
+              super.detectChanges();
+            }),
+            catchError((error) => {
+              super.stopLoading();
+              if (error instanceof CloudError) {
+                this.error = error.message;
+              } else {
+                this.error = 'Import failed. See console for error details.';
+              }
+              super.detectChanges();
+              return throwError(error);
+            })
+          )
+      )
+    }
+  }
+
+  handleImport(): void {
+    const config = this.getConfig();
+
+    if (config && this.importData) {
+      this.resetErrors();
+      this.step = 'importing';
+      super.startLoading();
+      super.detectChanges();
+
+      super.subscribeToObservable(
+        this.dependencies.importService.import(this.importData, config).pipe(
           map((importResult) => {
             super.stopLoading();
-            this.importCompleted = true;
+            this.step = 'completed';
             this.importResult = importResult;
             super.detectChanges();
           }),
@@ -115,12 +144,7 @@ export class ImportFromFileComponent extends BaseComponent {
   }
 
 
-  private getConfig(): {
-    projectId: string,
-    apiKey: string,
-    file: File,
-    publishAllItems: boolean
-  } | undefined {
+  private getConfig(): IImportFromFileConfig | undefined {
     const projectId = this.formGroup.controls['projectId'].value;
     const cmApiKey = this.formGroup.controls['cmApiKey'].value;
     const publishAllItems = this.formGroup.controls['publishAllItems'].value;

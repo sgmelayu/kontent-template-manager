@@ -4,13 +4,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CoreModule } from '../core/core.module';
 import { MessageComponent } from './messages/message.component';
-import { ProcessedItemsComponents } from './processed-items/processed-items.component';
-
+import { ImportDataPreview } from './preview/import-data-preview.component';
+import { ProcessedItemsComponent } from './processed-items/processed-items.component';
 
 @NgModule({
   declarations: [
     MessageComponent,
-    ProcessedItemsComponents
+    ProcessedItemsComponent,
+    ImportDataPreview
   ],
 
   imports: [
@@ -20,7 +21,8 @@ import { ProcessedItemsComponents } from './processed-items/processed-items.comp
   ],
   exports: [
     MessageComponent,
-    ProcessedItemsComponents
+    ProcessedItemsComponent,
+    ImportDataPreview
   ]
 })
 export class ComponentsModule { }
