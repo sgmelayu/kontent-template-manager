@@ -4,9 +4,9 @@ import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../di';
-import { environment } from '../../environments/environment';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../../di';
+import { environment } from '../../../../environments/environment';
+import { BaseComponent } from '../../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +50,7 @@ export class ExportComponent extends BaseComponent {
       super.startLoading();
       super.detectChanges();
       super.subscribeToObservable(
-        this.dependencies.exportService.prepareAndDownloadPackage(config.projectId, this.parsedLanguages).pipe(
+        this.dependencies.exportService.preparePackageWithDeliveryApi(config.projectId, this.parsedLanguages).pipe(
           map((result) => {
             this.dependencies.exportService.createAndDownloadZipFile(config.projectId, result, () => {
               super.stopLoading();
@@ -83,7 +83,7 @@ export class ExportComponent extends BaseComponent {
     }
 
     return {
-      projectId: projectId
+      projectId: projectId,
     };
   }
 

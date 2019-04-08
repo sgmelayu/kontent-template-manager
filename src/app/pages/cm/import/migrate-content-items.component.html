@@ -1,6 +1,11 @@
 <h1>
-    Import from file
+    Migrate data
 </h1>
+
+<p>
+    Use this to migrate data (content items & assets) from one project to another. 
+    Requirement for this to work is to have matching content types and taxonomies. 
+</p>
 
 <div class="push-bottom" *ngIf="error">
     <lib-message [type]="'error'" [text]="error"></lib-message>
@@ -9,7 +14,7 @@
 <ng-container *ngIf="!isLoading && !importCompleted">
 
     <div libTitle1>
-        Target project
+        Source Project
     </div>
 
     <div [formGroup]="formGroup">
@@ -17,25 +22,39 @@
         <mat-card>
             <mat-card-content>
                 <mat-form-field class="w-full-width">
-                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
+                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="sourceProjectId"
+                        required>
                 </mat-form-field>
 
                 <mat-form-field class="push-top w-full-width">
-                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
+                    <input autocomplete="off" matInput placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language." formControlName="languages">
                 </mat-form-field>
 
-                <div class="push-top">
-                    <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
-                        <span></span>
-                    </file-drop>
-                    <div *ngIf="file" class="push-top" libTextCaption>
-                        <em>{{ file.name }} </em>
-                    </div>
+                <div class="push-top" *ngIf="languagesWarningMessage">
+                    <lib-message [type]="'warning'" [html]="languagesWarningMessage"></lib-message>
                 </div>
             </mat-card-content>
         </mat-card>
 
-        <div class="push-top">
+        <div libTitle1 class="push-top">
+            Target Project
+        </div>
+
+        <mat-card>
+            <mat-card-content>
+                <mat-form-field class="w-full-width">
+                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="targetProjectId"
+                        required>
+                </mat-form-field>
+
+                <mat-form-field class="push-top w-full-width">
+                    <input autocomplete="off" matInput placeholder="CM API Key" formControlName="targetProjectCmApiKey"
+                        required>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="push-top" *ngIf="!isLoading">
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Import</button>
             <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Import</button>
         </div>
@@ -69,7 +88,7 @@
                         imported
                     </mat-list-item>
                     <mat-list-item role="listitem">
-                        <strong>{{ importResult.assets.length }}</strong>&nbsp;imported assets
+                        <strong>{{ importResult.importedAssets.length }}</strong>&nbsp;imported assets
                     </mat-list-item>
                     <mat-list-item role="listitem">
                         <strong>{{ importResult.publishedItems.length }}</strong>&nbsp;published content items

@@ -56,7 +56,7 @@ export class TaxonomiesImportService extends BaseService {
                         action: 'Add taxonomy',
                         name: response.data.codename
                     });
-                    return <ITaxonomyModel>{
+                    return <ITaxonomyModel> {
                         system: {
                             codename: response.data.codename,
                             id: response.data.id,
@@ -67,6 +67,5 @@ export class TaxonomiesImportService extends BaseService {
                 })
             );
     }
-
 
 }

@@ -8,16 +8,27 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { observableHelper } from '../../utilities';
+import { BaseService } from '../base-service';
 import {
     ICMAssetModel,
+    IContentItemElement,
     IContentTypeElementModel,
     IContentTypeModel,
+    ILanguageVariantModel,
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
+import { DeliveryFetchService } from './delivery-fetch.service';
 
 @Injectable()
-export class CmFetchService {
+export class CmFetchService extends BaseService {
+
+    constructor(
+        private deliveryFetchService: DeliveryFetchService
+    ) {
+        super()
+    }
 
     getAllContentItems(projectId: string, apiKey: string, contentItems: ISlimContentItemModel[], nextPageUrl?: string): Observable<ISlimContentItemModel[]> {
         const query = this.getContentManagementClient(
@@ -42,8 +53,10 @@ export class CmFetchService {
                             id: m.id,
                             name: m.name,
                             sitemapLocations: m.sitemapLocations,
-                            type: m.type
-                        }
+                            type: m.type,
+                            typeId: m.type.id,
+                            typeCodename: 'notSupported'
+                        };
                     }));
 
                     if (response.data.pagination.nextPage) {
@@ -52,6 +65,77 @@ export class CmFetchService {
                     return contentItems;
                 })
             );
+    }
+
+    getLanguageVariantsForContentItems(projectId: string, apiKey: string, prerequisities: {
+        contentItems: ISlimContentItemModel[],
+        contentTypes: IContentTypeModel[],
+    }): Observable<ILanguageVariantModel[]> {
+        const client = this.getContentManagementClient(
+            {
+                projectId: projectId,
+                apiKey: apiKey
+            }
+        );
+
+        const languageVariants: ILanguageVariantModel[] = [];
+        const obs: Observable<void>[] = [];
+
+        for (const contentItem of prerequisities.contentItems) {
+            obs.push(
+
+                client.listLanguageVariants()
+                    .byItemCodename(contentItem.codename)
+                    .toObservable()
+                    .pipe(
+                        map(response => {
+                            languageVariants.push(...response.data.variants.map(variant => {
+                                return <ILanguageVariantModel>{
+                                    elements: variant.elements.map(element => {
+                                        const contentType = prerequisities.contentTypes.find(s => s.system.codename === contentItem.typeCodename);
+                                        if (!contentType) {
+                                            throw Error(`Could not find content type for content item '${contentItem.codename}'`);
+                                        }
+
+                                        const contentTypeElement = contentType.elements.find(s => s.id === element.element.id);
+
+                                        if (!contentTypeElement) {
+                                            throw Error(`Could not find content type element for content item '${contentItem.codename}' with id '${element.element.id}'`);
+                                        }
+
+                                        let fieldValue: undefined | string | number | string[];
+
+                                        if (Array.isArray(element.value)) {
+                                            fieldValue = element.value.map(m => {
+                                                if (!m.codename) {
+                                                    throw Error(`Codename is required`);
+                                                }
+                                                return m.codename;
+                                            });
+                                        } else {
+                                            fieldValue = element.value;
+                                        }
+
+                                        return <IContentItemElement>{
+                                            element: element.element,
+                                            value: fieldValue,
+                                            elementModel: contentTypeElement,
+                                            elementCodename: element.element.codename
+                                        };
+                                    }),
+                                    itemCodename: contentItem.codename,
+                                    itemId: contentItem.id,
+                                    lastModified: variant.lastModified,
+                                    languageCodename: 'notSupported'
+                                };
+                            }));
+                        })
+                    ));
+        }
+
+        return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(map(() => {
+            return languageVariants;
+        }));
     }
 
     getAllAssets(projectId: string, apiKey: string, assets: ICMAssetModel[], nextPageUrl?: string): Observable<ICMAssetModel[]> {
@@ -76,7 +160,8 @@ export class CmFetchService {
                             fileName: m.fileName,
                             id: m.id,
                             title: m.title,
-                            type: m.type
+                            type: m.type,
+                            deliveryUrl: this.constructDeliveryAssetUrl(projectId, m.fileReference.id, m.fileName)
                         };
                     }));
 
@@ -115,7 +200,9 @@ export class CmFetchService {
                                     name: originalElement.name,
                                     options: [],
                                     taxonomyGroup: undefined,
-                                    type: originalElement.type
+                                    type: originalElement.type,
+                                    id: originalElement.id,
+                                    mode: undefined
                                 });
                                 processed = true;
                             }
@@ -126,6 +213,8 @@ export class CmFetchService {
                                     options: originalElement.options,
                                     taxonomyGroup: undefined,
                                     type: originalElement.type,
+                                    id: originalElement.id,
+                                    mode: originalElement.mode
                                 });
                                 processed = true;
                             }
@@ -144,7 +233,7 @@ export class CmFetchService {
                             },
                             elementsWithOriginalCodename: [],
                             elements: elements
-                        }
+                        };
                     }));
 
                     if (response.data.pagination.nextPage) {
@@ -171,7 +260,7 @@ export class CmFetchService {
                         return <ITaxonomyModel>{
                             system: m,
                             terms: m.terms
-                        }
+                        };
                     }));
 
                     return taxonomies;
@@ -182,4 +271,37 @@ export class CmFetchService {
     getContentManagementClient(config: IContentManagementClientConfig): IContentManagementClient {
         return new ContentManagementClient(config);
     }
+
+    private getDataCenterFromProject(projectId: string): 'EU' | 'US' | 'AU' {
+        const dataCenterIdentifier = projectId.substr(14, 2);
+
+        if (dataCenterIdentifier === '00') {
+            return 'US';
+        }
+
+        if (dataCenterIdentifier === '01') {
+            return 'EU';
+        }
+
+        if (dataCenterIdentifier === '02') {
+            return 'AU';
+        }
+
+        return 'US';
+    }
+
+    private constructDeliveryAssetUrl(projectId: string, fileId: string, assetFilename: string): string {
+        const dataCenter = this.getDataCenterFromProject(projectId);
+        let dataCenterIdentifier = 'us-01';
+
+        if (dataCenter === 'EU') {
+            dataCenterIdentifier = 'eu-01';
+        }
+        if (dataCenter === 'AU') {
+            dataCenterIdentifier = 'au-01';
+        }
+
+        return `https://assets-${dataCenterIdentifier}.kc-usercontent.com/${projectId}/${fileId}/${assetFilename}`;
+    }
+
 }

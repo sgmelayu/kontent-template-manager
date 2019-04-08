@@ -6,16 +6,21 @@ export const environment = {
   production: false,
   appName: 'Template manager',
   defaultProjects: {
-     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
+    sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
+    // tslint:disable-next-line:max-line-length
+    sourceProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxM2VkMmI4ODQ1NDg0ZjIwYjVkNWVhOTRlZDVlOWY0YSIsImlhdCI6IjE1NTQzNjg0NjgiLCJleHAiOiIxODk5OTY4NDY4IiwicHJvamVjdF9pZCI6ImYyNDllYjgzMThmZDAxYjgyZGI3YzU2MWJjYjFlZDFlIiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.UJ8rpJ5fKrCco4_1JvVtMFvUIyrIHr1Wo-VTRbdx34M',
     languages: 'en-US; es-ES',
     // sourceProjectId: 'b062c2f0-1a33-0070-794f-b48fa8bc1899',
     targetProjectId: 'ede994d8-bb05-01b5-9c33-8b65e7372306',
+    // tslint:disable-next-line:max-line-length
     targetProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84'
   },
   requestDelay: 80,
   export: {
     filenames: {
       packagePrefix: 'export_',
+      assets: 'assets.json',
+      languageVariants: 'language-variants.json',
       contentItems: 'content-items.json',
       contentTypes: 'content-types.json',
       taxonomies: 'taxonomies.json',

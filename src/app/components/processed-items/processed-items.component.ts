@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { List } from 'immutable';
 import { map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../di';
-import { IImportItem } from '../../services';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../di';
+import { IImportItem } from '../../../services';
+import { BaseComponent } from '../../core/base.component';
 
 @Component({
   selector: 'lib-processed-items',

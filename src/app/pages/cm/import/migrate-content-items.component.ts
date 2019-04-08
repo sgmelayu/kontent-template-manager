@@ -4,16 +4,16 @@ import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../di';
-import { environment } from '../../environments/environment';
-import { IImportResult } from '../../services';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../../di';
+import { environment } from '../../../../environments/environment';
+import { IImportResult } from '../../../../services';
+import { BaseComponent } from '../../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './import-from-project.component.html',
+  templateUrl: './migrate-content-items.component.html',
 })
-export class ImportFromProjectComponent extends BaseComponent {
+export class MigrateContentItemsComponent extends BaseComponent {
 
   public importCompleted: boolean = false;
   public formGroup: FormGroup;
@@ -74,11 +74,11 @@ export class ImportFromProjectComponent extends BaseComponent {
 
     super.startLoading();
 
-    super.subscribeToObservable(this.dependencies.importService.importFromProject({
+    super.subscribeToObservable(this.dependencies.importService.importContentItemsWithDeliveryApi({
       languages: languages,
       sourceProjectId: sourceProjectId,
-      targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
+      targetProjectId: targetProjectId,
     }).pipe(
 
       map((importResult) => {
@@ -96,7 +96,7 @@ export class ImportFromProjectComponent extends BaseComponent {
         super.detectChanges();
         return throwError(error);
       })
-    ))
+    ));
   }
 
   private resetErrors(): void {

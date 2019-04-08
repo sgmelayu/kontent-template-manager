@@ -6,11 +6,11 @@ import {
 } from 'kentico-cloud-content-management';
 
 import {
-    IAssetModel,
+    ICMAssetModel,
     IContentItemModel,
     IContentTypeModel,
-    IEmbeddedAsset,
     ILanguageVariantModel,
+    ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
 
@@ -19,13 +19,22 @@ export interface IImportFromFileConfig {
     apiKey: string;
 }
 
-export interface IImportFromProjectConfig {
-    languages: string[],
+export interface IImportFromProjectWithCMConfig {
+    languages: string[];
+    targetProjectId: string;
+    targetProjectCmApiKey: string;
+    sourceProjectId: string;
+    sourceProjectCmApiKey: string;
+}
+
+export interface IImportFromProjectWithDeliveryConfig {
+    languages: string[];
     targetProjectId: string;
     targetProjectCmApiKey: string;
     sourceProjectId: string;
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface IImportConfig {
 }
 
@@ -38,8 +47,15 @@ export interface IContentItemImportPrerequisities {
     contentTypes: IImportContentTypeResult[];
 }
 
+export interface ILanguageVariantsImportPrerequisities {
+    assets: IImportAssetResult[];
+    contentItems: IImportContentItemResult[];
+    taxonomies: IImportTaxonomyResult[];
+    contentTypes: IImportContentTypeResult[];
+}
+
 export interface IImportContentItemResult {
-    originalItem: IContentItemModel;
+    originalItem: ISlimContentItemModel;
     importedItem: ContentItemModels.ContentItem;
 }
 
@@ -55,50 +71,41 @@ export interface IImportTaxonomyResult {
 
 export interface IImportAssetResult {
     importedItem: AssetModels.Asset;
-    embeddedAsset: IEmbeddedAsset;
+    originalItem: ICMAssetModel;
 }
 
-export interface IImportContentItemsResult {
-    contentItems: IImportContentItemResult[];
-    languageVariants: ICreateLanguageVariantResult[];
-    assets: IImportAssetResult[];
+export interface IImportLanguageVariantsResult {
+    importedItem: LanguageVariantModels.ContentItemLanguageVariant;
+    originalItem: ILanguageVariantModel;
 }
 
 export interface IImportResult {
     importedContentTypes: IImportContentTypeResult[];
     importedContentItems: IImportContentItemResult[];
-    importedLanguageVariants: ICreateLanguageVariantResult[],
+    importedLanguageVariants: IImportLanguageVariantsResult[];
     importedTaxonomies: IImportTaxonomyResult[];
     publishedItems: IPublishItemRequest[];
-    assets: IImportAssetResult[];
-}
-
-export interface ICreateLanguageVariantResult {
-    languageVariant: ILanguageVariantModel;
-    assets: IImportAssetResult[];
-    languageCodename: string;
-}
-
-export interface ICreateContentItemWithAssetsResult {
-    importedContentItem: ContentItemModels.ContentItem;
-    assetImportResult: IImportAssetResult[];
+    importedAssets: IImportAssetResult[];
 }
 
 export interface IPublishItemRequest {
     itemId: string;
-    languageCodename: string;
+    languageId: string;
 }
 
 export interface IAssetFromFile {
     data: Blob;
-    embeddedAsset: IEmbeddedAsset;
+    embeddedAsset: ICMAssetModel;
 }
 
 export interface IImportData {
+    targetProjectId: string;
     targetClient: IContentManagementClient;
     contentTypes: IContentTypeModel[];
-    contentItems: IContentItemModel[];
+    contentItems: ISlimContentItemModel[];
+    languageVariants: ILanguageVariantModel[];
     taxonomies: ITaxonomyModel[];
+    assets: ICMAssetModel[];
     assetsFromFile: IAssetFromFile[];
 }
 
@@ -110,5 +117,5 @@ export interface IMigrateContentItemsData {
 
 export interface IGetAssetData {
     blob: Blob;
-    embeddedAsset: IEmbeddedAsset;
+    asset: ICMAssetModel;
 }

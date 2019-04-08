@@ -24,16 +24,22 @@
 
     <mat-sidenav #sidenav opened [mode]="isSmallScreen ? 'over' : 'side'" [opened]="isSmallScreen ? 'false' : 'true'"
         class="w-layout-side-menu">
-        <a fxLayout="row" fxLayoutAlign="start center" *ngFor="let item of navigationItems"
-            class="w-layout-side-item active" [class.active]="menuItemIsActive(item.routerLink)"
-            [routerLink]="item.routerLink">
-            <div fxLayout="column" class="push-right">
-                <mat-icon>{{ item.icon }}</mat-icon>
+        <ng-container *ngFor="let item of navigationItems">
+            <a *ngIf="item.type === 'link'" fxLayout="row" fxLayoutAlign="start center" class="w-layout-side-item active"
+                [class.active]="menuItemIsActive(item.routerLink)" [routerLink]="item.routerLink">
+                <div fxLayout="column" class="push-right">
+                    <mat-icon>{{ item.icon }}</mat-icon>
+                </div>
+                <div fxLayout="column" fxFlex>
+                    {{ item.title}}
+                </div>
+            </a>
+            <div *ngIf="item.type === 'section'" fxLayout="row" fxLayoutAlign="start center" class="w-layout-side-section">
+                <div  fxLayout="column" fxFlex="100%">
+                    {{ item.title }}
+                </div>
             </div>
-            <div fxLayout="column" fxFlex>
-                {{ item.title}}
-            </div>
-        </a>
+        </ng-container>
     </mat-sidenav>
 
     <div class="w-layout-content">

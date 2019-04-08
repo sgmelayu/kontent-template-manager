@@ -26,18 +26,40 @@ export interface IContentTypeModel {
 export interface ICMAssetModel {
     id: string;
     fileName: string;
-    title: string | null;
+    title?: string;
     type: string;
     externalId?: string;
+    binaryData: Blob;
+
+    deliveryUrl: string;
 }
 
 export interface IContentTypeElementModel {
     [key: string]: any;
     codename: string;
-    type: string;
+    type: ElementType;
     name?: string;
     taxonomyGroup?: string;
     options: IElementOptionModel[];
+    mode?: ElementMode;
+}
+
+export enum ElementMode {
+    single = 'single',
+    multiple = 'multiple'
+}
+export enum ElementType {
+    text = 'text',
+    richText = 'rich_text',
+    number = 'number',
+    multipleChoice = 'multiple_choice',
+    dateTime = 'date_time',
+    asset = 'asset',
+    modularContent = 'modular_content',
+    taxonomy = 'taxonomy',
+    urlSlug = 'url_slug',
+    guidelines = 'guidelines',
+    snippet = 'snippet'
 }
 
 export interface IElementOptionModel {
@@ -60,13 +82,15 @@ export interface ISlimContentItemModel {
     id: string;
     name: string;
     codename: string;
-    type: {
-        id: string;
-    };
-    sitemapLocations: [{
-        id: string;
-    }];
+    typeId?: string;
+    typeCodename: string;
     externalId?: string;
+}
+
+export interface IDeliveryContentItemsResult {
+    contentItems: ISlimContentItemModel[];
+    assets: ICMAssetModel[];
+    languageVariants: ILanguageVariantModel[];
 }
 
 export interface IContentItemModel {
@@ -100,8 +124,31 @@ export interface IReferenceModel {
 }
 
 export interface ILanguageVariantModel {
-    item: IReferenceModel;
-    language: IReferenceModel
+    itemId: string;
+    itemCodename: string;
+    languageCodename: string;
+    elements: IContentItemElement[];
+}
+
+export interface IAssetElementValue {
+    name: string;
+    type: string;
+    size: number;
+    description: string;
+    url: string;
+}
+
+export interface IMultipleChoiceElementValue {
+    codename: string;
+    name: string;
+}
+
+export type IElementValue = undefined | string | number | string[] | IMultipleChoiceElementValue[] | IAssetElementValue[];
+
+export interface IContentItemElement {
+    elementCodename: string;
+    value: IElementValue;
+    elementModel: IContentTypeElementModel;
 }
 
 export interface IFieldModel {

@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { MediaObserver } from '@angular/flex-layout';
 import { Router } from '@angular/router';
 
-import { CleanupService, ExportService, ImportService, ProcessingService } from '../services';
+import {
+    CleanupService,
+    ExportService,
+    ImportService,
+    ProcessingService,
+} from '../services';
 
 @Injectable()
 export class ComponentDependencies {

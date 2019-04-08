@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 
-import { ComponentDependencies } from '../../di';
-import { BaseComponent } from '../core/base.component';
+import { ComponentDependencies } from '../../../di';
+import { BaseComponent } from '../../core/base.component';
 
 @Component({
   selector: 'lib-message',

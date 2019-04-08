@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
     ContentItem,
     DeliveryClient,
+    FieldContracts,
     FieldType,
     IDeliveryClient,
     IDeliveryClientConfig,
@@ -10,8 +11,23 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { observableHelper } from '../../utilities';
-import { IAssetModel, IContentItemModel, IContentTypeModel, IEmbeddedAsset, ITaxonomyModel } from '../shared/shared.models';
+import { observableHelper, stringHelper } from '../../utilities';
+import {
+    ElementType,
+    IAssetElementValue,
+    IAssetModel,
+    ICMAssetModel,
+    IContentItemElement,
+    IContentItemModel,
+    IContentTypeModel,
+    IDeliveryContentItemsResult,
+    IElementValue,
+    IEmbeddedAsset,
+    ILanguageVariantModel,
+    IMultipleChoiceElementValue,
+    ISlimContentItemModel,
+    ITaxonomyModel,
+} from '../shared/shared.models';
 
 @Injectable()
 export class DeliveryFetchService {
@@ -31,9 +47,14 @@ export class DeliveryFetchService {
                 map(response => {
                     allTypes.push(...response.types.map(m => {
                         return <IContentTypeModel>{
+
                             elements: m.elements,
-                            system: m.system,
-                            elementsWithOriginalCodename: []
+                            system: {
+                                codename: m.system.codename,
+                                id: m.system.id,
+                                name: m.system.name
+                            }
+
                         }
                     }));
 
@@ -73,13 +94,17 @@ export class DeliveryFetchService {
             );
     }
 
-    getAllContentItems(projectId: string, languageCodenames: string[]): Observable<IContentItemModel[]> {
+    getAllContentItems(projectId: string, languageCodenames: string[]): Observable<IDeliveryContentItemsResult> {
         const contentItems: IContentItemModel[] = [];
         const obs: Observable<void>[] = [];
 
         if (languageCodenames.length === 0) {
             // get content items in default language withous specifying any language param
-            return this.getContentItemsForLanguage(projectId, contentItems, undefined, undefined);
+            return this.getContentItemsForLanguage(projectId, contentItems, undefined, undefined).pipe(
+                map(result => {
+                    return this.processContentItemsResult(result);
+                })
+            );
         }
 
         for (const languageCodename of languageCodenames) {
@@ -94,25 +119,119 @@ export class DeliveryFetchService {
 
         return observableHelper.flatMapObservables(obs, 50).pipe(
             map(() => {
-                return this.filterIdenticalContentItems(contentItems);
+                return this.processContentItemsResult(contentItems);
             })
         )
+    }
+
+    processContentItemsResult(contentItems: IContentItemModel[]): IDeliveryContentItemsResult {
+        const assets: ICMAssetModel[] = [];
+        const slimContentItems: ISlimContentItemModel[] = [];
+        const languageVariants: ILanguageVariantModel[] = [];
+
+        for (const contentItem of contentItems) {
+            assets.push(...contentItem.assets.map(m => <ICMAssetModel>{
+                deliveryUrl: m.asset.url,
+                fileName: m.asset.name,
+                id: stringHelper.newGuid(),
+                type: m.asset.type
+            }));
+
+            slimContentItems.push(
+                {
+                    codename: contentItem.system.codename,
+                    id: contentItem.system.id,
+                    name: contentItem.system.name,
+                    typeId: undefined,
+                    typeCodename: contentItem.system.type
+                }
+            )
+
+            languageVariants.push(this.extractLanguageVariant(contentItem));
+        }
+
+        return {
+            assets: assets,
+            contentItems: this.filterIdenticalContentItems(slimContentItems),
+            languageVariants: languageVariants
+        }
+    }
+
+    getContentItemByCodename(projectId: string, codename: string): Observable<IContentItemModel> {
+        return this.getDeliveryClient({
+            projectId: projectId
+        })
+            .item(codename)
+            .toObservable().pipe(
+                map(response => {
+                    const item = response.item;
+
+                    return <IContentItemModel>{
+                        elements: item.elements,
+                        system: item.system,
+                        assets: this.extractAssets(item),
+                        linkedItemCodenames: this.extractLinkedItemCodenames(item)
+                    };
+                })
+            )
     }
 
     getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
         return new DeliveryClient(config);
     }
 
-    private filterIdenticalContentItems(contentItems: IContentItemModel[]): IContentItemModel[] {
-        return contentItems.reduce((unique: IContentItemModel[], item) => {
-            const existingItem = unique.find(m => m.system.codename === item.system.codename && m.system.language === item.system.language);
+    private extractLanguageVariant(contentItem: IContentItemModel): ILanguageVariantModel {
+        if (!contentItem.system.language) {
+            throw Error(`Invalid or missing language for content item '${contentItem.system.codename}'`);
+        }
+
+        const elements: IContentItemElement[] = [];
+        for (const elementCodename of Object.keys(contentItem.elements)) {
+            const field = contentItem.elements[elementCodename];
+            let fieldValue: IElementValue = undefined;
+
+            if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
+                const assetFieldValue = field.value as FieldContracts.IAssetContract[];
+                fieldValue = <IAssetElementValue[]>assetFieldValue;
+               
+            } 
+            if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
+                const multipleFieldValue = field.value as FieldContracts.IMultipleChoiceOptionContract[];
+                fieldValue = <IMultipleChoiceElementValue[]>multipleFieldValue;
+            } 
+            else {
+                fieldValue = field.value;
+            }
+
+            elements.push({
+                value: fieldValue,
+                elementCodename: field.name,
+                elementModel: {
+                    codename: elementCodename,
+                    type: field.type as ElementType,
+                    mode: undefined,
+                    name: field.name,
+                    options: [],
+                    taxonomyGroup: field.taxonomy_group
+                }
+            })
+        }
+
+        return {
+            itemCodename: contentItem.system.codename,
+            itemId: contentItem.system.id,
+            languageCodename: contentItem.system.language,
+            elements: elements
+        }
+    }
+
+    private filterIdenticalContentItems(contentItems: ISlimContentItemModel[]): ISlimContentItemModel[] {
+        return contentItems.reduce((unique: ISlimContentItemModel[], item) => {
+            const existingItem = unique.find(m => m.codename === item.codename);
             return existingItem ? unique : [...unique, item]
         }, []);
     }
 
-    /**
-     * This is required because if rich text of item contains components, they are not fetched by standard delivery and need to be added from given response
-     */
     private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<ContentItem>, contentItems: IContentItemModel[]): void {
         for (const linkedItemCodename of linkedItemCodenames) {
             const existingItem = contentItems.find(m => m.system.codename === linkedItemCodename);

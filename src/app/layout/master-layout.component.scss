@@ -24,15 +24,26 @@
     display: block;
     text-decoration: none;
     padding: 12px;
-    color: $primaryColor;
+    color: black;
+    font-size: 14px;
     cursor: pointer;
     &:hover {
-        background-color: $accentColor;
-        color: $accentColorContrast;
+        /* background-color: $accentColor; */
+        color: $primaryColor;
     }
 
     &.active {
-        background-color: rgb(238, 238, 238);
+       /* background-color: rgb(238, 238, 238); */
         color: $primaryColor;
     }
+}
+
+.w-layout-side-section {
+    display: block;
+    text-align: center;
+    background-color: darken($primaryColor, 20);
+    text-decoration: none;
+    padding: 12px;
+    font-size: 12px;
+    color: lighten($primaryColor, 40);
 }

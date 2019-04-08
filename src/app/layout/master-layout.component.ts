@@ -6,9 +6,10 @@ import { stringHelper } from '../../utilities';
 import { BaseComponent } from '../core/base.component';
 
 interface INavigationItem {
-  routerLink: string;
+  routerLink?: string;
   title: string;
-  icon: string;
+  icon?: string;
+  type: 'link' | 'section'
 }
 
 @Component({
@@ -24,29 +25,50 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public navigationItems: INavigationItem[] = [
     {
+      title: 'Import',
+      type: 'section'
+    },
+    {
       title: 'Import from project',
       routerLink: '/',
-      icon: 'settings_backup_restore'
+      icon: 'settings_backup_restore',
+      type: 'link'
     },
     {
       title: 'Import from file',
       routerLink: '/import-from-file',
-      icon: 'settings_backup_restore'
+      icon: 'settings_backup_restore',
+      type: 'link'
+    },
+    {
+      title: 'Item migration',
+      type: 'section'
     },
     {
       title: 'Migrate items between projects',
       routerLink: '/migrate-content-items',
-      icon: 'sync'
+      icon: 'sync',
+      type: 'link'
+    },
+    {
+      title: 'Export',
+      type: 'section'
     },
     {
       title: 'Export',
       routerLink: '/export',
-      icon: 'cloud_download'
+      icon: 'cloud_download',
+      type: 'link'
+    },
+    {
+      title: 'Common',
+      type: 'section'
     },
     {
       title: 'Cleanup',
       routerLink: '/cleanup',
-      icon: 'delete'
+      icon: 'delete',
+      type: 'link'
     }
   ];
 

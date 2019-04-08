@@ -1,11 +1,6 @@
 <h1>
-    Migrate data
+    Import from project
 </h1>
-
-<p>
-    Use this to migrate data (content items & assets) from one project to another. 
-    Requirement for this to work is to have matching content types and taxonomies. 
-</p>
 
 <div class="push-bottom" *ngIf="error">
     <lib-message [type]="'error'" [text]="error"></lib-message>
@@ -88,7 +83,7 @@
                         imported
                     </mat-list-item>
                     <mat-list-item role="listitem">
-                        <strong>{{ importResult.assets.length }}</strong>&nbsp;imported assets
+                        <strong>{{ importResult.importedAssets.length }}</strong>&nbsp;imported assets
                     </mat-list-item>
                     <mat-list-item role="listitem">
                         <strong>{{ importResult.publishedItems.length }}</strong>&nbsp;published content items

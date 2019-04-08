@@ -3,6 +3,7 @@ export const environment = {
   appName: 'Template manager',
   defaultProjects: {
     languages: '',
+    sourceProjectApiKey: '',
     sourceProjectId: '',
     targetProjectId: '',
     targetProjectApiKey: ''
@@ -11,6 +12,8 @@ export const environment = {
   export: {
     filenames: {
       packagePrefix: 'export_',
+      assets: 'assets.json',
+      languageVariants: 'language-variants.json',
       contentItems: 'content-items.json',
       contentTypes: 'content-types.json',
       taxonomies: 'taxonomies.json',
