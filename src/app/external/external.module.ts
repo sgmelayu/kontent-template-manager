@@ -4,6 +4,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import {
   MatButtonModule,
   MatCardModule,
+  MatCheckboxModule,
   MatDialogModule,
   MatDividerModule,
   MatFormFieldModule,
@@ -33,7 +34,8 @@ import { FileDropModule } from 'ngx-file-drop';
     MatDividerModule,
     MatListModule,
     MatDialogModule,
-    FileDropModule
+    FileDropModule,
+    MatCheckboxModule
   ],
 })
 export class ExternalModule { }

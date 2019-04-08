@@ -4,10 +4,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ComponentsModule } from '../components/components.module';
 import { CoreModule } from '../core/core.module';
-import { ExportComponent } from './cm/export/export.component';
-import { ImportFromFileComponent } from './cm/import/import-from-file.component';
-import { ImportFromProjectComponent } from './cm/import/import-from-project.component';
-import { MigrateContentItemsComponent } from './cm/import/migrate-content-items.component';
+import { ExportComponent } from './export/export.component';
+import { ImportFromFileComponent } from './import/import-from-file.component';
+import { ImportFromProjectComponent } from './import/import-from-project.component';
+import { MigrateContentItemsComponent } from './import/migrate-content-items.component';
 import { CleanupConfirmComponent } from './shared/cleanup/cleanup-confirm.component';
 import { CleanupComponent } from './shared/cleanup/cleanup.component';
 

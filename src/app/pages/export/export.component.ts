@@ -4,9 +4,9 @@ import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../../../di';
-import { environment } from '../../../../environments/environment';
-import { BaseComponent } from '../../../core/base.component';
+import { ComponentDependencies } from '../../../di';
+import { environment } from '../../../environments/environment';
+import { BaseComponent } from '../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

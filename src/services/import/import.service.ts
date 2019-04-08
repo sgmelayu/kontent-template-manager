@@ -5,13 +5,12 @@ import {
     IContentManagementClient,
     IContentManagementClientConfig,
 } from 'kentico-cloud-content-management';
-import { from, Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { observableHelper } from '../../utilities';
-import { CmFetchService } from '../fetch/cm-fetch.service';
-import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
+import { ExportService } from '../export/export.service';
 import {
     ICMAssetModel,
     IContentTypeModel,
@@ -21,22 +20,20 @@ import {
 } from '../shared/shared.models';
 import { WorkflowService } from '../workflow/workflow.service';
 import {
-    IAssetFromFile,
     IImportConfig,
     IImportContentTypeResult,
     IImportData,
     IImportFromFileConfig,
+    IImportFromProjectWithDeliveryConfig,
     IImportResult,
     IImportTaxonomyResult,
     IPublishItemRequest,
-    IImportFromProjectWithDeliveryConfig,
 } from './import.models';
 import { AssetsImportService } from './types/assets-import.service';
 import { ContentItemsImportService } from './types/content-items-import.service';
 import { ContentTypesImportService } from './types/content-types-import.service';
 import { LanguageVariantsImportService } from './types/language-variants-import.service';
 import { TaxonomiesImportService } from './types/taxonomies-import.service';
-import { ExportService } from '../export/export.service';
 
 @Injectable()
 export class ImportService {
@@ -45,8 +42,6 @@ export class ImportService {
         private contentTypesImportService: ContentTypesImportService,
         private contentItemsImportService: ContentItemsImportService,
         private taxonomiesImportService: TaxonomiesImportService,
-        private deliveryFetchService: DeliveryFetchService,
-        private cmFetchService: CmFetchService,
         private workflowService: WorkflowService,
         private exportService: ExportService,
         private languageVariantsImportService: LanguageVariantsImportService,
@@ -135,7 +130,7 @@ export class ImportService {
                 );
             }),
             flatMap((importData) => {
-                return this.import(importData, {});
+                return this.import(importData, config);
             }),
             map(result => {
                 return result;
@@ -170,11 +165,11 @@ export class ImportService {
                     data.targetClient,
                     data.contentItems,
                     {
-                        contentTypes: data.contentTypes.map(m => <IImportContentTypeResult> {
+                        contentTypes: data.contentTypes.map(m => <IImportContentTypeResult>{
                             importedItem: m,
                             originalItem: m
                         }),
-                        taxonomies: data.taxonomies.map(m => <IImportTaxonomyResult> {
+                        taxonomies: data.taxonomies.map(m => <IImportTaxonomyResult>{
                             importedItem: m,
                             originalItem: m
                         })
@@ -242,47 +237,31 @@ export class ImportService {
                 )
             }),
             flatMap(() => {
-                return this.workflowService.publishContentItems(result.importedLanguageVariants.map(languageVariantResult => {
-                    if (!languageVariantResult.importedItem.item.id) {
-                        throw Error(`Cannot publish item because item id is missing`);
-                    }
-                    if (!languageVariantResult.importedItem.language.id) {
-                        throw Error(`Cannot publish item because language id is missing for item '${languageVariantResult.importedItem.item.id}'`);
-                    }
-                    return <IPublishItemRequest> {
-                        itemId: languageVariantResult.importedItem.item.id,
-                        languageId: languageVariantResult.importedItem.language.id
-                    };
-                }), data.targetClient, config).pipe(
-                    map((response) => {
-                        result.publishedItems = response;
-                    })
-                );
+                if (config.publishAllItems) {
+                    return this.workflowService.publishContentItems(result.importedLanguageVariants.map(languageVariantResult => {
+                        if (!languageVariantResult.importedItem.item.id) {
+                            throw Error(`Cannot publish item because item id is missing`);
+                        }
+                        if (!languageVariantResult.importedItem.language.id) {
+                            throw Error(`Cannot publish item because language id is missing for item '${languageVariantResult.importedItem.item.id}'`);
+                        }
+                        return <IPublishItemRequest>{
+                            itemId: languageVariantResult.importedItem.item.id,
+                            languageId: languageVariantResult.importedItem.language.id
+                        };
+                    }), data.targetClient, config).pipe(
+                        map((response) => {
+                            result.publishedItems = response;
+                        })
+                    );
+                } else {
+                    result.publishedItems = [];
+                }
+                return of(undefined);
             }),
             map(() => {
                 // all finished
                 return result;
-            })
-        );
-    }
-
-    private getAssetFile(response: any, asset: ICMAssetModel): Observable<IAssetFromFile> {
-        const files = response.files;
-        const assetsFolderName = environment.export.filenames.assetsFolder;
-
-        const fullFilePath = `${assetsFolderName}/${asset.id}/${asset.fileName}`;
-        const assetFile = files[fullFilePath];
-
-        if (!assetFile) {
-            throw Error(`Invalid file '${fullFilePath}'`);
-        }
-
-        return from(assetFile.async('blob')).pipe(
-            map(data => {
-                return <IAssetFromFile> {
-                    data: data as Blob,
-                    embeddedAsset: asset
-                };
             })
         );
     }

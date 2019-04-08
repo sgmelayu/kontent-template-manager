@@ -14,12 +14,12 @@ import {
     ITaxonomyModel,
 } from '../shared/shared.models';
 
-export interface IImportFromFileConfig {
+export interface IImportFromFileConfig extends IImportConfig {
     projectId: string;
     apiKey: string;
 }
 
-export interface IImportFromProjectWithCMConfig {
+export interface IImportFromProjectWithCMConfig extends IImportConfig {
     languages: string[];
     targetProjectId: string;
     targetProjectCmApiKey: string;
@@ -27,7 +27,7 @@ export interface IImportFromProjectWithCMConfig {
     sourceProjectCmApiKey: string;
 }
 
-export interface IImportFromProjectWithDeliveryConfig {
+export interface IImportFromProjectWithDeliveryConfig extends IImportConfig {
     languages: string[];
     targetProjectId: string;
     targetProjectCmApiKey: string;
@@ -36,6 +36,7 @@ export interface IImportFromProjectWithDeliveryConfig {
 
 // tslint:disable-next-line:no-empty-interface
 export interface IImportConfig {
+    publishAllItems: boolean
 }
 
 export interface IContentTypeImportPrerequisities {

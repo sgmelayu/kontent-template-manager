@@ -1,6 +1,11 @@
 <h1>
-    Import from project
+    Migrate data
 </h1>
+
+<p>
+    Use this to migrate data (content items & assets) from one project to another.
+    Requirement for this to work is to have matching content types and taxonomies.
+</p>
 
 <div class="push-bottom" *ngIf="error">
     <lib-message [type]="'error'" [text]="error"></lib-message>
@@ -22,7 +27,9 @@
                 </mat-form-field>
 
                 <mat-form-field class="push-top w-full-width">
-                    <input autocomplete="off" matInput placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language." formControlName="languages">
+                    <input autocomplete="off" matInput
+                        placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language."
+                        formControlName="languages">
                 </mat-form-field>
 
                 <div class="push-top" *ngIf="languagesWarningMessage">
@@ -46,6 +53,16 @@
                     <input autocomplete="off" matInput placeholder="CM API Key" formControlName="targetProjectCmApiKey"
                         required>
                 </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+
+        <div libTitle1 class="push-top">
+            Configuration
+        </div>
+
+        <mat-card>
+            <mat-card-content>
+                <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
             </mat-card-content>
         </mat-card>
 

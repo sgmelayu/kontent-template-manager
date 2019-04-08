@@ -5,10 +5,10 @@ import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../../../di';
-import { environment } from '../../../../environments/environment';
-import { IImportResult } from '../../../../services';
-import { BaseComponent } from '../../../core/base.component';
+import { ComponentDependencies } from '../../../di';
+import { environment } from '../../../environments/environment';
+import { IImportResult } from '../../../services';
+import { BaseComponent } from '../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +37,7 @@ export class ImportFromFileComponent extends BaseComponent {
     this.formGroup = this.fb.group({
       projectId: [environment.defaultProjects.targetProjectId, Validators.required],
       cmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
+      publishAllItems: [true],
     });
   }
 
@@ -53,6 +54,7 @@ export class ImportFromFileComponent extends BaseComponent {
         this.dependencies.importService.importFromFile({
           apiKey: config.apiKey,
           projectId: config.projectId,
+          publishAllItems: config.publishAllItems
         }, config.file).pipe(
           map((importResult) => {
             super.stopLoading();
@@ -116,10 +118,12 @@ export class ImportFromFileComponent extends BaseComponent {
   private getConfig(): {
     projectId: string,
     apiKey: string,
-    file: File
+    file: File,
+    publishAllItems: boolean
   } | undefined {
     const projectId = this.formGroup.controls['projectId'].value;
     const cmApiKey = this.formGroup.controls['cmApiKey'].value;
+    const publishAllItems = this.formGroup.controls['publishAllItems'].value;
 
     if (!projectId) {
       this.error = 'Invalid project id';
@@ -139,7 +143,8 @@ export class ImportFromFileComponent extends BaseComponent {
     return {
       apiKey: cmApiKey,
       projectId: projectId,
-      file: this.file
+      file: this.file,
+      publishAllItems: publishAllItems
     };
   }
 

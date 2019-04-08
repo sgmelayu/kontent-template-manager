@@ -4,16 +4,16 @@ import { CloudError } from 'kentico-cloud-core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ComponentDependencies } from '../../../../di';
-import { environment } from '../../../../environments/environment';
-import { IImportResult } from '../../../../services';
-import { BaseComponent } from '../../../core/base.component';
+import { ComponentDependencies } from '../../../di';
+import { environment } from '../../../environments/environment';
+import { IImportResult } from '../../../services';
+import { BaseComponent } from '../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './import-from-project.component.html',
+  templateUrl: './migrate-content-items.component.html',
 })
-export class ImportFromProjectComponent extends BaseComponent {
+export class MigrateContentItemsComponent extends BaseComponent {
 
   public importCompleted: boolean = false;
   public formGroup: FormGroup;
@@ -54,6 +54,7 @@ export class ImportFromProjectComponent extends BaseComponent {
       targetProjectId: [environment.defaultProjects.targetProjectId, Validators.required],
       languages: [environment.defaultProjects.languages],
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
+      publishAllItems: [true],
     });
   }
 
@@ -70,15 +71,17 @@ export class ImportFromProjectComponent extends BaseComponent {
     const sourceProjectId = this.formGroup.controls['sourceProjectId'].value;
     const targetProjectId = this.formGroup.controls['targetProjectId'].value;
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
+    const publishAllItems = this.formGroup.controls['publishAllItems'].value;
     const languages = this.parsedLanguages;
 
     super.startLoading();
 
-    super.subscribeToObservable(this.dependencies.importService.importFromProjectWithDeliveryApi({
+    super.subscribeToObservable(this.dependencies.importService.importContentItemsWithDeliveryApi({
       languages: languages,
       sourceProjectId: sourceProjectId,
-      targetProjectId: targetProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
+      targetProjectId: targetProjectId,
+      publishAllItems: publishAllItems
     }).pipe(
 
       map((importResult) => {
@@ -96,7 +99,7 @@ export class ImportFromProjectComponent extends BaseComponent {
         super.detectChanges();
         return throwError(error);
       })
-    ))
+    ));
   }
 
   private resetErrors(): void {
