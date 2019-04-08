@@ -8,6 +8,8 @@ import { catchError, map } from 'rxjs/operators';
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
 import { IImportData, IImportFromFileConfig, IImportResult } from '../../../services';
+import { previewHelper } from '../../components/preview/preview-helper';
+import { IDataPreviewWrapper } from '../../components/preview/preview-models';
 import { BaseComponent } from '../../core/base.component';
 
 @Component({
@@ -21,7 +23,21 @@ export class ImportFromFileComponent extends BaseComponent {
   public file?: File;
   public importData?: IImportData;
 
-  public step: 'initial' | 'preview' | 'importing' | 'completed' = 'initial'
+  public step: 'initial' | 'preview' | 'importing' | 'completed' = 'initial';
+
+  public get importPreviewData(): IDataPreviewWrapper | undefined {
+    if (!this.importData) {
+      return undefined;
+    }
+    return previewHelper.convertFromImportData(this.importData);
+  }
+
+  public get resultPreviewData(): IDataPreviewWrapper | undefined {
+    if (!this.importResult) {
+      return undefined;
+    }
+    return previewHelper.convertFromImportResult(this.importResult);
+  }
 
   public get canSubmit(): boolean {
     return this.formGroup.valid && (this.file ? true : false);

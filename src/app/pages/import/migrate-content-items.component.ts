@@ -8,6 +8,8 @@ import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
 import { IImportData, IImportFromProjectWithDeliveryConfig, IImportResult } from '../../../services';
 import { BaseComponent } from '../../core/base.component';
+import { IDataPreviewWrapper } from '../../components/preview/preview-models';
+import { previewHelper } from '../../components/preview/preview-helper';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,6 +20,20 @@ export class MigrateContentItemsComponent extends BaseComponent {
   public formGroup: FormGroup;
   public error?: string;
   public step: 'initial' | 'preview' | 'importing' | 'completed' = 'initial'
+
+  public get importPreviewData(): IDataPreviewWrapper | undefined {
+    if (!this.importData) {
+      return undefined;
+    }
+    return previewHelper.convertFromImportData(this.importData);
+  }
+
+  public get resultPreviewData(): IDataPreviewWrapper | undefined {
+    if (!this.importResult) {
+      return undefined;
+    }
+    return previewHelper.convertFromImportResult(this.importResult);
+  }
 
   public get canSubmit(): boolean {
     return this.formGroup.valid;

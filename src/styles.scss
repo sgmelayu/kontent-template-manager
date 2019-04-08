@@ -1,4 +1,5 @@
 @import './assets/styles/material-theme.scss';
+
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
@@ -20,8 +21,12 @@ body {
 }
 
 .w-import-viewport {
-  width: 100%;
-  height: 380px;  
+    width: 100%;
+    height: 380px;
+}
+
+.w-text-center {
+    text-align: center;
 }
 
 .w-message {
@@ -73,5 +78,6 @@ body {
             padding: 8px 12px;
         }
     }
-}
 
+
+}

@@ -1,26 +1,55 @@
-<div *ngIf="importData">
+<div *ngIf="previewData">
 
     <div fxLayout="row wrap" fxLayoutGap="16px" fxLayoutAlign="start center">
-        <div *ngIf="showType('contentTypes')" fxLayout="column" class="pad" [class.w-inactive-item]="activeType !== 'contentTypes'"
+        <div *ngIf="showType('contentTypes')" fxLayout="column" class="pad"
+            [class.w-inactive-item]="activeType !== 'contentTypes'"
             [class.w-active-item]="activeType === 'contentTypes'" fxFlex.lt-md="50%" (click)="setType('contentTypes')">
-            Content types
+            <div>
+                Content types
+            </div>
+            <div class="push-top-sm w-text-center" libTextCaption>
+                {{ previewData.contentTypes.length }}
+            </div>
         </div>
-        <div *ngIf="showType('taxonomies')" fxLayout="column" class="pad" [class.w-inactive-item]="activeType !== 'taxonomies'"
-            [class.w-active-item]="activeType === 'taxonomies'" fxFlex.lt-md="50%" (click)="setType('taxonomies')">
-            Taxonomies
+        <div *ngIf="showType('taxonomies')" fxLayout="column" class="pad"
+            [class.w-inactive-item]="activeType !== 'taxonomies'" [class.w-active-item]="activeType === 'taxonomies'"
+            fxFlex.lt-md="50%" (click)="setType('taxonomies')">
+            <div>
+                Taxonomies
+            </div>
+            <div class="push-top-sm w-text-center" libTextCaption>
+                {{ previewData.taxonomies.length }}
+            </div>
         </div>
         <div *ngIf="showType('assets')" fxLayout="column" class="pad" [class.w-inactive-item]="activeType !== 'assets'"
             [class.w-active-item]="activeType === 'assets'" fxFlex.lt-md="50%" (click)="setType('assets')">
-            Assets
+            <div>
+                Assets
+            </div>
+            <div class="push-top-sm w-text-center" libTextCaption>
+                {{ previewData.assets.length }}
+            </div>
         </div>
-        <div *ngIf="showType('contentItems')" fxLayout="column" class="pad" [class.w-inactive-item]="activeType !== 'contentItems'"
+        <div *ngIf="showType('contentItems')" fxLayout="column" class="pad"
+            [class.w-inactive-item]="activeType !== 'contentItems'"
             [class.w-active-item]="activeType === 'contentItems'" fxFlex.lt-md="50%" (click)="setType('contentItems')">
-            Content items
+            <div>
+                Content items
+            </div>
+            <div class="push-top-sm w-text-center" libTextCaption>
+                {{ previewData.contentItems.length }}
+            </div>
         </div>
-        <div *ngIf="showType('languageVariants')" fxLayout="column" class="pad" [class.w-inactive-item]="activeType !== 'languageVariants'"
+        <div *ngIf="showType('languageVariants')" fxLayout="column" class="pad"
+            [class.w-inactive-item]="activeType !== 'languageVariants'"
             [class.w-active-item]="activeType === 'languageVariants'" fxFlex.lt-md="50%"
             (click)="setType('languageVariants')">
-            Language variants
+            <div>
+                Language variants
+            </div>
+            <div class="push-top-sm w-text-center" libTextCaption>
+                {{ previewData.languageVariants.length }}
+            </div>
         </div>
     </div>
 

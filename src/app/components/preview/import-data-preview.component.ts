@@ -1,19 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 
 import { ComponentDependencies } from '../../../di';
-import { IImportData } from '../../../services';
 import { BaseComponent } from '../../core/base.component';
-
-type ActiveType = 'taxonomies' | 'contentTypes' | 'assets' | 'contentItems' | 'languageVariants'
-
-interface IItemPreview {
-  title: string;
-  data: any;
-}
-
-interface IItemPreviewWithIndex extends IItemPreview {
-  index: number;
-}
+import { ActiveType, IDataPreviewWrapper, IItemPreview, IItemPreviewWithIndex } from './preview-models';
 
 @Component({
   selector: 'lib-import-data-preview',
@@ -23,12 +12,12 @@ interface IItemPreviewWithIndex extends IItemPreview {
 })
 export class ImportDataPreview extends BaseComponent implements OnInit {
 
-  @Input() importData?: IImportData;
+  @Input() previewData?: IDataPreviewWrapper;
   @Input() showTypes: 'all' | 'contentItemsImport' = 'all';
 
   private _activeType?: ActiveType;
 
-  public get activeType(): ActiveType  {
+  public get activeType(): ActiveType {
     if (this._activeType) {
       return this._activeType;
     }
@@ -63,49 +52,28 @@ export class ImportDataPreview extends BaseComponent implements OnInit {
   }
 
   public get activeItems(): IItemPreview[] | undefined {
-    if (!this.importData) {
+    if (!this.previewData) {
       return undefined;
     }
 
     if (this.activeType === 'contentTypes') {
-      return this.importData.contentTypes.map(m => <IItemPreview>{
-        title: m.system.name,
-        data: m
-      });
+      return this.previewData.contentTypes;
     }
 
     if (this.activeType === 'assets') {
-      const files: IItemPreview[] = [];
-      files.push(...this.importData.assets.map(m => <IItemPreview>{
-        title: m.fileName,
-        data: m
-      }));
-      files.push(...this.importData.assetsFromFile.map(m => <IItemPreview>{
-        title: m.embeddedAsset.fileName,
-        data: m
-      }));
-      return files;
+      return this.previewData.assets;
     }
 
     if (this.activeType === 'taxonomies') {
-      return this.importData.taxonomies.map(m => <IItemPreview>{
-        title: m.system.name,
-        data: m
-      });
+      return this.previewData.taxonomies;
     }
 
     if (this.activeType === 'contentItems') {
-      return this.importData.contentItems.map(m => <IItemPreview>{
-        title: m.name,
-        data: m
-      });
+      return this.previewData.contentItems;
     }
 
     if (this.activeType === 'languageVariants') {
-      return this.importData.languageVariants.map(m => <IItemPreview>{
-        title: `${m.itemCodename} [${m.languageCodename}]`,
-        data: m
-      });
+      return this.previewData.languageVariants;
     }
   }
 
@@ -116,7 +84,6 @@ export class ImportDataPreview extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
   }
 
   showType(type: ActiveType): boolean {
@@ -144,6 +111,7 @@ export class ImportDataPreview extends BaseComponent implements OnInit {
 
   setType(type: ActiveType): void {
     this._activeType = type;
+    this.previewedItem = undefined;
     super.detectChanges();
   }
 }

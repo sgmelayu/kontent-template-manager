@@ -58,7 +58,7 @@
         <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Proceed with import</button>
     </div>
 
-    <lib-import-data-preview [importData]="importData"></lib-import-data-preview>
+    <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
 
 </ng-container>
 
@@ -80,29 +80,8 @@
         Overview of imported items:
     </div>
 
-    <mat-card *ngIf="importResult" class="push-top push-bottom">
-        <div>
-            <mat-list role="list">
-                <mat-list-item role="listitem">
-                    <strong>{{ importResult.importedContentTypes.length }}</strong>&nbsp;content types imported
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <strong>{{ importResult.importedTaxonomies.length }}</strong>&nbsp;taxonomies imported
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <strong>{{ importResult.importedContentItems.length }}</strong>&nbsp;content items imported
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <strong>{{ importResult.importedLanguageVariants.length }}</strong>&nbsp;language variants
-                    imported
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <strong>{{ importResult.importedAssets.length }}</strong>&nbsp;imported assets
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <strong>{{ importResult.publishedItems.length }}</strong>&nbsp;published content items
-                </mat-list-item>
-            </mat-list>
-        </div>
-    </mat-card>
+    <div class="push-top">
+        <lib-import-data-preview [previewData]="resultPreviewData"></lib-import-data-preview>
+    </div>
+
 </ng-container>
