@@ -6,7 +6,7 @@ import { delay, flatMap, map } from 'rxjs/operators';
 import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { ProcessingService } from '../../processing/processing.service';
-import { ICMAssetModel } from '../../shared/shared.models';
+import { IAssetModel } from '../../shared/shared.models';
 import { IAssetFromFile, IGetAssetData, IImportAssetResult, IImportConfig } from '../import.models';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AssetsImportService extends BaseService {
         super();
     }
 
-    importAssets(targetClient: IContentManagementClient, assets: ICMAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
+    importAssets(targetClient: IContentManagementClient, assets: IAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
         return this.importAssetsFromModels(targetClient, assets).pipe(
             map((createdContentItems) => {
                 return createdContentItems;
@@ -26,11 +26,11 @@ export class AssetsImportService extends BaseService {
         );
     }
 
-    importAssetsFromFile(targetClient: IContentManagementClient, assets: ICMAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
+    importAssetsFromFile(targetClient: IContentManagementClient, assets: IAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
         return from([]);
     }
 
-    private importAssetsFromModels(targetClient: IContentManagementClient, assets: ICMAssetModel[]): Observable<IImportAssetResult[]> {
+    private importAssetsFromModels(targetClient: IContentManagementClient, assets: IAssetModel[]): Observable<IImportAssetResult[]> {
         const createdAssets: IImportAssetResult[] = [];
         const assetsToCreateObs: Observable<IGetAssetData>[] = [];
         const obs: Observable<void>[] = [];

@@ -10,7 +10,7 @@ import { delay, flatMap, map } from 'rxjs/operators';
 import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
-import { ICMAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
+import { IAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
 import { ICleanupData } from './cleanup.models';
 import { ProcessingService } from '../processing/processing.service';
 
@@ -83,7 +83,7 @@ export class CleanupService extends BaseService {
         return new ContentManagementClient(config);
     }
 
-    private deleteAssets(client: IContentManagementClient, assets: ICMAssetModel[]): Observable<void> {
+    private deleteAssets(client: IContentManagementClient, assets: IAssetModel[]): Observable<void> {
         const obs: Observable<void>[] = [];
 
         for (const asset of assets) {

@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import {
-    ICMAssetModel,
+    IAssetModel,
     IContentItemElement,
     IContentTypeElementModel,
     IContentTypeModel,
@@ -138,7 +138,7 @@ export class CmFetchService extends BaseService {
         }));
     }
 
-    getAllAssets(projectId: string, apiKey: string, assets: ICMAssetModel[], nextPageUrl?: string): Observable<ICMAssetModel[]> {
+    getAllAssets(projectId: string, apiKey: string, assets: IAssetModel[], nextPageUrl?: string): Observable<IAssetModel[]> {
         const query = this.getContentManagementClient(
             {
                 projectId: projectId,
@@ -155,7 +155,7 @@ export class CmFetchService extends BaseService {
             .pipe(
                 map(response => {
                     assets.push(...response.data.items.map(m => {
-                        return <ICMAssetModel>{
+                        return <IAssetModel>{
                             externalId: m.externalId,
                             fileName: m.fileName,
                             id: m.id,

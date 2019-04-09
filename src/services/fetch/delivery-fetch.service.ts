@@ -12,11 +12,12 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { observableHelper, stringHelper } from '../../utilities';
+import { IProcessingItem } from '../processing/processing-models';
+import { ProcessingService } from '../processing/processing.service';
 import {
     ElementType,
     IAssetElementValue,
     IAssetModel,
-    ICMAssetModel,
     IContentItemElement,
     IContentItemModel,
     IContentTypeModel,
@@ -25,12 +26,11 @@ import {
     IEmbeddedAsset,
     ILanguageVariantModel,
     IMultipleChoiceElementValue,
+    IRawAssetModel,
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
-import { ProcessingService } from '../processing/processing.service';
 import { IFetchConfig } from './fetch-models';
-import { IProcessingItem } from '../processing/processing-models';
 
 @Injectable()
 export class DeliveryFetchService {
@@ -178,16 +178,20 @@ export class DeliveryFetchService {
     }
 
     private processContentItemsResult(contentItems: IContentItemModel[]): IDeliveryContentItemsResult {
-        const assets: ICMAssetModel[] = [];
+        const assets: IAssetModel[] = [];
         const slimContentItems: ISlimContentItemModel[] = [];
         const languageVariants: ILanguageVariantModel[] = [];
 
         for (const contentItem of contentItems) {
-            assets.push(...contentItem.assets.map(m => <ICMAssetModel>{
+            assets.push(...contentItem.assets.map(m => <IAssetModel>{
                 deliveryUrl: m.asset.url,
                 fileName: m.asset.name,
                 id: stringHelper.newGuid(),
-                type: m.asset.type
+                type: m.asset.type,
+                description: m.asset.description,
+                size: m.size,
+                externalId: undefined, // N/A Delivery API
+                title: m.name // N/A Delivery API
             }));
 
             slimContentItems.push(
@@ -369,14 +373,18 @@ export class DeliveryFetchService {
         for (const elementCodename of Object.keys(contentItem.elements)) {
             const element = contentItem.elements[elementCodename];
             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
-                const fieldAssets = element.value as IAssetModel[];
+                const fieldAssets = element.value as IRawAssetModel[];
                 for (const asset of fieldAssets) {
                     assets.push({
                         languageCodename: contentItem.system.language,
                         asset: asset,
                         contentItemCodename: contentItem.system.codename,
                         contentItemId: contentItem.system.id,
-                        fieldCodename: elementCodename
+                        fieldCodename: elementCodename,
+                        description: asset.description,
+                        size: asset.size,
+                        type: asset.type,
+                        name: asset.name
                     });
                 }
             }

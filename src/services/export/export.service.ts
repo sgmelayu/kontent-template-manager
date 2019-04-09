@@ -7,7 +7,7 @@ import {
     IContentManagementClient,
     IContentManagementClientConfig,
 } from 'kentico-cloud-content-management';
-import { config, from, Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -22,7 +22,7 @@ import {
     IImportFromProjectWithDeliveryConfig,
 } from '../import/import.models';
 import {
-    ICMAssetModel,
+    IAssetModel,
     IContentTypeModel,
     ILanguageVariantModel,
     ISlimContentItemModel,
@@ -166,7 +166,7 @@ export class ExportService extends BaseService {
                 obs.push(
                     this.readJsonFile(response, environment.export.filenames.assets).pipe(
                         map(assetsString => {
-                            const assets = JSON.parse(assetsString) as ICMAssetModel[];
+                            const assets = JSON.parse(assetsString) as IAssetModel[];
                             importData.assets = assets;
                         }),
 

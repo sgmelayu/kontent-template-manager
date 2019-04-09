@@ -1,8 +1,8 @@
-import { ICMAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
+import { IAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
 
 export interface ICleanupData {
     contentItems: ISlimContentItemModel[];
     contentTypes: IContentTypeModel[];
-    assets: ICMAssetModel[];
+    assets: IAssetModel[];
     taxonomies: ITaxonomyModel[];
 }

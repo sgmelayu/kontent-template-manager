@@ -23,15 +23,15 @@ export interface IContentTypeModel {
     elements: IContentTypeElementModel[];
 }
 
-export interface ICMAssetModel {
+export interface IAssetModel {
     id: string;
     fileName: string;
     title?: string;
     type: string;
     externalId?: string;
-    binaryData: Blob;
-
     deliveryUrl: string;
+    description?: string;
+    size: number;
 }
 
 export interface IContentTypeElementModel {
@@ -89,7 +89,7 @@ export interface ISlimContentItemModel {
 
 export interface IDeliveryContentItemsResult {
     contentItems: ISlimContentItemModel[];
-    assets: ICMAssetModel[];
+    assets: IAssetModel[];
     languageVariants: ILanguageVariantModel[];
 }
 
@@ -159,13 +159,17 @@ export interface IFieldModel {
 
 export interface IEmbeddedAsset {
     languageCodename: string;
-    asset: IAssetModel;
+    asset: IRawAssetModel;
     fieldCodename: string;
     contentItemCodename: string;
     contentItemId: string;
+    type: string;
+    size: number;
+    name: String;
+    description: string;
 }
 
-export interface IAssetModel {
+export interface IRawAssetModel {
     name: string;
     type: string;
     size: number;
