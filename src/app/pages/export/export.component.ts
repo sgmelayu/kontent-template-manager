@@ -41,6 +41,13 @@ export class ExportComponent extends BaseComponent {
     return languagesValue.split(';').map(m => m.trim());
   }
 
+  public get showDownloadButton(): boolean {
+    if (this.importData) {
+      return true;
+    }
+    return false;
+  }
+
   constructor(
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef,
@@ -51,6 +58,18 @@ export class ExportComponent extends BaseComponent {
       projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
       languages: [environment.defaultProjects.languages],
     });
+  }
+
+  handleDownloadFile(): void  {
+    const config = this.getConfig();
+
+    if (config && this.importData) {
+      this.dependencies.exportService.createAndDownloadZipFile(config.projectId, this.importData, () => {
+        super.stopLoading();
+        this.step = 'completed';
+        super.detectChanges();
+      });
+    }
   }
 
   handleExport(): void {
@@ -71,12 +90,9 @@ export class ExportComponent extends BaseComponent {
           targetProjectId: 'xxx'
         }).pipe(
           map((result) => {
-            this.dependencies.exportService.createAndDownloadZipFile(config.projectId, result, () => {
-              super.stopLoading();
-              this.importData = result;
-              this.step = 'completed';
-              super.detectChanges();
-            });
+          this.importData = result;
+
+          this.handleDownloadFile();
           }),
           catchError((err) => {
             if (err instanceof CloudError) {

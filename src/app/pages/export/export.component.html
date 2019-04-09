@@ -40,6 +40,10 @@
     <div>
         <lib-message [type]="'success'" [text]="'Data was exported successfully.'"></lib-message>
 
+        <div class="push-top" *ngIf="showDownloadButton">
+            <button mat-raised-button color="primary" (click)="handleDownloadFile()">Download zip</button>
+        </div>
+
         <div class="push-top">
             <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
         </div>
