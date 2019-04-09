@@ -11,7 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { observableHelper, stringHelper } from '../../utilities';
+import { observableHelper, stringHelper, zipHelper } from '../../utilities';
 import { IProcessingItem } from '../processing/processing-models';
 import { ProcessingService } from '../processing/processing.service';
 import {
@@ -152,8 +152,6 @@ export class DeliveryFetchService {
         )
     }
 
-    
-
     getContentItemByCodename(projectId: string, codename: string): Observable<IContentItemModel> {
         return this.getDeliveryClient({
             projectId: projectId
@@ -183,13 +181,16 @@ export class DeliveryFetchService {
         const languageVariants: ILanguageVariantModel[] = [];
 
         for (const contentItem of contentItems) {
+            const fakeAssetId = stringHelper.newGuid(); // delivery API does not return asset/file id = generate new one
+
             assets.push(...contentItem.assets.map(m => <IAssetModel>{
                 deliveryUrl: m.asset.url,
                 fileName: m.asset.name,
-                id: stringHelper.newGuid(),
+                id: fakeAssetId,
                 type: m.asset.type,
                 description: m.asset.description,
                 size: m.size,
+                zipFilePath: zipHelper.getFullAssetPath(fakeAssetId, m.asset.name),
                 externalId: undefined, // N/A Delivery API
                 title: m.name // N/A Delivery API
             }));

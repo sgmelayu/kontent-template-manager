@@ -37,7 +37,7 @@ export interface IImportFromProjectWithDeliveryConfig extends IImportConfig {
 
 // tslint:disable-next-line:no-empty-interface
 export interface IImportConfig {
-    publishAllItems: boolean
+    publishAllItems: boolean;
 }
 
 export interface IContentTypeImportPrerequisities {
@@ -97,7 +97,7 @@ export interface IPublishItemRequest {
 
 export interface IAssetFromFile {
     data: Blob;
-    embeddedAsset: IAssetModel;
+    asset: IAssetModel;
 }
 
 export interface IImportData {

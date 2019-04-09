@@ -180,11 +180,11 @@ export class ImportFromFileComponent extends BaseComponent {
       return;
     }
 
-    return {
+    return <IImportFromFileConfig> {
       apiKey: cmApiKey,
       projectId: projectId,
       file: this.file,
-      publishAllItems: publishAllItems
+      publishAllItems: publishAllItems,
     };
   }
 

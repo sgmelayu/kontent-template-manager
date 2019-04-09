@@ -169,7 +169,7 @@ export class MigrateContentItemsComponent extends BaseComponent {
       publishAllItems: publishAllItems,
       sourceProjectId: sourceProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
-      targetProjectId: targetProjectId
+      targetProjectId: targetProjectId,
     };
   }
 

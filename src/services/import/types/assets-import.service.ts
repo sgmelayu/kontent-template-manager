@@ -18,19 +18,28 @@ export class AssetsImportService extends BaseService {
         super();
     }
 
-    importAssets(targetClient: IContentManagementClient, assets: IAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
-        return this.importAssetsFromModels(targetClient, assets).pipe(
-            map((createdContentItems) => {
-                return createdContentItems;
+    importAssetsByUrl(targetClient: IContentManagementClient, assets: IAssetModel[], assetsFromFile: IAssetFromFile[], config: IImportConfig): Observable<IImportAssetResult[]> {
+        const importedAssets: IImportAssetResult[] = [];
+
+        return observableHelper.flatMapObservables([
+            this.importAssetsByUrlInternal(targetClient, assets).pipe(
+                map((createdAssets) => {
+                    importedAssets.push(...createdAssets);
+                })
+            ),
+            this.importAssetsFromFileInternal(targetClient, assetsFromFile).pipe(
+                map((createdAssets) => {
+                    importedAssets.push(...createdAssets);
+                })
+            ),
+        ], this.cmRequestDelay).pipe(
+            map(() => {
+                return importedAssets;
             })
-        );
+        )
     }
 
-    importAssetsFromFile(targetClient: IContentManagementClient, assets: IAssetModel[], config: IImportConfig): Observable<IImportAssetResult[]> {
-        return from([]);
-    }
-
-    private importAssetsFromModels(targetClient: IContentManagementClient, assets: IAssetModel[]): Observable<IImportAssetResult[]> {
+    private importAssetsByUrlInternal(targetClient: IContentManagementClient, assets: IAssetModel[]): Observable<IImportAssetResult[]> {
         const createdAssets: IImportAssetResult[] = [];
         const assetsToCreateObs: Observable<IGetAssetData>[] = [];
         const obs: Observable<void>[] = [];
@@ -38,7 +47,7 @@ export class AssetsImportService extends BaseService {
         for (const asset of assets) {
             assetsToCreateObs.push(this.getAssetBlobFromUrl(asset.deliveryUrl).pipe(
                 map(response => {
-                    return <IGetAssetData> {
+                    return <IGetAssetData>{
                         blob: response.blob,
                         asset: asset
                     };
@@ -91,7 +100,7 @@ export class AssetsImportService extends BaseService {
                                     });
 
                                     createdAssets.push(
-                                        <IImportAssetResult> {
+                                        <IImportAssetResult>{
                                             importedItem: response.data,
                                             originalItem: data.asset
                                         }
@@ -124,14 +133,13 @@ export class AssetsImportService extends BaseService {
         })) as Observable<IGetAssetData>;
     }
 
-    private importAssetsFromFiles(sourceProjectId: string, targetClient: IContentManagementClient, assetsFromFile: IAssetFromFile[]): Observable<IImportAssetResult[]> {
+    private importAssetsFromFileInternal(targetClient: IContentManagementClient, assets: IAssetFromFile[]): Observable<IImportAssetResult[]> {
         const createdAssets: IImportAssetResult[] = [];
-        const assetsToCreateObs: Observable<IGetAssetData>[] = [];
         const obs: Observable<void>[] = [];
 
-        for (const assetFromFile of assetsFromFile) {
-            const contentLength = assetFromFile.data.size;
-            const contentType = assetFromFile.embeddedAsset.type;
+        for (const assetFromFile of assets) {
+            const contentLength = assetFromFile.asset.size;
+            const contentType = assetFromFile.asset.type;
             const fileBinary = assetFromFile.data;
 
             obs.push(targetClient.uploadBinaryFile()
@@ -139,7 +147,7 @@ export class AssetsImportService extends BaseService {
                     binaryData: fileBinary,
                     contentType: contentType,
                     contentLength: contentLength,
-                    filename: assetFromFile.embeddedAsset.fileName
+                    filename: assetFromFile.asset.fileName
                 }).toObservable().pipe(
                     delay(this.cmRequestDelay),
                     flatMap(response => {
@@ -147,11 +155,11 @@ export class AssetsImportService extends BaseService {
                             data: response.data.id,
                             type: 'binary file',
                             action: 'upload',
-                            name: `[${response.data.type}] - ${assetFromFile.embeddedAsset.fileName}`
+                            name: `${assetFromFile.asset.fileName} [${assetFromFile.asset.size}B]`
                         });
 
                         return targetClient.addAsset().withData({
-                            title: assetFromFile.embeddedAsset.fileName,
+                            title: assetFromFile.asset.fileName,
                             descriptions: [],
                             fileReference: {
                                 id: response.data.id,
@@ -168,9 +176,9 @@ export class AssetsImportService extends BaseService {
                         });
 
                         createdAssets.push(
-                            <IImportAssetResult> {
+                            <IImportAssetResult>{
                                 importedItem: response.data,
-                                originalItem: assetFromFile.embeddedAsset
+                                originalItem: assetFromFile.asset
                             }
                         );
                     })

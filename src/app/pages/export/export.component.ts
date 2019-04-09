@@ -87,7 +87,7 @@ export class ExportComponent extends BaseComponent {
           publishAllItems: false,
           sourceProjectId: config.projectId,
           targetProjectCmApiKey: 'xxx',
-          targetProjectId: 'xxx'
+          targetProjectId: 'xxx',
         }).pipe(
           map((result) => {
           this.importData = result;

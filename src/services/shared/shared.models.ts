@@ -32,6 +32,7 @@ export interface IAssetModel {
     deliveryUrl: string;
     description?: string;
     size: number;
+    zipFilePath: string;
 }
 
 export interface IContentTypeElementModel {

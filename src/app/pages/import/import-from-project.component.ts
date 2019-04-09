@@ -171,7 +171,7 @@ export class ImportFromProjectComponent extends BaseComponent {
       publishAllItems: publishAllItems,
       sourceProjectId: sourceProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
-      targetProjectId: targetProjectId
+      targetProjectId: targetProjectId,
     };
   }
 

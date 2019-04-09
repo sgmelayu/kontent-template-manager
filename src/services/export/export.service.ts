@@ -11,7 +11,7 @@ import { from, Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
-import { observableHelper } from '../../utilities';
+import { observableHelper, zipHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
 import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
@@ -20,6 +20,7 @@ import {
     IImportFromFileConfig,
     IImportFromProjectWithCMConfig,
     IImportFromProjectWithDeliveryConfig,
+    IAssetFromFile,
 } from '../import/import.models';
 import {
     IAssetModel,
@@ -51,9 +52,10 @@ export class ExportService extends BaseService {
         const assetsFolder = zip.folder(environment.export.filenames.assetsFolder);
 
         for (const asset of data.assets) {
-            const assetSubFolder = assetsFolder.folder(asset.id);
+            const assetIdShortFolder = assetsFolder.folder(asset.id.substr(0, 3));
+            const assetIdFolder = assetIdShortFolder.folder(asset.id);
             const assetFilename = asset.fileName;
-            assetSubFolder.file(
+            assetIdFolder.file(
                 assetFilename,
                 this.urlToPromise(asset.deliveryUrl),
                 {
@@ -78,10 +80,10 @@ export class ExportService extends BaseService {
             contentTypes: [],
             contentItems: [],
             taxonomies: [],
-            assetsFromFile: [],
             languageVariants: [],
             assets: [],
-            targetProjectId: config.targetProjectId
+            targetProjectId: config.targetProjectId,
+            assetsFromFile: []
         };
 
         return this.deliveryFetchService.getAllTypes(config.sourceProjectId, [], {
@@ -117,7 +119,7 @@ export class ExportService extends BaseService {
         });
 
         return from(JSZip.loadAsync(config.file)).pipe(
-            flatMap((response: any) => {
+            flatMap((fileContents: any) => {
                 const obs: Observable<void>[] = [];
 
                 const importData: IImportData = {
@@ -125,15 +127,15 @@ export class ExportService extends BaseService {
                     contentTypes: [],
                     taxonomies: [],
                     targetClient,
-                    assetsFromFile: [],
                     languageVariants: [],
                     assets: [],
-                    targetProjectId: config.projectId
+                    targetProjectId: config.projectId,
+                    assetsFromFile: []
                 };
 
                 // taxonomies
                 obs.push(
-                    this.readJsonFile(response, environment.export.filenames.taxonomies).pipe(
+                    this.readJsonFile(fileContents, environment.export.filenames.taxonomies).pipe(
                         map(taxonomiesString => {
                             const taxonomies = JSON.parse(taxonomiesString) as ITaxonomyModel[];
                             importData.taxonomies = taxonomies;
@@ -143,7 +145,7 @@ export class ExportService extends BaseService {
 
                 // content types
                 obs.push(
-                    this.readJsonFile(response, environment.export.filenames.contentTypes).pipe(
+                    this.readJsonFile(fileContents, environment.export.filenames.contentTypes).pipe(
                         map(contentTypesString => {
                             const contentTypes = JSON.parse(contentTypesString) as IContentTypeModel[];
                             importData.contentTypes = contentTypes;
@@ -153,29 +155,32 @@ export class ExportService extends BaseService {
 
                 // content items
                 obs.push(
-                    this.readJsonFile(response, environment.export.filenames.contentItems).pipe(
+                    this.readJsonFile(fileContents, environment.export.filenames.contentItems).pipe(
                         map(contentItemsString => {
                             const contentItems = JSON.parse(contentItemsString) as ISlimContentItemModel[];
                             importData.contentItems = contentItems;
-                        }),
-
+                        })
                     )
                 );
 
                 // assets
                 obs.push(
-                    this.readJsonFile(response, environment.export.filenames.assets).pipe(
-                        map(assetsString => {
+                    this.readJsonFile(fileContents, environment.export.filenames.assets).pipe(
+                        flatMap(assetsString => {
                             const assets = JSON.parse(assetsString) as IAssetModel[];
-                            importData.assets = assets;
-                        }),
 
+                            return this.getAssetBinariesFromFile(fileContents, assets);
+                        }),
+                        map((assetsFromFile) => {
+                            importData.assetsFromFile = assetsFromFile;
+
+                        })  
                     )
                 );
 
                 // language variants
                 obs.push(
-                    this.readJsonFile(response, environment.export.filenames.languageVariants).pipe(
+                    this.readJsonFile(fileContents, environment.export.filenames.languageVariants).pipe(
                         map(languageVariantsString => {
                             const languageVariants = JSON.parse(languageVariantsString) as ILanguageVariantModel[];
                             importData.languageVariants = languageVariants;
@@ -197,11 +202,6 @@ export class ExportService extends BaseService {
     }
 
     getImportDataWithCMApi(config: IImportFromProjectWithCMConfig): Observable<IImportData> {
-        const sourceContentManagementClient = this.getContentManagementClient({
-            projectId: config.sourceProjectId,
-            apiKey: config.sourceProjectCmApiKey
-        });
-
         const targetContentManagementClient = this.getContentManagementClient({
             projectId: config.targetProjectId,
             apiKey: config.targetProjectCmApiKey
@@ -212,10 +212,10 @@ export class ExportService extends BaseService {
             contentTypes: [],
             contentItems: [],
             taxonomies: [],
-            assetsFromFile: [],
             languageVariants: [],
             assets: [],
-            targetProjectId: config.targetProjectId
+            targetProjectId: config.targetProjectId,
+            assetsFromFile: []
         };
 
         const obs: Observable<void>[] = [
@@ -259,8 +259,37 @@ export class ExportService extends BaseService {
         return new ContentManagementClient(config);
     }
 
-    private readJsonFile(response: any, filename: string): Observable<string> {
-        const files = response.files;
+    private getAssetBinariesFromFile(fileContents: any, assets: IAssetModel[]): Observable<IAssetFromFile[]> {
+        const obs: Observable<void>[] = [];
+        const assetsFromFile: IAssetFromFile[] = [];
+
+        if (!fileContents) {
+            throw Error(`Invalid zip file'`);
+        }
+
+        const files = fileContents.files;
+
+        for (const asset of assets) {
+            const assetFile = files[zipHelper.getFullAssetPath(asset.id, asset.fileName)];
+            obs.push(
+                from(assetFile.async('blob')).pipe(
+                    map(data => {
+                        assetsFromFile.push({
+                            asset: asset,
+                            data: data as Blob
+                        })
+                    })
+                ))
+        }
+
+        return observableHelper.zipObservables(obs).pipe(
+            map(() => assetsFromFile)
+        )
+    }
+
+
+    private readJsonFile(fileContents: any, filename: string): Observable<string> {
+        const files = fileContents.files;
         const file = files[filename];
 
         if (!file) {

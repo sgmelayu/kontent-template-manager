@@ -3,7 +3,6 @@ import { IContentManagementClient } from 'kentico-cloud-content-management';
 import { Observable, of } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 
-import { ExportService } from '../export/export.service';
 import { WorkflowService } from '../workflow/workflow.service';
 import {
     IImportConfig,
@@ -28,7 +27,6 @@ export class ImportService {
         private contentItemsImportService: ContentItemsImportService,
         private taxonomiesImportService: TaxonomiesImportService,
         private workflowService: WorkflowService,
-        private exportService: ExportService,
         private languageVariantsImportService: LanguageVariantsImportService,
         private assetsImportService: AssetsImportService
     ) {
@@ -60,7 +58,7 @@ export class ImportService {
                 flatMap(response => {
                     result.importedContentItems = response;
 
-                    return this.assetsImportService.importAssets(data.targetClient, data.assets, config);
+                    return this.assetsImportService.importAssetsByUrl(data.targetClient, data.assets, data.assetsFromFile, config);
 
                 }),
                 flatMap(response => {
@@ -118,7 +116,7 @@ export class ImportService {
                 );
             }),
             flatMap(() => {
-                return this.assetsImportService.importAssets(data.targetClient, data.assets, config).pipe(
+                return this.assetsImportService.importAssetsByUrl(data.targetClient, data.assets, data.assetsFromFile, config).pipe(
                     map((response) => {
                         result.importedAssets = response;
                     })

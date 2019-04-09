@@ -10,7 +10,7 @@ export class PreviewHelper {
             data: m
         }));
         files.push(...importData.assetsFromFile.map(m => <IItemPreview>{
-            title: m.embeddedAsset.fileName,
+            title: m.asset.fileName,
             data: m
         }));
 
