@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  appName: 'Template manager',
+  appName: 'Project manager',
   defaultProjects: {
     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
     // tslint:disable-next-line:max-line-length

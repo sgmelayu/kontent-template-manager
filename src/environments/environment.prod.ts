@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  appName: 'Template manager',
+  appName: 'Project manager',
   defaultProjects: {
     languages: '',
     sourceProjectApiKey: '',
