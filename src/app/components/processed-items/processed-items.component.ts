@@ -3,7 +3,7 @@ import { List } from 'immutable';
 import { map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
-import { IImportItem } from '../../../services';
+import { IProcessingItem } from '../../../services';
 import { BaseComponent } from '../../core/base.component';
 
 @Component({
@@ -13,9 +13,9 @@ import { BaseComponent } from '../../core/base.component';
 })
 export class ProcessedItemsComponent extends BaseComponent implements OnInit {
 
-  private _processedItems: List<IImportItem> = List<IImportItem>([]);
+  private _processedItems: List<IProcessingItem> = List<IProcessingItem>([]);
 
-  public get processedItems(): IImportItem[] {
+  public get processedItems(): IProcessingItem[] {
     return this._processedItems.toArray();
   }
 
@@ -28,8 +28,8 @@ export class ProcessedItemsComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     super.subscribeToObservable(
       this.dependencies.processingService.processedItemsChanged$.pipe(
-        map((item) => {
-          this._processedItems = this._processedItems.unshift(item);
+        map((items) => {
+          this._processedItems = this._processedItems.unshift(...items);
           super.detectChanges();
         })
       )
@@ -38,7 +38,7 @@ export class ProcessedItemsComponent extends BaseComponent implements OnInit {
     super.subscribeToObservable(
       this.dependencies.processingService.clearProcessedItemsChanged$.pipe(
         map((item) => {
-          this._processedItems = List<IImportItem>([]);
+          this._processedItems = List<IProcessingItem>([]);
           super.detectChanges();
         })
       )

@@ -186,9 +186,9 @@ export class ContentTypesImportService extends BaseService {
                 map((response) => {
                     this.processingService.addProcessedItem(
                         {
-                            item: contentType,
-                            status: 'imported',
-                            action: 'Add content type',
+                            data: contentType,
+                            type: 'content type',
+                            action: 'add',
                             name: response.data.codename
                         }
                     );

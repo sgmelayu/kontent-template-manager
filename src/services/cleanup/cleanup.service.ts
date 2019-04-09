@@ -94,9 +94,9 @@ export class CleanupService extends BaseService {
                         map((response) => {
                             this.processingService.addProcessedItem(
                                 {
-                                    item: asset.fileName,
-                                    status: 'deleted',
-                                    action: 'Delete asset',
+                                    data: asset.fileName,
+                                    type: 'asset',
+                                    action: 'delete',
                                     name: asset.fileName
                                 }
                             );
@@ -117,9 +117,9 @@ export class CleanupService extends BaseService {
                         map((response) => {
                             this.processingService.addProcessedItem(
                                 {
-                                    item: type.system.codename,
-                                    status: 'deleted',
-                                    action: 'Delete content type',
+                                    data: type.system.codename,
+                                    type: 'content type',
+                                    action: 'delete',
                                     name: type.system.codename
                                 }
                             );
@@ -141,9 +141,9 @@ export class CleanupService extends BaseService {
                         map((response) => {
                             this.processingService.addProcessedItem(
                                 {
-                                    item: taxonomy.system.codename,
-                                    status: 'deleted',
-                                    action: 'Delete taxonomy',
+                                    data: taxonomy.system.codename,
+                                    type: 'taxonomy',
+                                    action: 'delete',
                                     name: taxonomy.system.codename
                                 }
                             );
@@ -166,9 +166,9 @@ export class CleanupService extends BaseService {
                         map((response) => {
                             this.processingService.addProcessedItem(
                                 {
-                                    item: item.codename,
-                                    status: 'deleted',
-                                    action: 'Delete content item',
+                                    data: item.codename,
+                                    type: 'content item',
+                                    action: 'delete',
                                     name: item.codename
                                 }
                             );

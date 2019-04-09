@@ -28,9 +28,9 @@ export class WorkflowService extends BaseService {
                     .pipe(
                         map(() => {
                             this.processingService.addProcessedItem({
-                                item: item.itemId,
-                                status: 'published',
-                                action: 'Publish',
+                                data: item.itemId,
+                                type: 'content item',
+                                action: 'publish',
                                 name: `${item.itemId} [${item.languageId}]`
                             });
                         })

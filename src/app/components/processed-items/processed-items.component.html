@@ -2,7 +2,7 @@
     <mat-list role="list">
         <mat-list-item role="listitem" *cdkVirtualFor="let processedItem of processedItems">
             <p>
-                <strong>{{ processedItem.action }}</strong>: {{ processedItem.name }}
+                <strong>{{ processedItem.action }} {{ processedItem.type }}</strong>: {{ processedItem.name }}
             </p>
         </mat-list-item>
     </mat-list>

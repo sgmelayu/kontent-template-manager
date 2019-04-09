@@ -2,20 +2,25 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { BaseService } from '../base-service';
-import { IImportItem } from './processing-models';
+import { IProcessingItem } from './processing-models';
 
 @Injectable()
 export class ProcessingService extends BaseService {
 
-    private readonly processedItemsSource = new Subject<IImportItem>();
+    private readonly processedItemsSource = new Subject<IProcessingItem[]>();
     private readonly clearProcessedItemsSource = new Subject<void>();
 
     public readonly processedItemsChanged$ = this.processedItemsSource.asObservable();
     public readonly clearProcessedItemsChanged$ = this.clearProcessedItemsSource.asObservable();
 
-    addProcessedItem(item: IImportItem): void {
-        this.processedItemsSource.next(item);
+    addProcessedItem(item: IProcessingItem): void {
+        this.processedItemsSource.next([item]);
     }
+
+    addProcessedItems(items: IProcessingItem[]): void {
+        this.processedItemsSource.next(items);
+    }
+
 
     clearProcessedItems(): void {
         this.clearProcessedItemsSource.next();

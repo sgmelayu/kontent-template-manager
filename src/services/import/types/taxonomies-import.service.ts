@@ -51,9 +51,9 @@ export class TaxonomiesImportService extends BaseService {
                 delay(this.cmRequestDelay),
                 map((response) => {
                     this.processingService.addProcessedItem({
-                        item: taxonomy,
-                        status: 'imported',
-                        action: 'Add taxonomy',
+                        data: taxonomy,
+                        type: 'taxonomy',
+                        action: 'add',
                         name: response.data.codename
                     });
                     return <ITaxonomyModel> {

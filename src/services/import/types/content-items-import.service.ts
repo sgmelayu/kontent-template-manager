@@ -75,9 +75,9 @@ export class ContentItemsImportService extends BaseService {
             .pipe(
                 map(response => {
                     this.processingService.addProcessedItem({
-                        item: contentItem,
-                        status: 'imported',
-                        action: 'Add content item',
+                        data: contentItem,
+                        type: 'content item',
+                        action: 'add',
                         name: response.data.codename
                     });
 

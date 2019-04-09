@@ -28,11 +28,18 @@ import {
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
+import { ProcessingService } from '../processing/processing.service';
+import { IFetchConfig } from './fetch-models';
+import { IProcessingItem } from '../processing/processing-models';
 
 @Injectable()
 export class DeliveryFetchService {
 
-    getAllTypes(projectId: string, allTypes: IContentTypeModel[], nextPageUrl?: string): Observable<IContentTypeModel[]> {
+    constructor(
+        private processingService: ProcessingService
+    ) {}
+
+    getAllTypes(projectId: string, allTypes: IContentTypeModel[], config: IFetchConfig, nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).types();
@@ -47,7 +54,6 @@ export class DeliveryFetchService {
                 map(response => {
                     allTypes.push(...response.types.map(m => {
                         return <IContentTypeModel>{
-
                             elements: m.elements,
                             system: {
                                 codename: m.system.codename,
@@ -58,15 +64,26 @@ export class DeliveryFetchService {
                         }
                     }));
 
+                    if (config.useProcessingService) {
+                        this.processingService.addProcessedItems(response.types.map(m => {
+                            return <IProcessingItem> {
+                                type: 'content type',
+                                action: 'get',
+                                data: m,
+                                name: m.system.name
+                            }
+                        }))
+                    }
+
                     if (response.pagination.nextPage) {
-                        this.getAllTypes(projectId, allTypes, response.pagination.nextPage);
+                        this.getAllTypes(projectId, allTypes, config, response.pagination.nextPage);
                     }
                     return allTypes;
                 })
             );
     }
 
-    getAllTaxonomies(projectId: string, taxonomies: ITaxonomyModel[], nextPageUrl?: string): Observable<ITaxonomyModel[]> {
+    getAllTaxonomies(projectId: string, taxonomies: ITaxonomyModel[], config: IFetchConfig, nextPageUrl?: string): Observable<ITaxonomyModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).taxonomies();
@@ -86,21 +103,32 @@ export class DeliveryFetchService {
                         }
                     }));
 
+                    if (config.useProcessingService) {
+                        this.processingService.addProcessedItems(response.taxonomies.map(m => {
+                            return <IProcessingItem> {
+                                type: 'taxonomy',
+                                action: 'get',
+                                data: m,
+                                name: m.system.name
+                            }
+                        }))
+                    }
+
                     if (response.pagination.nextPage) {
-                        this.getAllTaxonomies(projectId, taxonomies, response.pagination.nextPage);
+                        this.getAllTaxonomies(projectId, taxonomies, config, response.pagination.nextPage);
                     }
                     return taxonomies;
                 })
             );
     }
 
-    getAllContentItems(projectId: string, languageCodenames: string[]): Observable<IDeliveryContentItemsResult> {
+    getAllContentItems(projectId: string, languageCodenames: string[], config: IFetchConfig): Observable<IDeliveryContentItemsResult> {
         const contentItems: IContentItemModel[] = [];
         const obs: Observable<void>[] = [];
 
         if (languageCodenames.length === 0) {
             // get content items in default language withous specifying any language param
-            return this.getContentItemsForLanguage(projectId, contentItems, undefined, undefined).pipe(
+            return this.getContentItemsForLanguage(projectId, contentItems, config, undefined, undefined).pipe(
                 map(result => {
                     return this.processContentItemsResult(result);
                 })
@@ -109,7 +137,7 @@ export class DeliveryFetchService {
 
         for (const languageCodename of languageCodenames) {
             obs.push(
-                this.getContentItemsForLanguage(projectId, [], languageCodename, undefined).pipe(
+                this.getContentItemsForLanguage(projectId, [], config, languageCodename, undefined).pipe(
                     map(response => {
                         contentItems.push(...response);
                     })
@@ -124,7 +152,32 @@ export class DeliveryFetchService {
         )
     }
 
-    processContentItemsResult(contentItems: IContentItemModel[]): IDeliveryContentItemsResult {
+    
+
+    getContentItemByCodename(projectId: string, codename: string): Observable<IContentItemModel> {
+        return this.getDeliveryClient({
+            projectId: projectId
+        })
+            .item(codename)
+            .toObservable().pipe(
+                map(response => {
+                    const item = response.item;
+
+                    return <IContentItemModel>{
+                        elements: item.elements,
+                        system: item.system,
+                        assets: this.extractAssets(item),
+                        linkedItemCodenames: this.extractLinkedItemCodenames(item)
+                    };
+                })
+            )
+    }
+
+    getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
+        return new DeliveryClient(config);
+    }
+
+    private processContentItemsResult(contentItems: IContentItemModel[]): IDeliveryContentItemsResult {
         const assets: ICMAssetModel[] = [];
         const slimContentItems: ISlimContentItemModel[] = [];
         const languageVariants: ILanguageVariantModel[] = [];
@@ -155,29 +208,6 @@ export class DeliveryFetchService {
             contentItems: this.filterIdenticalContentItems(slimContentItems),
             languageVariants: languageVariants
         }
-    }
-
-    getContentItemByCodename(projectId: string, codename: string): Observable<IContentItemModel> {
-        return this.getDeliveryClient({
-            projectId: projectId
-        })
-            .item(codename)
-            .toObservable().pipe(
-                map(response => {
-                    const item = response.item;
-
-                    return <IContentItemModel>{
-                        elements: item.elements,
-                        system: item.system,
-                        assets: this.extractAssets(item),
-                        linkedItemCodenames: this.extractLinkedItemCodenames(item)
-                    };
-                })
-            )
-    }
-
-    getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
-        return new DeliveryClient(config);
     }
 
     private extractLanguageVariant(contentItem: IContentItemModel): ILanguageVariantModel {
@@ -254,7 +284,7 @@ export class DeliveryFetchService {
         }
     }
 
-    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
+    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], config: IFetchConfig, languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).items();
@@ -282,14 +312,24 @@ export class DeliveryFetchService {
 
                             contentItems.push(contentItem);
 
+                            if (config.useProcessingService) {
+                                this.processingService.addProcessedItems(response.items.map(m => {
+                                    return <IProcessingItem> {
+                                        type: 'content item',
+                                        action: 'get',
+                                        data: m,
+                                        name: `[${m.system.language}] ${m.system.name}`
+                                    }
+                                }))
+                            }
+
                             // make sure that components are added to result as well - needed because of components in rich text elements
                             this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
-
                         }
                     }
 
                     if (response.pagination.nextPage) {
-                        this.getContentItemsForLanguage(projectId, contentItems, languageCodename, response.pagination.nextPage);
+                        this.getContentItemsForLanguage(projectId, contentItems, config, languageCodename, response.pagination.nextPage);
                     }
                     return contentItems;
                 })

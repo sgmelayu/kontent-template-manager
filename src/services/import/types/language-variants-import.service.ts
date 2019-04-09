@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { IContentManagementClient, LanguageVariantModels, SharedContracts } from 'kentico-cloud-content-management';
-import { FieldType } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -8,22 +7,18 @@ import { observableHelper } from '../../../utilities';
 import { BaseService } from '../../base-service';
 import { ProcessingService } from '../../processing/processing.service';
 import {
-    IContentItemFieldModel,
-    IContentItemModel,
-    ILanguageVariantModel,
-    IMultipleChoiceOptionModel,
     ElementType,
-    IContentItemElement,
     IAssetElementValue,
+    IContentItemElement,
+    ILanguageVariantModel,
     IMultipleChoiceElementValue,
 } from '../../shared/shared.models';
 import {
-    IImportAssetResult,
     IImportConfig,
-    IImportLanguageVariantsResult,
-    ILanguageVariantsImportPrerequisities,
     IImportContentItemResult,
     IImportContentTypeResult,
+    IImportLanguageVariantsResult,
+    ILanguageVariantsImportPrerequisities,
 } from '../import.models';
 
 @Injectable()
@@ -93,9 +88,9 @@ export class LanguageVariantsImportService extends BaseService {
             .toObservable().pipe(
                 map(response => {
                     this.processingService.addProcessedItem({
-                        item: data.languageVariant,
-                        status: 'imported',
-                        action: 'Add language variant',
+                        data: data.languageVariant,
+                        type: 'language variant',
+                        action: 'add',
                         name: `${data.languageVariant.itemCodename} [${data.languageVariant.languageCodename}]`
                     });
 

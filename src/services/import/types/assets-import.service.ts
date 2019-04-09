@@ -66,9 +66,9 @@ export class AssetsImportService extends BaseService {
                                 delay(this.cmRequestDelay),
                                 flatMap(response => {
                                     this.processingService.addProcessedItem({
-                                        item: response.data.id,
-                                        status: 'imported',
-                                        action: 'Upload binary file',
+                                        data: response.data.id,
+                                        type: 'binary file',
+                                        action: 'upload',
                                         name: `[${response.data.type}] - ${asset.fileName}`
                                     });
 
@@ -84,9 +84,9 @@ export class AssetsImportService extends BaseService {
                                 }),
                                 map((response) => {
                                     this.processingService.addProcessedItem({
-                                        item: response.data.fileName,
-                                        status: 'imported',
-                                        action: 'Add asset',
+                                        data: response.data.fileName,
+                                        type: 'asset',
+                                        action: 'add',
                                         name: `[${response.data.type}] - ${response.data.fileName}`
                                     });
 
@@ -144,9 +144,9 @@ export class AssetsImportService extends BaseService {
                     delay(this.cmRequestDelay),
                     flatMap(response => {
                         this.processingService.addProcessedItem({
-                            item: response.data.id,
-                            status: 'imported',
-                            action: 'Upload binary file',
+                            data: response.data.id,
+                            type: 'binary file',
+                            action: 'upload',
                             name: `[${response.data.type}] - ${assetFromFile.embeddedAsset.fileName}`
                         });
 
@@ -161,9 +161,9 @@ export class AssetsImportService extends BaseService {
                     }),
                     map((response) => {
                         this.processingService.addProcessedItem({
-                            item: response.data.fileName,
-                            status: 'imported',
-                            action: 'Add asset',
+                            data: response.data.fileName,
+                            type: 'asset',
+                            action: 'add',
                             name: `[${response.data.type}] - ${response.data.fileName}`
                         });
 

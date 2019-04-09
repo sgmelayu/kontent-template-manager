@@ -2,27 +2,18 @@
     <lib-message [type]="'error'" [text]="error"></lib-message>
 </div>
 
-<div class="push-bottom" *ngIf="success">
-    <lib-message [type]="'success'" [text]="'Data was exported successfully.'"></lib-message>
-</div>
+<h1>
+    Export data
+</h1>
 
-<ng-container *ngIf="isLoading">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    <mat-card>
-        exporting data ...
-    </mat-card>
-</ng-container>
+<p class="push-top push-bottom">
+    This function enables you to create <em>json</em> export package of data from given project
+</p>
 
-<ng-container *ngIf="!isLoading && !success">
 
-    <h1>
-        Export data
-    </h1>
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
-    <p class="push-top">
-        This function enables you to create <em>json</em> export package of data from given project
-    </p>
-
+<ng-container *ngIf="step === 'initial'">
     <div [formGroup]="formGroup">
         <mat-card class="push-top">
             <mat-card-content>
@@ -43,5 +34,20 @@
             <button disabled *ngIf="!canSubmit" (click)="handleExport()" mat-raised-button>Export data</button>
         </div>
     </div>
+</ng-container>
 
+<ng-container *ngIf="step === 'completed'">
+    <div>
+        <lib-message [type]="'success'" [text]="'Data was exported successfully.'"></lib-message>
+
+        <div class="push-top">
+            <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="step === 'exporting'">
+    <mat-card>
+        <lib-processed-items></lib-processed-items>
+    </mat-card>
 </ng-container>

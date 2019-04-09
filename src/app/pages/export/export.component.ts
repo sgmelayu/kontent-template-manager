@@ -6,6 +6,9 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
+import { IImportData } from '../../../services';
+import { previewHelper } from '../../components/preview/preview-helper';
+import { IDataPreviewWrapper } from '../../components/preview/preview-models';
 import { BaseComponent } from '../../core/base.component';
 
 @Component({
@@ -16,7 +19,15 @@ export class ExportComponent extends BaseComponent {
 
   public formGroup: FormGroup;
   public error?: string;
-  public success: boolean = false;
+  public importData?: IImportData;
+  public step: 'initial' | 'exporting' | 'completed' = 'initial';
+
+  public get importPreviewData(): IDataPreviewWrapper | undefined {
+    if (!this.importData) {
+      return undefined;
+    }
+    return previewHelper.convertFromImportData(this.importData);
+  }
 
   public get canSubmit(): boolean {
     return this.formGroup.valid;
@@ -47,14 +58,23 @@ export class ExportComponent extends BaseComponent {
     this.resetErrors();
 
     if (config) {
+      this.step = 'exporting';
+
       super.startLoading();
       super.detectChanges();
       super.subscribeToObservable(
-        this.dependencies.exportService.preparePackageWithDeliveryApi(config.projectId, this.parsedLanguages).pipe(
+        this.dependencies.exportService.getImportDataWithDeliveryApi({
+          languages: this.parsedLanguages,
+          publishAllItems: false,
+          sourceProjectId: config.projectId,
+          targetProjectCmApiKey: 'xxx',
+          targetProjectId: 'xxx'
+        }).pipe(
           map((result) => {
             this.dependencies.exportService.createAndDownloadZipFile(config.projectId, result, () => {
               super.stopLoading();
-              this.success = true;
+              this.importData = result;
+              this.step = 'completed';
               super.detectChanges();
             });
           }),
@@ -89,6 +109,5 @@ export class ExportComponent extends BaseComponent {
 
   private resetErrors(): void {
     this.error = undefined;
-    this.success = false;
   }
 }

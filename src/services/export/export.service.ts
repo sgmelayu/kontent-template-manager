@@ -28,7 +28,6 @@ import {
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
-import { IExportJsonResult } from './export.models';
 
 @Injectable()
 export class ExportService extends BaseService {
@@ -40,74 +39,7 @@ export class ExportService extends BaseService {
         super();
     }
 
-    preparePackageWithDeliveryApi(projectId: string, languageCodenames: string[]): Observable<IExportJsonResult> {
-        const result: IExportJsonResult = {
-            contentItems: [],
-            contentTypes: [],
-            taxonomies: [],
-            assets: [],
-            languageVariants: [],
-        };
-
-        return this.deliveryFetchService.getAllTypes(projectId, []).pipe(
-            flatMap(types => {
-                result.contentTypes.push(...types);
-                return this.deliveryFetchService.getAllContentItems(projectId, languageCodenames);
-            }),
-            flatMap(contentItemsResult => {
-                result.assets.push(...contentItemsResult.assets);
-                result.contentItems.push(...contentItemsResult.contentItems);
-                result.languageVariants.push(...contentItemsResult.languageVariants);
-
-                return this.deliveryFetchService.getAllTaxonomies(projectId, []);
-            }),
-            map(taxonomies => {
-                result.taxonomies.push(...taxonomies);
-
-                return result;
-            })
-        );
-    }
-
-    preparePackageWithCMApi(projectId: string, projectApiKey: string): Observable<IExportJsonResult> {
-        const result: IExportJsonResult = {
-            contentItems: [],
-            contentTypes: [],
-            taxonomies: [],
-            assets: [],
-            languageVariants: [],
-        };
-
-        return this.cmFetchService.getAllTypes(projectId, projectApiKey, []).pipe(
-            flatMap(types => {
-                result.contentTypes.push(...types);
-
-                return this.cmFetchService.getAllContentItems(projectId, projectApiKey, []);
-            }),
-            flatMap(contentItems => {
-                result.contentItems.push(...contentItems);
-                return this.cmFetchService.getLanguageVariantsForContentItems(projectId, projectApiKey, {
-                    contentItems: contentItems,
-                    contentTypes: result.contentTypes
-                });
-            }),
-            flatMap(languageVariants => {
-                result.languageVariants.push(...languageVariants);
-                return this.cmFetchService.getAllTaxonomies(projectId, projectApiKey, []);
-            }),
-            flatMap(taxonomies => {
-                result.taxonomies.push(...taxonomies);
-                return this.cmFetchService.getAllAssets(projectId, projectApiKey, []);
-            }),
-            map(assets => {
-                result.assets.push(...assets);
-
-                return result;
-            })
-        );
-    }
-
-    createAndDownloadZipFile(projectId: string, data: IExportJsonResult, callback: (() => void)): void {
+    createAndDownloadZipFile(projectId: string, data: IImportData, callback: (() => void)): void {
         const zip = new JSZip();
 
         zip.file(environment.export.filenames.contentTypes, JSON.stringify(data.contentTypes));
@@ -152,17 +84,23 @@ export class ExportService extends BaseService {
             targetProjectId: config.targetProjectId
         };
 
-        return this.deliveryFetchService.getAllTypes(config.sourceProjectId, []).pipe(
+        return this.deliveryFetchService.getAllTypes(config.sourceProjectId, [], {
+            useProcessingService: true
+        }).pipe(
             flatMap(types => {
                 data.contentTypes.push(...types);
-                return this.deliveryFetchService.getAllContentItems(config.sourceProjectId, config.languages);
+                return this.deliveryFetchService.getAllContentItems(config.sourceProjectId, config.languages, {
+                    useProcessingService: true
+                });
             }),
             flatMap(contentItemsResult => {
                 data.assets.push(...contentItemsResult.assets);
                 data.contentItems.push(...contentItemsResult.contentItems);
                 data.languageVariants.push(...contentItemsResult.languageVariants);
 
-                return this.deliveryFetchService.getAllTaxonomies(config.sourceProjectId, []);
+                return this.deliveryFetchService.getAllTaxonomies(config.sourceProjectId, [], {
+                    useProcessingService: true
+                });
             }),
             map(taxonomies => {
                 data.taxonomies.push(...taxonomies);

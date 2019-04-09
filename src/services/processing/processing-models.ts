@@ -1,19 +1,9 @@
-import {
-    IContentItemModel,
-    IContentTypeModel,
-    ILanguageVariantModel,
-    ISlimContentItemModel,
-    ITaxonomyModel,
-} from '../shared/shared.models';
+export type ProcessingItemAction = 'publish' | 'add' | 'delete' | 'upload' | 'get';
+export type ProcessingItemType = 'binary file' | 'content type' | 'content item' | 'taxonomy' | 'language variant' | 'asset'
 
-export type ImportItemStatus = 'imported' | 'published' | 'deleted';
-
-export type ImportProcessedItemType = IContentItemModel | IContentTypeModel | ITaxonomyModel | ISlimContentItemModel | string | ILanguageVariantModel;
-
-export interface IImportItem {
-    item: ImportProcessedItemType;
-    status: ImportItemStatus;
-    action: 'Add content type' | 'Add content item' | 'Add taxonomy' | 'Add language variant' | 'Publish' |
-    'Upload binary file' | 'Add asset' | 'Delete content type' | 'Delete content item' | 'Delete taxonomy' | 'Delete asset';
+export interface IProcessingItem {
+    data: any;
+    type: ProcessingItemType;
+    action: ProcessingItemAction;
     name: string;
 }
