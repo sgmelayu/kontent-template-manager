@@ -47,6 +47,22 @@ body {
         }
     }
 
+    &.info {
+        background-color: rgb(74, 86, 195);
+        color: white;
+
+        .title {
+            font-size: 22px;
+            padding: 8px 12px;
+            display: block;
+            background-color: darken(rgb(74, 86, 195), 10);
+        }
+
+        .text {
+            padding: 8px 12px;
+        }
+    }
+
     &.success {
         background-color: #8BC34A;
         color: white;

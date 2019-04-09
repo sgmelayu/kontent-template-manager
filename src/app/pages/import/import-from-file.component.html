@@ -58,6 +58,10 @@
         <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Proceed with import</button>
     </div>
 
+    <div libTitle1 class="push-top">
+        Import data preview
+    </div>
+
     <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
 
 </ng-container>

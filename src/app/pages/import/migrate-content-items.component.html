@@ -81,6 +81,10 @@
         <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Proceed with import</button>
     </div>
 
+    <div libTitle1 class="push-top">
+        Import data preview
+    </div>
+
     <lib-import-data-preview [showTypes]="'contentItemsImport'" [previewData]="importPreviewData">
     </lib-import-data-preview>
 
@@ -105,7 +109,8 @@
     </div>
 
     <div class="push-top">
-        <lib-import-data-preview [showTypes]="'contentItemsImport'" [previewData]="resultPreviewData"></lib-import-data-preview>
+        <lib-import-data-preview [showTypes]="'contentItemsImport'" [previewData]="resultPreviewData">
+        </lib-import-data-preview>
     </div>
-    
+
 </ng-container>

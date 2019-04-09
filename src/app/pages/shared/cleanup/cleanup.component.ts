@@ -8,13 +8,10 @@ import { catchError, map } from 'rxjs/operators';
 import { ComponentDependencies } from '../../../../di';
 import { environment } from '../../../../environments/environment';
 import { ICleanupData } from '../../../../services';
+import { previewHelper } from '../../../components/preview/preview-helper';
+import { IDataPreviewWrapper } from '../../../components/preview/preview-models';
 import { BaseComponent } from '../../../core/base.component';
 import { CleanupConfirmComponent } from './cleanup-confirm.component';
-
-interface ICleanupItem {
-  type: 'Content type' | 'Content item' | 'Asset' | 'Taxonomy',
-  name: string;
-}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,16 +19,42 @@ interface ICleanupItem {
 })
 export class CleanupComponent extends BaseComponent {
 
-  public cleanupCompleted: boolean = false;
-  public cleanupPrepared: boolean = false;
   public formGroup: FormGroup;
   public error?: string;
   public cleanupData?: ICleanupData;
+  public step: 'initial' | 'cleaning' | 'completed' | 'preview' = 'initial';
 
-  public cleanupItems?: ICleanupItem[];
+  public get previewData(): IDataPreviewWrapper | undefined {
+    if (!this.cleanupData) {
+      return undefined;
+    }
+    return previewHelper.convertFromCleanupData(this.cleanupData);
+  }
 
   public get canSubmit(): boolean {
     return this.formGroup.valid;
+  }
+
+  public projectContainsSomeData(): boolean {
+    if (!this.cleanupData) {
+      return false;
+    }
+
+    if (this.cleanupData.assets.length > 0) {
+      return true;
+    }
+
+    if (this.cleanupData.contentItems.length > 0) {
+      return true;
+    }
+    if (this.cleanupData.contentTypes.length > 0) {
+      return true;
+    }
+    if (this.cleanupData.taxonomies.length > 0) {
+      return true;
+    }
+
+    return false;
   }
 
   constructor(
@@ -50,7 +73,66 @@ export class CleanupComponent extends BaseComponent {
   prepareCleanup(): void {
     const config = this.getConfig();
     if (config) {
-      this.prepareCleanupData(config.projectId, config.apiKey);
+      this.step = 'preview';
+
+      super.startLoading();
+      super.detectChanges();
+
+      super.subscribeToObservable(
+        this.dependencies.cleanupService.prepareCleanup(config.projectId, config.apiKey).pipe(
+          map((cleanupData) => {
+            this.cleanupData = cleanupData;
+            super.stopLoading();
+            super.detectChanges();
+          }),
+          catchError((error) => {
+            super.stopLoading();
+            if (error instanceof CloudError) {
+              this.error = error.message;
+            } else {
+              this.error = 'Preparing cleanup data failed. See console for full error.';
+            }
+
+            // cleanup data because something might have been deleted already and same item
+            // cannot be deleted twice
+            this.cleanupData = undefined;
+
+            super.detectChanges();
+            return throwError(error);
+          })
+        )
+      );
+    }
+  }
+
+  cleanup(): void {
+    const config = this.getConfig();
+
+    if (config && this.cleanupData) {
+      this.step = 'cleaning';
+      super.startLoading();
+      super.detectChanges();
+
+      super.subscribeToObservable(
+        this.dependencies.cleanupService.cleanupProject(config.projectId, config.apiKey, this.cleanupData).pipe(
+          map((cleanupData) => {
+            super.stopLoading();
+            this.step = 'completed';
+            super.detectChanges();
+          }),
+          catchError((error) => {
+            super.stopLoading();
+            if (error instanceof CloudError) {
+              this.error = error.message;
+            } else {
+              this.error = 'Cleaning project data failed. See console for full error.';
+            }
+
+            super.detectChanges();
+            return throwError(error);
+          })
+        )
+      );
     }
   }
 
@@ -72,44 +154,10 @@ export class CleanupComponent extends BaseComponent {
             throw Error(`Invalid cleanup data`);
           }
 
-          this.cleanupProject(config.projectId, config.apiKey, this.cleanupData);
+          this.cleanup();
         }
       });
     }
-  }
-
-  private getCleanupItems(cleanupData: ICleanupData): ICleanupItem[] {
-    const items: ICleanupItem[] = [];
-
-    items.push(...cleanupData.contentItems.map(m => {
-      return <ICleanupItem>{
-        type: "Content item",
-        name: m.codename
-      }
-    }));
-
-    items.push(...cleanupData.contentTypes.map(m => {
-      return <ICleanupItem>{
-        type: "Content type",
-        name: m.system.codename
-      }
-    }));
-
-    items.push(...cleanupData.taxonomies.map(m => {
-      return <ICleanupItem>{
-        type: "Taxonomy",
-        name: m.system.codename
-      }
-    }));
-
-    items.push(...cleanupData.assets.map(m => {
-      return <ICleanupItem>{
-        type: "Asset",
-        name: m.fileName
-      }
-    }));
-
-    return items;
   }
 
   private getConfig(): {
@@ -133,68 +181,6 @@ export class CleanupComponent extends BaseComponent {
       apiKey: cmApiKey,
       projectId: projectId
     };
-  }
-
-  private prepareCleanupData(projectId: string, apiKey: string): void {
-    super.startLoading();
-    super.detectChanges();
-
-    super.subscribeToObservable(
-      this.dependencies.cleanupService.prepareCleanup(projectId, apiKey).pipe(
-        map((cleanupData) => {
-          this.cleanupData = cleanupData;
-          this.cleanupPrepared = true;
-          this.cleanupItems = this.getCleanupItems(cleanupData);
-          super.stopLoading();
-          super.detectChanges();
-        }),
-        catchError((error) => {
-          super.stopLoading();
-          if (error instanceof CloudError) {
-            this.error = error.message;
-          } else {
-            this.error = 'Import failed. See console for error details.';
-          }
-
-          // cleanup data because something might have been deleted already and same item
-          // cannot be deleted twice
-          this.cleanupData = undefined;
-          this.cleanupItems = undefined;
-
-          return throwError(error);
-        })
-      )
-    );
-  }
-
-  private cleanupProject(projectId: string, apiKey: string, cleanupData: ICleanupData): void {
-    super.startLoading();
-    super.detectChanges();
-
-    super.subscribeToObservable(
-      this.dependencies.cleanupService.cleanupProject(projectId, apiKey, cleanupData).pipe(
-        map(() => {
-          super.stopLoading();
-          this.cleanupCompleted = true;
-          super.detectChanges();
-        }),
-        catchError((error) => {
-          super.stopLoading();
-          if (error instanceof CloudError) {
-            this.error = error.message;
-          } else {
-            this.error = 'Import failed. See console for error details.';
-          }
-
-          // cleanup data because something might have been deleted already and same item
-          // cannot be deleted twice
-          this.cleanupData = undefined;
-          this.cleanupItems = undefined;
-
-          return throwError(error);
-        })
-      )
-    );
   }
 
   private resetErrors(): void {

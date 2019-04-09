@@ -22,6 +22,18 @@
     </div>
 </ng-container>
 
+<ng-container *ngIf="type === 'info'">
+    <div class="w-message info">
+        <div class="title">
+            Info
+        </div>
+        <div class="text" *ngIf="text">
+            {{ text }}
+        </div>
+        <div class="text" *ngIf="html" [innerHtml]="html"></div>
+    </div>
+</ng-container>
+
 <ng-container *ngIf="type === 'warning'">
     <div class="w-message warning">
         <div class="title">

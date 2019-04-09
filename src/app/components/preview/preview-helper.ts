@@ -1,7 +1,29 @@
-import { IImportData, IImportResult } from '../../../services';
+import { ICleanupData, IImportData, IImportResult } from '../../../services';
 import { IDataPreviewWrapper, IItemPreview } from './preview-models';
 
 export class PreviewHelper {
+
+    convertFromCleanupData(cleanupData: ICleanupData): IDataPreviewWrapper {
+        return {
+            assets: cleanupData.assets.map(m => <IItemPreview>{
+                title: m.fileName,
+                data: m
+            }),
+            contentItems: cleanupData.contentItems.map(m => <IItemPreview>{
+                title: m.name,
+                data: m
+            }),
+            contentTypes: cleanupData.contentTypes.map(m => <IItemPreview>{
+                title: m.system.name,
+                data: m
+            }),
+            languageVariants: [],
+            taxonomies: cleanupData.assets.map(m => <IItemPreview>{
+                title: m.fileName,
+                data: m
+            }),
+        }
+    }
 
     convertFromImportData(importData: IImportData): IDataPreviewWrapper {
         const files: IItemPreview[] = [];

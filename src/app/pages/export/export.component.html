@@ -10,7 +10,6 @@
     This function enables you to create <em>json</em> export package of data from given project
 </p>
 
-
 <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
 <ng-container *ngIf="step === 'initial'">
@@ -41,7 +40,11 @@
         <lib-message [type]="'success'" [text]="'Data was exported successfully.'"></lib-message>
 
         <div class="push-top" *ngIf="showDownloadButton">
-            <button mat-raised-button color="primary" (click)="handleDownloadFile()">Download zip</button>
+            <button mat-raised-button color="accent" (click)="handleDownloadFile()">Download zip</button>
+        </div>
+
+        <div libTitle1 class="push-top">
+            Preview of exported data
         </div>
 
         <div class="push-top">
