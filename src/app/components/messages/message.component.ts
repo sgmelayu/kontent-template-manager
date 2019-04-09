@@ -12,7 +12,7 @@ export class MessageComponent extends BaseComponent {
 
   @Input() text?: string;
   @Input() html?: string;
-  @Input() type: 'error' | 'success' | 'warning' = 'error';
+  @Input() type: 'error' | 'success' | 'warning' | 'info' = 'error';
 
   constructor(
     dependencies: ComponentDependencies,
