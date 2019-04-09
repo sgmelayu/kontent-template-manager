@@ -1,4 +1,4 @@
-## https://enngage.github.io/kc-template-manager/
+## https://enngage.github.io/kc-project-manager/
 
 ### Publishing app to GitHub pages
 
