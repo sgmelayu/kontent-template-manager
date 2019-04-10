@@ -11,6 +11,7 @@ import { IImportData, IImportFromFileConfig, IImportResult } from '../../../serv
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
 import { BaseComponent } from '../../core/base.component';
+import { zipHelper } from '../../../utilities';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -146,7 +147,7 @@ export class ImportFromFileComponent extends BaseComponent {
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
         fileEntry.file((file: File) => {
-          if (file.type !== 'application/zip') {
+          if (!zipHelper.getZipFileTypes().map(m => m.toLowerCase()).includes(file.type.toLowerCase())) {
             this.error = 'File has to be zip package';
             super.detectChanges();
             return;
