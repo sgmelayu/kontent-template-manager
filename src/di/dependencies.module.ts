@@ -3,7 +3,6 @@ import { RouterModule } from '@angular/router';
 
 import { ExternalModule } from '../app/external';
 import { ServicesModule } from '../services';
-import { ComponentDependencies } from './component-dependencies';
 
 @NgModule({
     imports: [
@@ -12,7 +11,7 @@ import { ComponentDependencies } from './component-dependencies';
         ExternalModule
     ],
     providers: [
-        ComponentDependencies
+
     ],
 })
 export class DependenciesModule { }

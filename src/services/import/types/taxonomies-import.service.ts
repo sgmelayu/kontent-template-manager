@@ -9,7 +9,9 @@ import { ProcessingService } from '../../processing/processing.service';
 import { ITaxonomyModel } from '../../shared/shared.models';
 import { IImportConfig, IImportTaxonomyResult } from '../import.models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class TaxonomiesImportService extends BaseService {
 
     constructor(

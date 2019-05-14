@@ -19,7 +19,9 @@ import { ContentTypesImportService } from './types/content-types-import.service'
 import { LanguageVariantsImportService } from './types/language-variants-import.service';
 import { TaxonomiesImportService } from './types/taxonomies-import.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ImportService {
 
     constructor(

@@ -8,7 +8,9 @@ import { BaseService } from '../base-service';
 import { IImportConfig, IPublishItemRequest } from '../import/import.models';
 import { ProcessingService } from '../processing/processing.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class WorkflowService extends BaseService {
 
     constructor(

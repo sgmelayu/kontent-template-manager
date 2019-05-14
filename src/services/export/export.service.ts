@@ -31,7 +31,9 @@ import {
     ITaxonomyModel,
 } from '../shared/shared.models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ExportService extends BaseService {
 
     constructor(

@@ -21,7 +21,9 @@ import {
 } from '../shared/shared.models';
 import { DeliveryFetchService } from './delivery-fetch.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CmFetchService extends BaseService {
 
     constructor(

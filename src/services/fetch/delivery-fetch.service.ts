@@ -32,7 +32,9 @@ import {
 } from '../shared/shared.models';
 import { IFetchConfig } from './fetch-models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class DeliveryFetchService {
 
     constructor(

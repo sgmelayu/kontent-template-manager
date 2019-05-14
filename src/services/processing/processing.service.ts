@@ -4,7 +4,9 @@ import { Subject } from 'rxjs';
 import { BaseService } from '../base-service';
 import { IProcessingItem } from './processing-models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ProcessingService extends BaseService {
 
     private readonly processedItemsSource = new Subject<IProcessingItem[]>();

@@ -15,7 +15,9 @@ import { ProcessingService } from '../../processing/processing.service';
 import { ElementType, IContentTypeElementModel, IContentTypeModel } from '../../shared/shared.models';
 import { IContentTypeImportPrerequisities, IImportConfig, IImportContentTypeResult } from '../import.models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ContentTypesImportService extends BaseService {
 
     constructor(

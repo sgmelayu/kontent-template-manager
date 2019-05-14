@@ -21,7 +21,9 @@ import {
     ILanguageVariantsImportPrerequisities,
 } from '../import.models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class LanguageVariantsImportService extends BaseService {
 
     constructor(

@@ -9,7 +9,9 @@ import { ProcessingService } from '../../processing/processing.service';
 import { ISlimContentItemModel } from '../../shared/shared.models';
 import { IContentItemImportPrerequisities, IImportConfig, IImportContentItemResult } from '../import.models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ContentItemsImportService extends BaseService {
 
     constructor(

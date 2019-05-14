@@ -9,7 +9,9 @@ import { ProcessingService } from '../../processing/processing.service';
 import { IAssetModel } from '../../shared/shared.models';
 import { IAssetFromFile, IGetAssetData, IImportAssetResult, IImportConfig } from '../import.models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AssetsImportService extends BaseService {
 
     constructor(

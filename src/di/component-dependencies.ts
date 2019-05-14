@@ -9,7 +9,9 @@ import {
     ProcessingService,
 } from '../services';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ComponentDependencies {
 
     constructor(

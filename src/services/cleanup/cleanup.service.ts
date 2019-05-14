@@ -14,7 +14,9 @@ import { IAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel }
 import { ICleanupData } from './cleanup.models';
 import { ProcessingService } from '../processing/processing.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CleanupService extends BaseService {
 
     constructor(
