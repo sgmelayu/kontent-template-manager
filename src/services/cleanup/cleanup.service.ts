@@ -112,7 +112,7 @@ export class CleanupService extends BaseService {
 
         for (const type of contentTypes) {
             obs.push(
-                client.deleteContentType().byItemCodename(type.system.codename).toObservable()
+                client.deleteContentType().byTypeCodename(type.system.codename).toObservable()
                     .pipe(
                         map((response) => {
                             this.processingService.addProcessedItem(

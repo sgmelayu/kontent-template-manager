@@ -24,6 +24,7 @@ export class WorkflowService extends BaseService {
                 client.publishOrScheduleLanguageVariant()
                     .byItemId(item.itemId)
                     .byLanguageId(item.languageId)
+                    .withData(undefined as any)
                     .toObservable()
                     .pipe(
                         map(() => {
