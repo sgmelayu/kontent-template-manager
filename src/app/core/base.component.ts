@@ -4,10 +4,15 @@ import { catchError, takeUntil } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../di';
 import { observableHelper } from '../../utilities';
+import { versionInfo } from '../../version';
 
 export abstract class BaseComponent implements OnDestroy {
 
     protected readonly ngUnsubscribe: Subject<void> = new Subject<void>();
+
+    public get version(): string {
+        return versionInfo.version;
+    }
 
     public get isSmallScreen(): boolean {
         if (!this.dependencies) {

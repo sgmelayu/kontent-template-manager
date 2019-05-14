@@ -1,14 +1,15 @@
 {
   "name": "import-tool",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "npm run set-version && ng serve",
+    "build": "npm run set-version && ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build-gh-pages": "ng build --prod"
+    "build-gh-pages": "npm run set-version && ng build --prod",
+    "set-version": "node ./src/version-generator.js"
   },
   "private": true,
   "dependencies": {

@@ -100,6 +100,10 @@ export interface IAssetFromFile {
     asset: IAssetModel;
 }
 
+export interface IImportMetadata {
+    version: string;
+}
+
 export interface IImportData {
     targetProjectId: string;
     targetClient: IContentManagementClient;
@@ -109,6 +113,7 @@ export interface IImportData {
     taxonomies: ITaxonomyModel[];
     assets: IAssetModel[];
     assetsFromFile: IAssetFromFile[];
+    metadata: IImportMetadata;
 }
 
 export interface IMigrateContentItemsData {

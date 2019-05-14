@@ -24,7 +24,8 @@ export const environment = {
       contentItems: 'content-items.json',
       contentTypes: 'content-types.json',
       taxonomies: 'taxonomies.json',
-      assetsFolder: 'assets'
+      assetsFolder: 'assets',
+      metadata: 'metadata.json'
     }
   }
 };

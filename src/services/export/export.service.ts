@@ -12,15 +12,16 @@ import { flatMap, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { observableHelper, zipHelper } from '../../utilities';
+import { versionInfo } from '../../version';
 import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
 import { DeliveryFetchService } from '../fetch/delivery-fetch.service';
 import {
+    IAssetFromFile,
     IImportData,
     IImportFromFileConfig,
     IImportFromProjectWithCMConfig,
     IImportFromProjectWithDeliveryConfig,
-    IAssetFromFile,
 } from '../import/import.models';
 import {
     IAssetModel,
@@ -48,6 +49,7 @@ export class ExportService extends BaseService {
         zip.file(environment.export.filenames.taxonomies, JSON.stringify(data.taxonomies));
         zip.file(environment.export.filenames.assets, JSON.stringify(data.assets));
         zip.file(environment.export.filenames.languageVariants, JSON.stringify(data.languageVariants));
+        zip.file(environment.export.filenames.metadata, JSON.stringify(data.metadata));
 
         const assetsFolder = zip.folder(environment.export.filenames.assetsFolder);
 
@@ -60,7 +62,8 @@ export class ExportService extends BaseService {
                 this.urlToPromise(asset.deliveryUrl),
                 {
                     binary: true
-                });
+                }
+            );
         }
 
         zip.generateAsync({ type: 'blob' }).then((content: any) => {
@@ -83,7 +86,10 @@ export class ExportService extends BaseService {
             languageVariants: [],
             assets: [],
             targetProjectId: config.targetProjectId,
-            assetsFromFile: []
+            assetsFromFile: [],
+            metadata: {
+                version: versionInfo.version,
+            }
         };
 
         return this.deliveryFetchService.getAllTypes(config.sourceProjectId, [], {
@@ -130,7 +136,10 @@ export class ExportService extends BaseService {
                     languageVariants: [],
                     assets: [],
                     targetProjectId: config.projectId,
-                    assetsFromFile: []
+                    assetsFromFile: [],
+                    metadata: {
+                        version: versionInfo.version,
+                    }
                 };
 
                 // taxonomies
@@ -174,7 +183,7 @@ export class ExportService extends BaseService {
                         map((assetsFromFile) => {
                             importData.assetsFromFile = assetsFromFile;
 
-                        })  
+                        })
                     )
                 );
 
@@ -215,7 +224,10 @@ export class ExportService extends BaseService {
             languageVariants: [],
             assets: [],
             targetProjectId: config.targetProjectId,
-            assetsFromFile: []
+            assetsFromFile: [],
+            metadata: {
+                version: versionInfo.version,
+            }
         };
 
         const obs: Observable<void>[] = [
