@@ -1,4 +1,6 @@
-## https://kentico.github.io/kc-project-manager/
+## Hosted app 
+
+https://kentico.github.io/cloud-template-manager/
 
 ### Running application locally
 
