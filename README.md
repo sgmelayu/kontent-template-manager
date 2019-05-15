@@ -1,6 +1,17 @@
-## https://enngage.github.io/kc-project-manager/
+## https://kentico.github.io/kc-project-manager/
 
-### Publishing app to GitHub pages
+### Running application locally
+
+Download/clone this repository and run following commands:
+
+```
+npm i
+npm start 
+```
+
+Since the application is build in Angular, you can also use `ng serve` command to run application.
+
+### Publishing to GitHub pages
 
 Under root, generate app with
 
