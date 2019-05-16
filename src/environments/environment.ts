@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   appName: 'Template manager',
+  templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
     // tslint:disable-next-line:max-line-length

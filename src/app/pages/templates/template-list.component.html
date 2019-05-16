@@ -1,0 +1,43 @@
+<h1>
+    Browse templates
+</h1>
+
+<div fxLayout="row wrap" fxLayoutGap="16px grid">
+    <div fxLayout="column" fxFlex="25%" fxFlex.lt-lg="50%" fxFlex.lt-md="100%" *ngFor="let template of templates">
+        <mat-card>
+            <mat-card-title>
+                {{ template.name }}
+            </mat-card-title>
+            <img mat-card-image [src]="template.imageUrl" [alt]="'Image for ' + template.name">
+            <mat-card-content>
+                <div libTextCaption fxLayout="row" fxLayoutGap="8px">
+                    <div fxLayout="column" fxFlex>
+                        <span>By <strong>{{ template.author.name }}</strong></span>
+                    </div>
+                    <div fxLayout="column" fxFlex="initial">
+                        v{{ template.version }}
+                    </div>
+                    <div fxLayout="column" fxFlex="initial" fxHide>
+                        {{ template.lastUpdate }}
+                    </div>
+                </div>
+                <div class="push-top-sm">
+                    {{ template.description }}
+                </div>
+
+                <div fxLayout="row" fxLayoutGap="8px" class="push-top">
+                    <div fxLayout="column">
+                        <a mat-raised-button color="accent" target="_blank"
+                            [href]="template.exportPackageUrl">Download</a>
+                    </div>
+                    <div fxLayout="column" fxFlex>
+
+                    </div>
+                    <div fxLayout="column">
+                        <a mat-button target="_blank" [href]="template.repoUrl">GitHub</a>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

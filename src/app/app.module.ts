@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 
 import { CoreModule } from './core/core.module';
 import { PagesModule } from './pages/pages.module';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { PagesModule } from './pages/pages.module';
     BrowserAnimationsModule,
     AppRoutingModule,
     CoreModule,
-    PagesModule
+    PagesModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

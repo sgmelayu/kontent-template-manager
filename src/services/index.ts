@@ -11,6 +11,8 @@ export * from './export/export.service';
 export * from './processing/processing.service';
 export * from './processing/processing-models';
 export * from './import/types/content-items-import.service';
+export * from './templates/templates.service';
+export * from './templates/template.models';
 
 
 

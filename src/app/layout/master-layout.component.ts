@@ -69,6 +69,16 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       routerLink: '/cleanup',
       icon: 'delete',
       type: 'link'
+    },
+    {
+      title: 'Templates',
+      type: 'section'
+    },
+    {
+      title: 'Browse templates',
+      routerLink: '/templates',
+      icon: 'list',
+      type: 'link'
     }
   ];
 

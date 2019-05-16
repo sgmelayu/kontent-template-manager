@@ -10,6 +10,7 @@ import { ImportFromProjectComponent } from './import/import-from-project.compone
 import { MigrateContentItemsComponent } from './import/migrate-content-items.component';
 import { CleanupConfirmComponent } from './shared/cleanup/cleanup-confirm.component';
 import { CleanupComponent } from './shared/cleanup/cleanup.component';
+import { TemplateListComponent } from './templates/template-list.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { CleanupComponent } from './shared/cleanup/cleanup.component';
     ExportComponent,
     CleanupComponent,
     CleanupConfirmComponent,
-    MigrateContentItemsComponent
+    MigrateContentItemsComponent,
+    TemplateListComponent
   ],
   entryComponents: [
     CleanupConfirmComponent
