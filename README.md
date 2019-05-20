@@ -21,3 +21,5 @@ Under root, generate app with
 npm run build-gh-pages
 npx ngh --dir=dist
 ```
+
+![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/cloud-template-manager?pixel)
