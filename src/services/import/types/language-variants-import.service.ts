@@ -32,7 +32,6 @@ export class LanguageVariantsImportService extends BaseService {
         super();
     }
 
-
     importLanguageVariants(
         targetClient: IContentManagementClient,
         languageVariants: ILanguageVariantModel[],
@@ -104,6 +103,58 @@ export class LanguageVariantsImportService extends BaseService {
             )
     }
 
+    private processRichTextItems(htmlCollection: HTMLCollection, prerequisities: ILanguageVariantsImportPrerequisities): void {
+        if (!htmlCollection || htmlCollection.length === 0) {
+            // there are no more nodes
+        } else {
+            for (let i = 0; i < htmlCollection.length; i++) {
+                const element = htmlCollection[i];
+
+                const typeAttribute = element.attributes ? element.attributes.getNamedItem('type') : undefined;
+
+                // process linked items (modular items)
+                if (element.attributes && typeAttribute && typeAttribute.value && typeAttribute.value.toLowerCase() === 'application/kenticocloud'.toLowerCase()) {
+                    const dataCodenameAttribute = element.attributes.getNamedItem('data-codename');
+                    const dataTypeAttribute = element.attributes.getNamedItem('data-type');
+
+                    if (!dataCodenameAttribute) {
+                        throw Error('Missing data codename attribute. This is likely an error caused by invalid response.');
+                    }
+
+                    if (!dataTypeAttribute) {
+                        throw Error('Missing data type attribute. This is likely an error caused by invalid response.');
+                    }
+
+                    // find linked item
+                    const importedLinkedItem = prerequisities.contentItems.find(m => m.originalItem.codename === dataCodenameAttribute.value);
+
+                    if (!importedLinkedItem) {
+                        throw Error(`Linked item in rich text field with codename '${dataCodenameAttribute.value}' could not be found`);
+                    }
+
+                    // see https://developer.kenticocloud.com/reference#section-rich-text-content-items for syntax details
+
+                    // remove data-codename attribute 
+                    element.attributes.removeNamedItem('data-codename')
+                    element.attributes.removeNamedItem('data-rel')
+
+                    // add data-id attribute with imported item id
+                    element.setAttribute('data-id', importedLinkedItem.importedItem.id);
+                }
+
+                if (element.children && element.children.length > 0) {
+                    this.processRichTextItems(element.children, prerequisities);
+                }
+            }
+        }
+    }
+
+    private getRichTextHtmlElement(html: string): HTMLElement {
+        const element = document.createElement('p');
+        element.innerHTML = html;
+        return element;
+    }
+
     private fixInvalidHtmlInRichTextField(html: string): string {
         // because sample project contains invalid html
         return html.replace(new RegExp('<br>', 'g'), '');
@@ -125,13 +176,16 @@ export class LanguageVariantsImportService extends BaseService {
                 });
             }
 
-           return newLinkedItems;
+            return newLinkedItems;
         }
 
         const value = field.value;
 
         if (field.elementModel.type === ElementType.richText) {
-            return this.fixInvalidHtmlInRichTextField(field.value as string);
+            const richTextValueWithFixedHtml = this.fixInvalidHtmlInRichTextField(field.value as string);
+            const doc = this.getRichTextHtmlElement(richTextValueWithFixedHtml);
+            this.processRichTextItems(doc.children, prerequisities);
+            return doc.innerHTML;
         }
 
         if (field.elementModel.type === ElementType.taxonomy) {
@@ -150,7 +204,7 @@ export class LanguageVariantsImportService extends BaseService {
                 });
             }
 
-           return newTaxonomies;
+            return newTaxonomies;
         }
 
         if (field.elementModel.type === ElementType.multipleChoice) {
@@ -168,7 +222,7 @@ export class LanguageVariantsImportService extends BaseService {
                 });
             }
 
-           return newOptions;
+            return newOptions;
         }
 
         if (field.elementModel.type === ElementType.asset) {
@@ -187,7 +241,7 @@ export class LanguageVariantsImportService extends BaseService {
                 });
             }
 
-           return newAssets;
+            return newAssets;
         }
 
         return value;
