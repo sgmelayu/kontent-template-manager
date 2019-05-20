@@ -41,7 +41,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "https://enngage.github.io/kc-project-manager/",
+              "baseHref": "https://kentico.github.io/cloud-template-manager/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,

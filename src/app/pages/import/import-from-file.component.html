@@ -26,6 +26,11 @@
                 <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
                     <span></span>
                 </file-drop>
+                <div class="push-top">
+                    Or select file <input #selectFileElem (change)="handleManualInputOnChange($event)" type="file"
+                        accept=".zip">
+                </div>
+
                 <div *ngIf="file" class="push-top" libTextCaption>
                     <em>{{ file.name }} </em>
                 </div>

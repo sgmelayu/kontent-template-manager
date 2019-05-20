@@ -63,7 +63,6 @@ export class AssetsImportService extends BaseService {
                     delay(this.cmRequestDelay),
                     flatMap(data => {
                         const asset = data.asset;
-                        const contentLength = data.blob.size;
                         const contentType = asset.type;
                         const fileBinary = data.blob;
 
@@ -71,7 +70,6 @@ export class AssetsImportService extends BaseService {
                             .withData({
                                 binaryData: fileBinary,
                                 contentType,
-                                contentLength,
                                 filename: asset.fileName
                             }).toObservable().pipe(
                                 delay(this.cmRequestDelay),

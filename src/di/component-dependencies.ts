@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core';
 import { MediaObserver } from '@angular/flex-layout';
 import { Router } from '@angular/router';
 
-import {
-    CleanupService,
-    ExportService,
-    ImportService,
-    ProcessingService,
-} from '../services';
+import { CleanupService, ExportService, ImportService, ProcessingService, TemplatesService } from '../services';
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +15,7 @@ export class ComponentDependencies {
         public exportService: ExportService,
         public processingService: ProcessingService,
         public media: MediaObserver,
-        public router: Router
+        public router: Router,
+        public templatesService: TemplatesService
     ) { }
 }

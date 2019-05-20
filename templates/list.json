@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Multiverse",
+        "description": "Multiverse by HTML5UP.net",
+        "repoUrl": "https://github.com/ondrabus/kc-template-multiverse",
+        "exportPackageUrl": "https://github.com/ondrabus/kc-template-multiverse/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/ondrabus/kc-template-multiverse/master/template.jpg",
+        "author": {
+            "name": "ondrabus",
+            "email": "ondrejp@kentico.com"
+        },
+        "lastUpdate": "2019-05-16T15:53:00.000Z",
+        "version": "1",
+        "technology": "Vue.js"
+    },
+    {
+        "name": "Grayscale",
+        "description": "Grayscale by Start Bootstrap",
+        "repoUrl": "https://github.com/ondrabus/kc-template-grayscale",
+        "exportPackageUrl": "https://github.com/ondrabus/kc-template-grayscale/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/ondrabus/kc-template-grayscale/master/template.jpg",
+        "author": {
+            "name": "ondrabus",
+            "email": "ondrejp@kentico.com"
+        },
+        "lastUpdate": "2019-05-16T16:03:00.000Z",
+        "version": "1",
+        "technology": "Vue.js"
+    }
+]

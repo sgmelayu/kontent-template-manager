@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  appName: 'Project manager',
+  appName: 'Template manager',
+  templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
     languages: '',
     sourceProjectApiKey: '',

@@ -8,10 +8,10 @@ import { catchError, map } from 'rxjs/operators';
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
 import { IImportData, IImportFromFileConfig, IImportResult } from '../../../services';
+import { zipHelper } from '../../../utilities';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
 import { BaseComponent } from '../../core/base.component';
-import { zipHelper } from '../../../utilities';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,6 +91,18 @@ export class ImportFromFileComponent extends BaseComponent {
     }
   }
 
+  handleManualInputOnChange(change: Event): void {
+    this.file = undefined;
+    if (change.target) {
+      const fileList = (change.target as any)['files'] as FileList;
+
+      if (fileList.length > 0) {
+        this.file = fileList[0];
+      }
+      super.detectChanges();
+    }
+  }
+
   handleImport(): void {
     const config = this.getConfig();
 
@@ -123,7 +135,7 @@ export class ImportFromFileComponent extends BaseComponent {
     }
   }
 
-  public dropped(event: UploadEvent) {
+  dropped(event: UploadEvent) {
     if (!event.files) {
       this.error = 'Invalid file'
       super.detectChanges();
@@ -181,7 +193,7 @@ export class ImportFromFileComponent extends BaseComponent {
       return;
     }
 
-    return <IImportFromFileConfig> {
+    return <IImportFromFileConfig>{
       apiKey: cmApiKey,
       projectId: projectId,
       file: this.file,
