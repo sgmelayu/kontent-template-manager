@@ -15,7 +15,7 @@ Since the application is build in Angular, you can also use `ng serve` command t
 
 #### :warning: Limitations
 
-See [a list of limitations](https://kentico.github.io/cloud-template-manager/limitations) before you started.
+See [a list of limitations](https://kentico.github.io/cloud-template-manager/limitations) before you get started.
 
 ### Publishing to GitHub pages
 
