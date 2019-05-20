@@ -1,0 +1,29 @@
+<h1>
+    Limitations
+</h1>
+
+<mat-card>
+    <p class="push-top">
+        Currently, the <em>export package</em> is created using <strong>Delivery API</strong>, and as such it cannot make
+        an
+        identical copy of your project. Some information is not available through Delivery API and is lost during
+        export/import process. Once the <strong>Contemt managemenent API</strong> is mature enough, this application
+        will switch to it to create better export packages with more information.
+    </p>
+</mat-card>
+
+<div class="push-top">
+    <h3>Current limitations include:</h3>
+
+    <mat-card>
+        <mat-list role="list">
+            <mat-list-item role="listitem">1) Content type snippets are not preserved, but data is not lost. Instead, these
+                elements are created on each content type separately.</mat-list-item>
+            <mat-list-item role="listitem">2) Components in rich text elements are created as standalone linked items (they
+                are preserved correctly in rich text values)</mat-list-item>
+            <mat-list-item role="listitem">3) Content type configuration is lost (e.g. size limitations for assets, allowed content types for linked item elements...)</mat-list-item>
+            <mat-list-item role="listitem">4) Only published items are exported</mat-list-item>
+            <mat-list-item role="listitem">5) Assets folder categorization is not preserved and assets are created in flat structure</mat-list-item>
+        </mat-list>
+    </mat-card>
+</div>

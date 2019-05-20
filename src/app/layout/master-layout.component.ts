@@ -41,10 +41,6 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'link'
     },
     {
-      title: 'Item migration',
-      type: 'section'
-    },
-    {
       title: 'Migrate items between projects',
       routerLink: '/migrate-content-items',
       icon: 'sync',
@@ -78,6 +74,16 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       title: 'Browse templates',
       routerLink: '/templates',
       icon: 'list',
+      type: 'link'
+    },
+    {
+      title: 'FAQ',
+      type: 'section'
+    },
+    {
+      title: 'Limitations',
+      routerLink: '/limitations',
+      icon: 'help',
       type: 'link'
     }
   ];

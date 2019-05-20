@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { MasterLayoutComponent } from './layout';
 import { ExportComponent } from './pages/export/export.component';
+import { LimitationsComponent } from './pages/faq/limitations.component';
 import { ImportFromFileComponent } from './pages/import/import-from-file.component';
 import { ImportFromProjectComponent } from './pages/import/import-from-project.component';
 import { MigrateContentItemsComponent } from './pages/import/migrate-content-items.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
       { path: 'import-from-file', component: ImportFromFileComponent },
       { path: 'migrate-content-items', component: MigrateContentItemsComponent },
       { path: 'templates', component: TemplateListComponent },
+      { path: 'limitations', component: LimitationsComponent },
     ]
   },
 ];
