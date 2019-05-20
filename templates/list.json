@@ -4,7 +4,7 @@
         "description": "Multiverse by HTML5UP.net",
         "repoUrl": "https://github.com/ondrabus/kc-template-multiverse",
         "exportPackageUrl": "https://github.com/ondrabus/kc-template-multiverse/archive/master.zip",
-        "imageUrl": "https://github.com/ondrabus/kc-template-multiverse/blob/master/template.jpg",
+        "imageUrl": "https://raw.githubusercontent.com/ondrabus/kc-template-multiverse/master/template.jpg",
         "author": {
             "name": "ondrabus",
             "email": "ondrejp@kentico.com"
@@ -17,7 +17,7 @@
         "description": "Grayscale by Start Bootstrap",
         "repoUrl": "https://github.com/ondrabus/kc-template-grayscale",
         "exportPackageUrl": "https://github.com/ondrabus/kc-template-grayscale/archive/master.zip",
-        "imageUrl": "https://github.com/ondrabus/kc-template-grayscale/blob/master/template.jpg",
+        "imageUrl": "https://raw.githubusercontent.com/ondrabus/kc-template-grayscale/master/template.jpg",
         "author": {
             "name": "ondrabus",
             "email": "ondrejp@kentico.com"
