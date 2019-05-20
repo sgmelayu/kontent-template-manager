@@ -30,8 +30,8 @@
     {
       "name": "Kentico Cloud & GatsbyJs Photon",
       "description": "Kentico Cloud & GatsbyJs template based on Photon",
-      "repoUrl": "https://github.com/Simply007/cloud-template-manager",
-      "exportPackageUrl": "https://github.com/Simply007/cloud-template-manager/archive/master.zip",
+      "repoUrl": "https://github.com/Simply007/cloud-template-gatsby",
+      "exportPackageUrl": "https://github.com/Simply007/cloud-template-gatsby/archive/master.zip",
       "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-gatsby/master/template.png",
       "author": {
           "name": "Ondřej Chrastina",
