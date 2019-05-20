@@ -1,11 +1,11 @@
-## Hosted app 
+## Kentico Cloud Template Manager
 [![Template manager](https://img.shields.io/badge/-Template%20Manager-brightgreen.svg)](https://kentico.github.io/cloud-template-manager/)
 
 ### Running application locally
 
 Download/clone this repository and run following commands:
 
-```
+```sh
 npm i
 npm start 
 ```
@@ -20,7 +20,7 @@ See [a list of limitations](https://kentico.github.io/cloud-template-manager/lim
 
 Under root, generate app with
 
-```
+```sh
 npm run build-gh-pages
 npx ngh --dir=dist
 ```
