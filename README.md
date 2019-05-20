@@ -1,6 +1,5 @@
 ## Hosted app 
-
-https://kentico.github.io/cloud-template-manager/
+[![Template manager](https://img.shields.io/badge/-Template%20Manager-brightgreen.svg)](https://kentico.github.io/cloud-template-manager/)
 
 ### Running application locally
 
