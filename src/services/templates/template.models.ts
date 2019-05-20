@@ -7,7 +7,8 @@ export interface ITemplate {
     author: {
         name: string;
         email: String;
-    }
+    };
+    technology: string;
 
     lastUpdate?: Date;
     version?: string;

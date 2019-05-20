@@ -3,7 +3,8 @@
 </h1>
 
 <div fxLayout="row wrap" fxLayoutGap="16px grid">
-    <div fxLayout="column" fxFlex="33%" fxFlex.gt-lg="25%" fxFlex.lg="25%" fxFlex.lt-lg="33%" fxFlex.lt-md="50%" fxFlex.sm="50%" fxFlex.xs="100%" *ngFor="let template of templates">
+    <div fxLayout="column" fxFlex="33%" fxFlex.gt-lg="25%" fxFlex.lg="25%" fxFlex.lt-lg="33%" fxFlex.lt-md="50%"
+        fxFlex.sm="50%" fxFlex.xs="100%" *ngFor="let template of templates">
         <mat-card>
             <mat-card-title>
                 {{ template.name }}
@@ -15,7 +16,7 @@
                         <span>By <strong>{{ template.author.name }}</strong></span>
                     </div>
                     <div fxLayout="column" fxFlex="initial">
-                        v{{ template.version }}
+                        {{ template.technology }}
                     </div>
                     <div fxLayout="column" fxFlex="initial" fxHide>
                         {{ template.lastUpdate }}
