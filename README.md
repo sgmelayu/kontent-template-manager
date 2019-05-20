@@ -28,7 +28,7 @@ npx ngh --dir=dist
 
 ## Submitting Web Template to Templates Gallery
 
-If you want to submit a Kentico Cloud Web Template to the Templates Gallery, please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust https://github.com/Kentico/cloud-template-manager/blob/master/templates/list.json and create a pull request.
+If you want to submit a Kentico Cloud Web Template to the Templates Gallery, please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust [/templates/list.json](/templates/list.json) and create a pull request.
 
 ### Guidelines for Web Templates
 * Every template has its own GitHub repository
@@ -38,7 +38,7 @@ If you want to submit a Kentico Cloud Web Template to the Templates Gallery, ple
 
 * **/source**<br>Contains template implementation (open-source)
     
-* **content.zip**<br>ZIP package generated via https://kentico.github.io/cloud-template-manager
+* **content.zip**<br>ZIP package generated via [https://kentico.github.io/cloud-template-manager](https://kentico.github.io/cloud-template-manager)
 
 * **template.jpg**<br>Screenshot/image of the template in 3:2 ratio, e.g. 600x400px (min. 450x300px), in JPG format (no other format is allowed)
 
