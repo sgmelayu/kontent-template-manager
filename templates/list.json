@@ -28,7 +28,7 @@
         "technology": "Vue.js"
     },
     {
-      "name": "Kentico Cloud & GatsbyJs Photon",
+      "name": "GatsbyJs Photon",
       "description": "Kentico Cloud & GatsbyJs template based on Photon",
       "repoUrl": "https://github.com/Simply007/cloud-template-gatsby",
       "exportPackageUrl": "https://github.com/Simply007/cloud-template-gatsby/archive/master.zip",
