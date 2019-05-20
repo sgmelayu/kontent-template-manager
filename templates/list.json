@@ -26,5 +26,19 @@
         "lastUpdate": "2019-05-16T16:03:00.000Z",
         "version": "1",
         "technology": "Vue.js"
-    }
+    },
+    {
+      "name": "Kentico Cloud & GatsbyJs Photon",
+      "description": "Kentico Cloud & GatsbyJs template based on Photon",
+      "repoUrl": "https://github.com/Simply007/cloud-template-gatsby",
+      "exportPackageUrl": "https://github.com/Simply007/cloud-template-gatsby/archive/master.zip",
+      "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-gatsby/master/template.jpg",
+      "author": {
+          "name": "Ondřej Chrastina",
+          "email": "ondrej.chrastina@kentico.com"
+      },
+      "lastUpdate": "2019-05-20T16:00:00.000Z",
+      "version": "1",
+      "technology": "GatsbyJs"
+  }
 ]
