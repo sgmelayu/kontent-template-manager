@@ -13,6 +13,10 @@ npm start
 
 Since the application is build in Angular, you can also use `ng serve` command to run application.
 
+#### :warning: Limitations
+
+See [a list of limitations](https://kentico.github.io/cloud-template-manager/limitations) before you get started.
+
 ### Publishing to GitHub pages
 
 Under root, generate app with
