@@ -158,7 +158,10 @@ export interface IFieldModel {
     value: any;
 }
 
+export type EmbeddedAssetTypeSource = 'assetElement' | 'richTexElementtImages';
+
 export interface IEmbeddedAsset {
+    assetSource: EmbeddedAssetTypeSource;
     languageCodename: string;
     asset: IRawAssetModel;
     fieldCodename: string;
@@ -166,14 +169,15 @@ export interface IEmbeddedAsset {
     contentItemId: string;
     type: string;
     size: number;
-    name: String;
-    description: string;
+    name: string;
+    description?: string;
+    id: string | false;
 }
 
 export interface IRawAssetModel {
     name: string;
     type: string;
-    size: number;
-    description: string;
+    size?: number;
+    description?: string;
     url: string;
 }

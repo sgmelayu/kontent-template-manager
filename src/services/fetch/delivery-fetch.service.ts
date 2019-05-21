@@ -31,6 +31,7 @@ import {
     ITaxonomyModel,
 } from '../shared/shared.models';
 import { IFetchConfig } from './fetch-models';
+import { getType }from 'mime';
 
 @Injectable({
     providedIn: 'root'
@@ -39,7 +40,7 @@ export class DeliveryFetchService {
 
     constructor(
         private processingService: ProcessingService
-    ) {}
+    ) { }
 
     getAllTypes(projectId: string, allTypes: IContentTypeModel[], config: IFetchConfig, nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getDeliveryClient({
@@ -68,7 +69,7 @@ export class DeliveryFetchService {
 
                     if (config.useProcessingService) {
                         this.processingService.addProcessedItems(response.types.map(m => {
-                            return <IProcessingItem> {
+                            return <IProcessingItem>{
                                 type: 'content type',
                                 action: 'get',
                                 data: m,
@@ -107,7 +108,7 @@ export class DeliveryFetchService {
 
                     if (config.useProcessingService) {
                         this.processingService.addProcessedItems(response.taxonomies.map(m => {
-                            return <IProcessingItem> {
+                            return <IProcessingItem>{
                                 type: 'taxonomy',
                                 action: 'get',
                                 data: m,
@@ -183,19 +184,22 @@ export class DeliveryFetchService {
         const languageVariants: ILanguageVariantModel[] = [];
 
         for (const contentItem of contentItems) {
-            const fakeAssetId = stringHelper.newGuid(); // delivery API does not return asset/file id = generate new one
 
-            assets.push(...contentItem.assets.map(m => <IAssetModel>{
+            assets.push(...contentItem.assets.map(m => {
+                // delivery API does not return asset/file in all cases - use custom generated one for such scenarios
+                const assetId = !m.id ? stringHelper.newGuid() : m.id; 
+
+               return  <IAssetModel>{
                 deliveryUrl: m.asset.url,
                 fileName: m.asset.name,
-                id: fakeAssetId,
+                id: assetId,
                 type: m.asset.type,
                 description: m.asset.description,
                 size: m.size,
-                zipFilePath: zipHelper.getFullAssetPath(fakeAssetId, m.asset.name),
+                zipFilePath: zipHelper.getFullAssetPath(assetId, m.asset.name),
                 externalId: undefined, // N/A Delivery API
                 title: m.name // N/A Delivery API
-            }));
+            }}));
 
             slimContentItems.push(
                 {
@@ -230,12 +234,12 @@ export class DeliveryFetchService {
             if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
                 const assetFieldValue = field.value as FieldContracts.IAssetContract[];
                 fieldValue = <IAssetElementValue[]>assetFieldValue;
-               
-            } 
+
+            }
             if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
                 const multipleFieldValue = field.value as FieldContracts.IMultipleChoiceOptionContract[];
                 fieldValue = <IMultipleChoiceElementValue[]>multipleFieldValue;
-            } 
+            }
             else {
                 fieldValue = field.value;
             }
@@ -321,7 +325,7 @@ export class DeliveryFetchService {
 
                             if (config.useProcessingService) {
                                 this.processingService.addProcessedItems(response.items.map(m => {
-                                    return <IProcessingItem> {
+                                    return <IProcessingItem>{
                                         type: 'content item',
                                         action: 'get',
                                         data: m,
@@ -375,24 +379,66 @@ export class DeliveryFetchService {
 
         for (const elementCodename of Object.keys(contentItem.elements)) {
             const element = contentItem.elements[elementCodename];
+
+            // process asset elements
             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
                 const fieldAssets = element.value as IRawAssetModel[];
                 for (const asset of fieldAssets) {
                     assets.push({
+                        assetSource: 'assetElement',
                         languageCodename: contentItem.system.language,
                         asset: asset,
                         contentItemCodename: contentItem.system.codename,
                         contentItemId: contentItem.system.id,
                         fieldCodename: elementCodename,
                         description: asset.description,
-                        size: asset.size,
+                        size: asset.size || 0,
                         type: asset.type,
-                        name: asset.name
+                        name: asset.name,
+                        id: false,
+                    });
+                }
+            }
+
+            // process rich text elements
+            if (element.type.toLowerCase() === FieldType.RichText.toLowerCase()) {
+                const richTextElement = element as FieldContracts.IRichTextFieldContract;
+                for (const imageKey of Object.keys(richTextElement.images)) {
+                    const image = richTextElement.images[imageKey];
+
+                    const fileType = this.extractMimeTypeFromUrl(image.url);
+
+                    if (!fileType) {
+                        throw Error(`Cannot determine type of asset from '${image.url}'. This is referenced by '${contentItem.system.codename}' content item in element '${element.name}'`);
+                       }
+
+                    assets.push({
+                        assetSource: 'richTexElementtImages',
+                        asset: {
+                            description: image.description || '',
+                            name: image.image_id,
+                            size: 0, // not available
+                            type: fileType,
+                            url: image.url,
+                        },
+                        contentItemCodename: contentItem.system.codename,
+                        contentItemId: contentItem.system.id,
+                        fieldCodename: elementCodename,
+                        description: image.description,
+                        size: 0, // not available
+                        type: fileType,
+                        name: image.image_id,
+                        languageCodename: contentItem.system.language,
+                        id: image.image_id
                     });
                 }
             }
         }
 
         return assets;
+    }
+
+    private extractMimeTypeFromUrl(url: string): string | null {
+       return getType(url);
     }
 }

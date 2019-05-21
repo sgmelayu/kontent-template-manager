@@ -138,7 +138,6 @@ export class AssetsImportService extends BaseService {
         const obs: Observable<void>[] = [];
 
         for (const assetFromFile of assets) {
-            const contentLength = assetFromFile.asset.size;
             const contentType = assetFromFile.asset.type;
             const fileBinary = assetFromFile.data;
 
@@ -146,7 +145,6 @@ export class AssetsImportService extends BaseService {
                 .withData({
                     binaryData: fileBinary,
                     contentType: contentType,
-                    contentLength: contentLength,
                     filename: assetFromFile.asset.fileName
                 }).toObservable().pipe(
                     delay(this.cmRequestDelay),

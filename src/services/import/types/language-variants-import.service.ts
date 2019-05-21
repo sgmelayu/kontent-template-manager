@@ -110,6 +110,107 @@ export class LanguageVariantsImportService extends BaseService {
             for (let i = 0; i < htmlCollection.length; i++) {
                 const element = htmlCollection[i];
 
+                // process links 
+                if (element.nodeName.toLowerCase() === 'a'.toLowerCase()) {
+                    const linkAttributes = element.attributes;
+                    // remove attributes not allowed by CM API
+                    if (linkAttributes.getNamedItem('rel')) {
+                        linkAttributes.removeNamedItem('rel');
+                    }
+
+                    if (linkAttributes.getNamedItem('target')) {
+                        linkAttributes.removeNamedItem('target');
+                    }
+                }
+
+                // process assets
+                if (element.nodeName.toLowerCase() === 'figure'.toLowerCase()) {
+                    const assetAttributes = element.getAttributeNames();
+                    // remove attributes not allowed by CM API
+                    const allowedAttributes: string[] = ['data-asset-id', 'data-asset-external-id'];
+
+                    for (const assetAttribute of assetAttributes) {
+                        if (!allowedAttributes.includes(assetAttribute)) {
+                            element.attributes.removeNamedItem(assetAttribute);
+                        }
+                    }
+
+                    const dataAssetId = element.attributes.getNamedItem('data-asset-id');
+                    const dataImageExternalId = element.attributes.getNamedItem('data-asset-external-id');
+
+                    if (dataAssetId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.id === dataAssetId.value);
+
+
+                        if (!asset) {
+                            throw Error(`Asset with id '${dataAssetId.value}' could not be found in source data`);
+                        }
+                        element.attributes.removeNamedItem('data-asset-id')
+                        element.setAttribute('data-asset-id', asset.importedItem.id);
+                    }
+
+                    if (dataImageExternalId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.externalId === dataImageExternalId.value);
+
+                        if (!asset) {
+                            throw Error(`Asset with external id '${dataImageExternalId.value}' could not be found in source data`);
+                        }
+
+                        const externalIdOfImportedAsset = asset.importedItem.externalId;
+
+                        if (!externalIdOfImportedAsset) {
+                            throw Error(`ExternalId of asset is not set`);
+                        }
+                        element.attributes.removeNamedItem('data-asset-exgternal-id')
+                        element.setAttribute('data-asset-external-id', externalIdOfImportedAsset);
+                    }
+                }
+
+                // process images
+                if (element.nodeName.toLowerCase() === 'img'.toLowerCase()) {
+                    const dataImageId = element.attributes.getNamedItem('data-image-id');
+                    const dataImageExternalId = element.attributes.getNamedItem('data-image-external-id');
+
+                    if (dataImageId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.id === dataImageId.value);
+                        
+                        if (!asset) {
+                            throw Error(`Asset with id '${dataImageId.value}' could not be found in source data`);
+                        }
+                        element.setAttribute('data-asset-id', asset.importedItem.id);
+                        element.attributes.removeNamedItem('data-image-id')
+                    }
+
+                    if (dataImageExternalId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.externalId === dataImageExternalId.value);
+
+                        if (!asset) {
+                            throw Error(`Asset with external id '${dataImageExternalId.value}' could not be found in source data`);
+                        }
+
+                        const externalIdOfImportedAsset = asset.importedItem.externalId;
+
+                        if (!externalIdOfImportedAsset) {
+                            throw Error(`ExternalId of asset is not set`);
+                        }
+                        element.setAttribute('data-asset-external-id', externalIdOfImportedAsset);
+                        element.attributes.removeNamedItem('data-image-externa-id')
+                    }
+
+                    const allowedAttributes: string[] = ['data-asset-id', 'data-asset-external-id'];
+                    const assetAttributes = element.getAttributeNames();
+
+                    for (const assetAttribute of assetAttributes) {
+                        if (!allowedAttributes.includes(assetAttribute)) {
+                            element.attributes.removeNamedItem(assetAttribute);
+                        }
+                    }
+                }
+
                 const typeAttribute = element.attributes ? element.attributes.getNamedItem('type') : undefined;
 
                 // process linked items (modular items)
