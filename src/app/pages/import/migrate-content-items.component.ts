@@ -72,6 +72,18 @@ export class MigrateContentItemsComponent extends BasePageComponent {
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
       publishAllItems: [true],
     });
+
+    // init stored values
+    if (environment.production) {
+      const storedData = dependencies.importDataStorageService.getImportData();
+      if (storedData) {
+        this.formGroup.controls['targetProjectId'].setValue(storedData.targetProjectId);
+        this.formGroup.controls['targetProjectCmApiKey'].setValue(storedData.targetProjectApiKey);
+        this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems);
+        this.formGroup.controls['sourceProjectId'].setValue(storedData.sourceProjectId);
+        this.formGroup.controls['languages'].setValue(storedData.sourceProjectLanguages);
+      }
+    }
   }
 
   handlePreview(): void {
@@ -163,6 +175,15 @@ export class MigrateContentItemsComponent extends BasePageComponent {
       this.error = 'Invalid api key';
       return;
     }
+
+    // store values
+    this.dependencies.importDataStorageService.updateImportData({
+      targetProjectApiKey: targetProjectCmApiKey,
+      publishContentItems: publishAllItems,
+      targetProjectId: targetProjectId,
+      sourceProjectId: sourceProjectId,
+      sourceProjectLanguages: languages
+    });
 
     return <IImportFromProjectWithDeliveryConfig>{
       languages: languages,

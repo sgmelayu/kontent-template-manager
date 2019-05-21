@@ -32,6 +32,9 @@ export const environment = {
   google: {
     enableTracking: false,
     googleAnalyticsTrackingId: 'UA-69014260-7'
+  },
+  storage: {
+    storageName: 'templateManagerData'
   }
 };
 

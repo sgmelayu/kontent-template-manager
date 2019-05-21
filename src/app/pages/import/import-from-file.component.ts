@@ -57,6 +57,16 @@ export class ImportFromFileComponent extends BasePageComponent {
       cmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
       publishAllItems: [true],
     });
+
+    // init stored values
+    if (environment.production) {
+      const storedData = dependencies.importDataStorageService.getImportData();
+      if (storedData) {
+        this.formGroup.controls['projectId'].setValue(storedData.targetProjectId);
+        this.formGroup.controls['cmApiKey'].setValue(storedData.targetProjectId)
+        this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems)
+      }
+    }
   }
 
   handlePreview(): void {
@@ -192,6 +202,13 @@ export class ImportFromFileComponent extends BasePageComponent {
       this.error = 'File is not uploaded';
       return;
     }
+
+    // store values
+    this.dependencies.importDataStorageService.updateImportData({
+      targetProjectApiKey: cmApiKey,
+      publishContentItems: publishAllItems,
+      targetProjectId: projectId
+    });
 
     return <IImportFromFileConfig>{
       apiKey: cmApiKey,

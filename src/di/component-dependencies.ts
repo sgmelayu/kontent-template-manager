@@ -6,6 +6,7 @@ import {
     CleanupService,
     ExportService,
     GoogleAnalyticsService,
+    ImportDataStorageService,
     ImportService,
     ProcessingService,
     TemplatesService,
@@ -24,6 +25,7 @@ export class ComponentDependencies {
         public media: MediaObserver,
         public router: Router,
         public templatesService: TemplatesService,
-        public googleAnalyticsService: GoogleAnalyticsService
+        public googleAnalyticsService: GoogleAnalyticsService,
+        public importDataStorageService: ImportDataStorageService,
     ) { }
 }

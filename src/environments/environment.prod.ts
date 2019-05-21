@@ -25,5 +25,8 @@ export const environment = {
   google: {
     enableTracking: true,
     googleAnalyticsTrackingId: 'UA-69014260-7'
+  },
+  storage: {
+    storageName: 'templateManagerData'
   }
 };
