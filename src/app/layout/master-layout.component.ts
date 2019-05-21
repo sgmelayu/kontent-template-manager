@@ -63,11 +63,11 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'link'
     },
     {
-      title: 'Templates',
+      title: 'Gallery',
       type: 'section'
     },
     {
-      title: 'Browse templates',
+      title: 'Templates',
       routerLink: '/templates',
       icon: 'list',
       type: 'link'
