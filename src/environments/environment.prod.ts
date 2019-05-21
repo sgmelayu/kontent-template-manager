@@ -21,5 +21,9 @@ export const environment = {
       assetsFolder: 'assets',
       metadata: 'metadata.json'
     }
+  },
+  google: {
+    enableTracking: true,
+    googleAnalyticsTrackingId: 'UA-69014260-7'
   }
 };

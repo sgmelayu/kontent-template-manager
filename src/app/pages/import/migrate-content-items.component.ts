@@ -7,15 +7,15 @@ import { catchError, map } from 'rxjs/operators';
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
 import { IImportData, IImportFromProjectWithDeliveryConfig, IImportResult } from '../../../services';
-import { BaseComponent } from '../../core/base.component';
-import { IDataPreviewWrapper } from '../../components/preview/preview-models';
 import { previewHelper } from '../../components/preview/preview-helper';
+import { IDataPreviewWrapper } from '../../components/preview/preview-models';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './migrate-content-items.component.html',
 })
-export class MigrateContentItemsComponent extends BaseComponent {
+export class MigrateContentItemsComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;

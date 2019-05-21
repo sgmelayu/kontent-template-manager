@@ -9,13 +9,13 @@ import { environment } from '../../../environments/environment';
 import { IImportData, IImportFromProjectWithDeliveryConfig, IImportResult } from '../../../services';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
-import { BaseComponent } from '../../core/base.component';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './import-from-project.component.html',
 })
-export class ImportFromProjectComponent extends BaseComponent {
+export class ImportFromProjectComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;

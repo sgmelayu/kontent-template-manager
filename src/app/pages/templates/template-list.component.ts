@@ -3,13 +3,13 @@ import { map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
 import { ITemplate } from '../../../services/templates/template.models';
-import { BaseComponent } from '../../core/base.component';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './template-list.component.html',
 })
-export class TemplateListComponent extends BaseComponent implements OnInit {
+export class TemplateListComponent extends BasePageComponent implements OnInit {
 
   public templates?: ITemplate[];
 

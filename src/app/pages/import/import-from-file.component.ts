@@ -11,13 +11,13 @@ import { IImportData, IImportFromFileConfig, IImportResult } from '../../../serv
 import { zipHelper } from '../../../utilities';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
-import { BaseComponent } from '../../core/base.component';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './import-from-file.component.html',
 })
-export class ImportFromFileComponent extends BaseComponent {
+export class ImportFromFileComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;

@@ -13,6 +13,7 @@ export * from './processing/processing-models';
 export * from './import/types/content-items-import.service';
 export * from './templates/templates.service';
 export * from './templates/template.models';
+export * from './google/google-analytics.service';
 
 
 
