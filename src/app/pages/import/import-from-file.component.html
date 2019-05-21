@@ -12,46 +12,45 @@
         Target Project
     </div>
 
-    <mat-card>
-        <mat-card-content>
-            <mat-form-field class="w-full-width">
-                <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
-            </mat-form-field>
+    <div libCard>
+        <mat-form-field class="w-full-width">
+            <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
+        </mat-form-field>
 
-            <mat-form-field class="push-top w-full-width">
-                <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
-            </mat-form-field>
+        <mat-form-field class="push-top w-full-width">
+            <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
+        </mat-form-field>
 
+        <div class="push-top">
+            <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
+                <span></span>
+            </file-drop>
             <div class="push-top">
-                <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
-                    <span></span>
-                </file-drop>
-                <div class="push-top">
-                    Or select file <input #selectFileElem (change)="handleManualInputOnChange($event)" type="file"
-                        accept=".zip">
-                </div>
-
-                <div *ngIf="file" class="push-top" libTextCaption>
-                    <em>{{ file.name }} </em>
-                </div>
+                Or select file <input #selectFileElem (change)="handleManualInputOnChange($event)" type="file"
+                    accept=".zip">
             </div>
-        </mat-card-content>
-    </mat-card>
+
+            <div *ngIf="file" class="push-top" libTextCaption>
+                <em>{{ file.name }} </em>
+            </div>
+        </div>
+    </div>
 
     <div libTitle1 class="push-top">
         Configuration
     </div>
 
-    <mat-card>
-        <mat-card-content>
-            <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
-        </mat-card-content>
-    </mat-card>
+    <div libCard>
+        <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
+        <div>
 
-    <div class="push-top" *ngIf="!isLoading">
-        <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handlePreview()">Prepare import
-            data</button>
-        <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Prepare import data</button>
+            <div class="push-top" *ngIf="!isLoading">
+                <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handlePreview()">Prepare
+                    import
+                    data</button>
+                <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Prepare import data</button>
+            </div>
+        </div>
     </div>
 </ng-container>
 
@@ -77,9 +76,9 @@
     </div>
 
     <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
-    <mat-card>
+    <div libCard>
         <lib-processed-items *ngIf="isLoading || importCompleted"></lib-processed-items>
-    </mat-card>
+    </div>
 </ng-container>
 
 <ng-container *ngIf="step === 'completed'">

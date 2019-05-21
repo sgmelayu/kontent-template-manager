@@ -14,19 +14,19 @@
 
 <ng-container *ngIf="step === 'initial'">
     <div [formGroup]="formGroup">
-        <mat-card class="push-top">
-            <mat-card-content>
-                <mat-form-field class="w-full-width">
-                    <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
-                </mat-form-field>
+        <div libCard class="push-top">
+            <mat-form-field class="w-full-width">
+                <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
+            </mat-form-field>
 
-                <mat-form-field class="push-top w-full-width">
-                    <input autocomplete="off" matInput
-                        placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language."
-                        formControlName="languages">
-                </mat-form-field>
-            </mat-card-content>
-        </mat-card>
+            <mat-form-field class="push-top w-full-width">
+                <input autocomplete="off" matInput
+                    placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language."
+                    formControlName="languages">
+            </mat-form-field>
+        </div>
+    </div>
+    <div>
 
         <div class="push-top">
             <button *ngIf="canSubmit" (click)="handleExport()" mat-raised-button color="warn">Export data</button>
@@ -54,7 +54,7 @@
 </ng-container>
 
 <ng-container *ngIf="step === 'exporting'">
-    <mat-card>
+    <div libCard>
         <lib-processed-items></lib-processed-items>
-    </mat-card>
+    </div>
 </ng-container>

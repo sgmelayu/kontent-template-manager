@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DependenciesModule } from '../../di';
 import { ServicesModule } from '../../services';
 import { TypographyModule } from '../../typography';
+import { CardModule } from '../directives/directives.module';
 import { ExternalModule } from '../external';
 import { LayoutModule } from '../layout';
 
@@ -19,7 +20,8 @@ import { LayoutModule } from '../layout';
         ExternalModule,
         TypographyModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        CardModule
     ],
 })
 export class CoreModule { }
