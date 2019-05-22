@@ -14,7 +14,7 @@ export abstract class BasePageComponent extends BaseComponent {
 
         dependencies.googleAnalyticsService.trackPageview({
             pageTitle: `${environment.google.trackingPrefix}${dependencies.router.url}`,
-            pagePath: dependencies.router.url,
+            pagePath: `${environment.google.trackingPrefix}${dependencies.router.url}`,
         });
     }
 }
