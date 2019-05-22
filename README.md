@@ -1,5 +1,8 @@
 ## Kentico Cloud Template Manager
+
 [![Template manager](https://img.shields.io/badge/-Template%20Manager-brightgreen.svg)](https://kentico.github.io/cloud-template-manager/)
+
+[![Build Status](https://api.travis-ci.com/Kentico/cloud-template-manager.svg?branch=master)](https://travis-ci.com/Kentico/cloud-template-manager)
 
 ### Running application locally
 
@@ -7,7 +10,7 @@ Download/clone this repository and run following commands:
 
 ```sh
 npm i
-npm start 
+npm start
 ```
 
 Since the application is build in Angular, you can also use `ng serve` command to run application.
@@ -30,6 +33,7 @@ npx ngh --dir=dist
 If you want to submit a Kentico Cloud Web Template to the [Templates Gallery](https://kentico.github.io/cloud-template-manager/templates), please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust [/templates/list.json](/templates/list.json) and create a pull request.
 
 ### Guidelines for Web Templates
+
 * Every template has its own GitHub repository
 * The source code is available under MIT license (open-source)
 
@@ -50,6 +54,5 @@ If you want to submit a Kentico Cloud Web Template to the [Templates Gallery](ht
 * **LICENSE** (optional)
 
 The repository **may not** contain any other files in the root directory.
-
 
 ![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/cloud-template-manager?pixel)

@@ -1,0 +1,15 @@
+dist: trusty
+language: node_js
+node_js:
+- "lts/*"
+before_script:
+- npm install
+script:
+- npm run build
+deploy:
+  local-dir: dist
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # contact developerscommunity@kentico.com in case of change
+  on:
+    branch: master
