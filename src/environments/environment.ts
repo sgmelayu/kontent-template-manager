@@ -31,6 +31,7 @@ export const environment = {
   },
   google: {
     enableTracking: false,
+    trackingPrefix: '/cloud-template-manager',
     googleAnalyticsTrackingId: 'UA-69014260-7'
   },
   storage: {
