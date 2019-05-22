@@ -5,28 +5,32 @@
 <div fxLayout="row wrap" fxLayoutGap="16px grid">
     <div fxLayout="column" fxFlex="33%" fxFlex.gt-lg="25%" fxFlex.lg="25%" fxFlex.lt-lg="33%" fxFlex.lt-md="50%"
         fxFlex.sm="50%" fxFlex.xs="100%" *ngFor="let template of templates">
-        <div libCard [addPad]="false" fxFlexFill>
-            <div class="pad" libTitle2 style="margin:0">
-                {{ template.name }}
-            </div>
-            <img style="width:100%" [src]="template.imageUrl" [alt]="'Image for ' + template.name">
-            <div class="pad">
-                <div libTextCaption fxLayout="row" fxLayoutGap="8px">
+        <div libCard [addPad]="false" fxFlexFill fxLayout="row wrap">
+            <div fxLayout="column" fxFlex="100%">
+                <div class="pad" libTitle2 style="margin:0">
+                    {{ template.name }}
+                </div>
+                <img style="width:100%" [src]="template.imageUrl" [alt]="'Image for ' + template.name">
+                <div class="pad" fxLayout="row" fxLayoutAlign="end end">
                     <div fxLayout="column" fxFlex>
-                        <span>By <strong>{{ template.author.name }}</strong></span>
-                    </div>
-                    <div fxLayout="column" fxFlex="initial">
-                        {{ template.technology }}
-                    </div>
-                    <div fxLayout="column" fxFlex="initial" fxHide>
-                        {{ template.lastUpdate }}
+                        <div libTextCaption fxLayout="row" fxLayoutGap="8px">
+                            <div fxLayout="column" fxFlex>
+                                <span>By <strong>{{ template.author.name }}</strong></span>
+                            </div>
+                            <div fxLayout="column" fxFlex="initial">
+                                {{ template.technology }}
+                            </div>
+                            <div fxLayout="column" fxFlex="initial" fxHide>
+                                {{ template.lastUpdate }}
+                            </div>
+                        </div>
+                        <div class="push-top-sm">
+                            {{ template.description }}
+                        </div>
                     </div>
                 </div>
-                <div class="push-top-sm">
-                    {{ template.description }}
-                </div>
-
-
+            </div>
+            <div fxLayout="column" fxFlex="100%" class="pad" fxLayoutAlign="end">
                 <div fxLayout="row" fxLayoutGap="8px" class="push-top">
                     <div fxLayout="column">
                         <a mat-raised-button color="accent" target="_blank"
@@ -36,7 +40,7 @@
 
                     </div>
                     <div fxLayout="column">
-                        <a mat-button target="_blank" [href]="template.repoUrl">GitHub</a>
+                        <a mat-button target="_blank" color="primary" [href]="template.repoUrl">GitHub</a>
                     </div>
                 </div>
             </div>
