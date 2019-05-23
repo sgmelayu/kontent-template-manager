@@ -114,6 +114,7 @@ export interface IImportData {
     assets: IAssetModel[];
     assetsFromFile: IAssetFromFile[];
     metadata: IImportMetadata;
+    requiredLanguages: string[];
 }
 
 export interface IMigrateContentItemsData {

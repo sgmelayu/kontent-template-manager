@@ -44,6 +44,15 @@ export class ImportFromFileComponent extends BasePageComponent {
     return this.formGroup.valid && (this.file ? true : false);
   }
 
+  public get requiredLanguagesWarningMessage(): string | undefined {
+    if (!this.importData || this.importData.requiredLanguages.length === 0) {
+      return undefined;
+    }
+
+    const languagesListHtml = `<ul>${this.importData.requiredLanguages.map(m => `<li>${m}</li>`).join('')}</ul>`;
+    return `In order for import to work, make sure that your target project contains languages with following codenames: ${languagesListHtml}`;
+  }
+
   public importResult?: IImportResult | undefined = undefined;
 
   constructor(

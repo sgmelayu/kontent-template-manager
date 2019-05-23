@@ -57,6 +57,10 @@
 <ng-container *ngIf="step === 'preview'">
     <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+    <div class="push-bottom" *ngIf="requiredLanguagesWarningMessage">
+        <lib-message [type]="'warning'" [html]="requiredLanguagesWarningMessage"></lib-message>
+    </div>
+
     <div class="push-bottom" *ngIf="!isLoading">
         <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Proceed with import</button>
         <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Proceed with import</button>
