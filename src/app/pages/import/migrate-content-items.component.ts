@@ -90,6 +90,12 @@ export class MigrateContentItemsComponent extends BasePageComponent {
     const config = this.getConfig();
 
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'prepare-migrate-from-project',
+      });
+
       this.resetErrors();
       this.step = "preview";
       super.startLoading();
@@ -129,6 +135,12 @@ export class MigrateContentItemsComponent extends BasePageComponent {
     const config = this.getConfig();
 
     if (config && this.importData) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'migrate-from-project',
+      });
+
       this.step = 'importing';
       super.startLoading();
 

@@ -73,6 +73,12 @@ export class CleanupComponent extends BasePageComponent {
   prepareCleanup(): void {
     const config = this.getConfig();
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'cleanup',
+      });
+
       this.step = 'preview';
 
       super.startLoading();

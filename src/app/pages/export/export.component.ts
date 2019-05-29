@@ -9,7 +9,6 @@ import { environment } from '../../../environments/environment';
 import { IImportData } from '../../../services';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
-import { BaseComponent } from '../../core/base.component';
 import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
@@ -79,6 +78,12 @@ export class ExportComponent extends BasePageComponent {
 
     if (config) {
       this.step = 'exporting';
+
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'export',
+      });
 
       super.startLoading();
       super.detectChanges();

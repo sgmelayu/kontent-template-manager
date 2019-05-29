@@ -33,7 +33,7 @@
             <div fxLayout="column" fxFlex="100%" class="pad" fxLayoutAlign="end">
                 <div fxLayout="row" fxLayoutGap="8px" class="push-top">
                     <div fxLayout="column">
-                        <a mat-raised-button color="accent" target="_blank"
+                        <a (click)="handleDownloadClick(template)" mat-raised-button color="accent" target="_blank"
                             [href]="template.exportPackageUrl">Download</a>
                     </div>
                     <div fxLayout="column" fxFlex>

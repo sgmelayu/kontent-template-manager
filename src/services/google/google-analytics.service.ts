@@ -2,18 +2,16 @@ import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 
-
 declare var document: any;
 declare var gtag: any;
 declare var window: any;
 
-/**
- * Docs: https://developers.google.com/analytics/devguides/collection/gtagjs/pages
- */
 @Injectable({
     providedIn: 'root',
 })
 export class GoogleAnalyticsService {
+
+    private readonly gTagParam = 'gtag';
 
     /**
      * Name of script tag in DOM
@@ -28,13 +26,42 @@ export class GoogleAnalyticsService {
     private renderer2: Renderer2;
 
     constructor(
-        rendererFactory2: RendererFactory2
+        rendererFactory2: RendererFactory2,
     ) {
         this.renderer2 = rendererFactory2.createRenderer(null, null);
     }
 
     /**
-     * Tracks given page in google analytics
+     * Logs event activity as per https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+     */
+    logEvent(data: {
+        eventCategory: string,
+        eventAction: string,
+        eventLabel?: string,
+        eventValue?: number
+    }): void {
+        if (!environment.google.enableTracking) {
+            // tracking is disabled
+            return;
+        }
+
+        // make sure script is registered
+        this.ensureGoogleAnalyticsScript();
+
+        if (window[this.gTagParam]) {
+            // source: https://developers.google.com/analytics/devguides/collection/gtagjs/events
+            gtag('event', data.eventAction, {
+                event_category: data.eventCategory,
+                event_label: data.eventLabel,
+                event_value: data.eventValue
+            });
+        } else {
+            throw Error(`gtag is not available and cannot log page`);
+        }
+    }
+
+    /**
+     * Tracks given page in google analytics as per  https://developers.google.com/analytics/devguides/collection/gtagjs/pages
      * @param data Page data to track
      */
     trackPageview(data: {
@@ -59,7 +86,7 @@ export class GoogleAnalyticsService {
         // make sure script is registered
         this.ensureGoogleAnalyticsScript();
 
-        if (window['gtag']) {
+        if (window[this.gTagParam]) {
             // source: https://developers.google.com/analytics/devguides/collection/gtagjs/pages
             gtag('config', environment.google.googleAnalyticsTrackingId, {
                 page_title: data.pageTitle,
