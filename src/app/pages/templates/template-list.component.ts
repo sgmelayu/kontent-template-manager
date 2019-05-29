@@ -28,4 +28,13 @@ export class TemplateListComponent extends BasePageComponent implements OnInit {
       )
     )
   }
+
+  handleDownloadClick(template: ITemplate): void {
+     // track gEvent
+     super.trackEvent({
+      eventCategory: 'button',
+      eventAction: 'download-template',
+      eventLabel: template.name,
+    });
+  }
 }

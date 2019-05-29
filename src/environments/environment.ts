@@ -30,9 +30,9 @@ export const environment = {
     }
   },
   google: {
-    enableTracking: false,
+    enableTracking: true,
     trackingPrefix: '/cloud-template-manager',
-    googleAnalyticsTrackingId: 'UA-69014260-7'
+    googleAnalyticsTrackingId: 'UA-69014260-7',
   },
   storage: {
     storageName: 'templateManagerData'

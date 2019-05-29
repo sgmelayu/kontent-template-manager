@@ -82,6 +82,12 @@ export class ImportFromFileComponent extends BasePageComponent {
     const config = this.getConfig();
 
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'prepare-import-from-file',
+      });
+
       this.resetErrors();
       this.step = "preview";
       super.startLoading();
@@ -126,6 +132,13 @@ export class ImportFromFileComponent extends BasePageComponent {
     const config = this.getConfig();
 
     if (config && this.importData) {
+
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'import-from-file',
+      });
+
       this.resetErrors();
       this.step = 'importing';
       super.startLoading();

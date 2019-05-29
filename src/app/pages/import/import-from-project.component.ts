@@ -90,6 +90,12 @@ export class ImportFromProjectComponent extends BasePageComponent {
     const config = this.getConfig();
 
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'prepare-import-from-project',
+      });
+
       this.resetErrors();
       this.step = "preview";
       super.startLoading();
@@ -129,6 +135,11 @@ export class ImportFromProjectComponent extends BasePageComponent {
     const config = this.getConfig();
 
     if (config && this.importData) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'import-from-project',
+      });
 
       this.step = 'importing';
 
