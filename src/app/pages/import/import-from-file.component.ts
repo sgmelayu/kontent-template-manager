@@ -72,7 +72,7 @@ export class ImportFromFileComponent extends BasePageComponent {
       const storedData = dependencies.importDataStorageService.getImportData();
       if (storedData) {
         this.formGroup.controls['projectId'].setValue(storedData.targetProjectId);
-        this.formGroup.controls['cmApiKey'].setValue(storedData.targetProjectId)
+        this.formGroup.controls['cmApiKey'].setValue(storedData.targetProjectApiKey)
         this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems)
       }
     }
