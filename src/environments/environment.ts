@@ -30,7 +30,7 @@ export const environment = {
     }
   },
   google: {
-    enableTracking: true,
+    enableTracking: false,
     trackingPrefix: '/cloud-template-manager',
     googleAnalyticsTrackingId: 'UA-69014260-7',
   },
