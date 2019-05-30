@@ -10,9 +10,9 @@ import { delay, flatMap, map } from 'rxjs/operators';
 import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
 import { CmFetchService } from '../fetch/cm-fetch.service';
+import { ProcessingService } from '../processing/processing.service';
 import { IAssetModel, IContentTypeModel, ISlimContentItemModel, ITaxonomyModel } from '../shared/shared.models';
 import { ICleanupData } from './cleanup.models';
-import { ProcessingService } from '../processing/processing.service';
 
 @Injectable({
     providedIn: 'root'

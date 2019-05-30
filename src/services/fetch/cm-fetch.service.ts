@@ -122,7 +122,8 @@ export class CmFetchService extends BaseService {
                                             element: element.element,
                                             value: fieldValue,
                                             elementModel: contentTypeElement,
-                                            elementCodename: element.element.codename
+                                            elementCodename: element.element.codename,
+                                            taxonomyGroup: element.value
                                         };
                                     }),
                                     itemCodename: contentItem.codename,

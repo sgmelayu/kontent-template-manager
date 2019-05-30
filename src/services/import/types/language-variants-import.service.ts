@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { element } from '@angular/core/src/render3';
 import { IContentManagementClient, LanguageVariantModels, SharedContracts } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,6 +13,8 @@ import {
     IContentItemElement,
     ILanguageVariantModel,
     IMultipleChoiceElementValue,
+    ITaxonomyTermModel,
+    ITaxonomyTermsFieldValueModel,
 } from '../../shared/shared.models';
 import {
     IImportConfig,
@@ -176,7 +179,7 @@ export class LanguageVariantsImportService extends BaseService {
                     if (dataImageId) {
                         // get imported asset
                         const asset = prerequisities.assets.find(m => m.originalItem.id === dataImageId.value);
-                        
+
                         if (!asset) {
                             throw Error(`Asset with id '${dataImageId.value}' could not be found in source data`);
                         }
@@ -290,22 +293,34 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         if (field.elementModel.type === ElementType.taxonomy) {
-            const currentTaxonomies = field.value as string[];
-            const newTaxonomies: SharedContracts.IReferenceObjectContract[] = [];
+            const currentTaxonomyTerms = field.value as ITaxonomyTermsFieldValueModel[];
+            const newTaxonomyTerms: SharedContracts.IReferenceObjectContract[] = [];
 
-            for (const currentTaxonomyCodename of currentTaxonomies) {
-                const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === currentTaxonomyCodename);
+            if (!field.taxonomyGroup) {
+                throw Error(`Taxonomy is not set for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
+                and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
+            }
 
-                if (!candidateTaxonomy) {
-                    throw Error(`Cannot find taxonomy with id '${currentTaxonomyCodename}'`);
+            const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === field.taxonomyGroup);
+
+            if (!candidateTaxonomy) {
+                throw Error(`Could not find candidate taxonomy group '${field.taxonomyGroup}' for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
+                and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
+            }
+
+            for (const currentTaxonomyTerm of currentTaxonomyTerms) {
+                const candidateTaxonomyTerm = this.findTaxonomyTermRecursively(currentTaxonomyTerm.codename, candidateTaxonomy.originalItem.terms);
+                if (!candidateTaxonomyTerm) {
+                    throw Error(`Cannot find taxonomy term '${currentTaxonomyTerm.codename}' for taxonomy group '${candidateTaxonomy.originalItem.system.codename}' referenced by field '${field.elementCodename}' in '${contentType.originalItem.system.codename}' content type 
+                    and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
                 }
 
-                newTaxonomies.push({
-                    codename: candidateTaxonomy.importedItem.system.codename
+                newTaxonomyTerms.push({
+                    codename: candidateTaxonomyTerm.codename
                 });
             }
 
-            return newTaxonomies;
+            return newTaxonomyTerms;
         }
 
         if (field.elementModel.type === ElementType.multipleChoice) {
@@ -346,6 +361,16 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         return value;
+    }
+
+    private findTaxonomyTermRecursively(taxonomyTermToFind: string, originalTerms: ITaxonomyTermModel[]): ITaxonomyTermModel | undefined {
+        for (const taxonomyTerm of originalTerms) {
+            if (taxonomyTerm.codename === taxonomyTermToFind) {
+                return taxonomyTerm;
+            }
+            return this.findTaxonomyTermRecursively(taxonomyTermToFind, taxonomyTerm.terms);
+        }
+        return undefined;
     }
 
     private getElements(contentItem: IImportContentItemResult, languageVariant: ILanguageVariantModel, prerequisities: ILanguageVariantsImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {

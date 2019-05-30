@@ -247,6 +247,7 @@ export class DeliveryFetchService {
             elements.push({
                 value: fieldValue,
                 elementCodename: field.name,
+                taxonomyGroup: field.taxonomy_group,
                 elementModel: {
                     codename: elementCodename,
                     type: field.type as ElementType,

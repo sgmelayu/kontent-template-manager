@@ -118,6 +118,11 @@ export interface IMultipleChoiceOptionModel {
     codename: string;
 }
 
+export interface ITaxonomyTermsFieldValueModel {
+    codename: string;
+    name: string;
+}
+
 export interface IReferenceModel {
     id?: string;
     codename?: string;
@@ -150,6 +155,7 @@ export interface IContentItemElement {
     elementCodename: string;
     value: IElementValue;
     elementModel: IContentTypeElementModel;
+    taxonomyGroup?: string;
 }
 
 export interface IFieldModel {
