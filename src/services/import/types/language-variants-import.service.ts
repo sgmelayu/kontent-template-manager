@@ -296,15 +296,15 @@ export class LanguageVariantsImportService extends BaseService {
             const currentTaxonomyTerms = field.value as ITaxonomyTermsFieldValueModel[];
             const newTaxonomyTerms: SharedContracts.IReferenceObjectContract[] = [];
 
-            if (!field.taxonomyGroup) {
+            if (!field.elementModel.taxonomyGroup) {
                 throw Error(`Taxonomy is not set for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
                 and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
             }
 
-            const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === field.taxonomyGroup);
+            const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === field.elementModel.taxonomyGroup);
 
             if (!candidateTaxonomy) {
-                throw Error(`Could not find candidate taxonomy group '${field.taxonomyGroup}' for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
+                throw Error(`Could not find candidate taxonomy group '${field.elementModel.taxonomyGroup}' for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
                 and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
             }
 

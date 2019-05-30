@@ -155,7 +155,6 @@ export interface IContentItemElement {
     elementCodename: string;
     value: IElementValue;
     elementModel: IContentTypeElementModel;
-    taxonomyGroup?: string;
 }
 
 export interface IFieldModel {
