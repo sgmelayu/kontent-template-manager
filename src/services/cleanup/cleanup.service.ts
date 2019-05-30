@@ -3,9 +3,10 @@ import {
     ContentManagementClient,
     IContentManagementClient,
     IContentManagementClientConfig,
+    SharedModels,
 } from 'kentico-cloud-content-management';
-import { Observable } from 'rxjs';
-import { delay, flatMap, map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, delay, flatMap, map } from 'rxjs/operators';
 
 import { observableHelper } from '../../utilities';
 import { BaseService } from '../base-service';
@@ -19,6 +20,8 @@ import { ICleanupData } from './cleanup.models';
 })
 export class CleanupService extends BaseService {
 
+    private readonly maxNumberOfRetries = 50;
+
     constructor(
         private cmFetchService: CmFetchService,
         private processingService: ProcessingService
@@ -26,7 +29,7 @@ export class CleanupService extends BaseService {
         super();
     }
 
-    cleanupProject(projectId: string, apiKey: string, cleanupData: ICleanupData): Observable<void> {
+    cleanupProject(projectId: string, apiKey: string, cleanupData: ICleanupData, numberOfRetries = 0): Observable<void> {
         const client = this.getContentManagementClient({
             projectId: projectId,
             apiKey: apiKey
@@ -45,6 +48,21 @@ export class CleanupService extends BaseService {
                 delay(this.cmRequestDelay),
                 flatMap(() => {
                     return this.deleteContentTypes(client, cleanupData.contentTypes)
+                }),
+                catchError(error => {
+                    if (error instanceof SharedModels.ContentManagementCloudError) {
+                        // errorCode = item / object is used and cannot be deleted = try again
+                        if (error.errorCode === 0) {
+                            numberOfRetries++;
+                            console.warn(`Deleting item failed with message '${error.message}'. Retrying for the '${numberOfRetries}' time with ${this.maxNumberOfRetries - numberOfRetries} retries remaining.`);
+                            return this.prepareCleanup(projectId, apiKey).pipe(
+                                flatMap(cleanupData => {
+                                    return this.cleanupProject(projectId, apiKey, cleanupData)
+                                })
+                            )
+                        }
+                    }
+                    return throwError(error);
                 })
             );
     }
