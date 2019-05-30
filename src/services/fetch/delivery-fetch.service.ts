@@ -246,7 +246,7 @@ export class DeliveryFetchService {
 
             elements.push({
                 value: fieldValue,
-                elementCodename: field.name,
+                elementCodename: elementCodename,
                 elementModel: {
                     codename: elementCodename,
                     type: field.type as ElementType,

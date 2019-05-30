@@ -365,12 +365,11 @@ export class LanguageVariantsImportService extends BaseService {
 
     private findTaxonomyTermRecursively(taxonomyTermToFind: string, originalTerms: ITaxonomyTermModel[]): ITaxonomyTermModel | undefined {
         for (const taxonomyTerm of originalTerms) {
-            if (taxonomyTerm.codename === taxonomyTermToFind) {
+            if (taxonomyTerm.codename.toLowerCase() === taxonomyTermToFind.toLowerCase()) {
                 return taxonomyTerm;
             }
-            return this.findTaxonomyTermRecursively(taxonomyTermToFind, taxonomyTerm.terms);
+            this.findTaxonomyTermRecursively(taxonomyTermToFind, taxonomyTerm.terms);
         }
-        return undefined;
     }
 
     private getElements(contentItem: IImportContentItemResult, languageVariant: ILanguageVariantModel, prerequisities: ILanguageVariantsImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {
