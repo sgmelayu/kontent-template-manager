@@ -60,7 +60,8 @@ export enum ElementType {
     taxonomy = 'taxonomy',
     urlSlug = 'url_slug',
     guidelines = 'guidelines',
-    snippet = 'snippet'
+    snippet = 'snippet',
+    custom = 'custom'
 }
 
 export interface IElementOptionModel {

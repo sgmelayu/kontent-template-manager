@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
-    ContentItem,
     DeliveryClient,
     FieldContracts,
     FieldType,
     IDeliveryClient,
     IDeliveryClientConfig,
     ItemResponses,
+    IContentItem,
 } from 'kentico-cloud-delivery';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -165,7 +165,7 @@ export class DeliveryFetchService {
                     const item = response.item;
 
                     return <IContentItemModel>{
-                        elements: item.elements,
+                        elements: item.debug.rawElements,
                         system: item.system,
                         assets: this.extractAssets(item),
                         linkedItemCodenames: this.extractLinkedItemCodenames(item)
@@ -273,7 +273,7 @@ export class DeliveryFetchService {
         }, []);
     }
 
-    private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<ContentItem>, contentItems: IContentItemModel[]): void {
+    private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<IContentItem>, contentItems: IContentItemModel[]): void {
         for (const linkedItemCodename of linkedItemCodenames) {
             const existingItem = contentItems.find(m => m.system.codename === linkedItemCodename);
 
@@ -286,7 +286,7 @@ export class DeliveryFetchService {
                 }
 
                 contentItems.push({
-                    elements: linkedItem.elements,
+                    elements: linkedItem.debug.rawElements,
                     system: linkedItem.system,
                     assets: this.extractAssets(linkedItem),
                     linkedItemCodenames: this.extractLinkedItemCodenames(linkedItem)
@@ -315,7 +315,7 @@ export class DeliveryFetchService {
                     for (const item of response.items) {
                         if (!contentItems.find(m => m.system.codename === item.system.codename)) {
                             const contentItem = <IContentItemModel>{
-                                elements: item.elements,
+                                elements: item.debug.rawElements,
                                 system: item.system,
                                 assets: this.extractAssets(item),
                                 linkedItemCodenames: this.extractLinkedItemCodenames(item)
@@ -347,11 +347,11 @@ export class DeliveryFetchService {
             );
     }
 
-    private extractLinkedItemCodenames(contentItem: ContentItem): string[] {
+    private extractLinkedItemCodenames(contentItem: IContentItem): string[] {
         const linkedItems: string[] = [];
 
-        for (const elementCodename of Object.keys(contentItem.elements)) {
-            const element = contentItem.elements[elementCodename];
+        for (const elementCodename of Object.keys(contentItem.debug.rawElements)) {
+            const element = contentItem.debug.rawElements[elementCodename];
             if (element.type.toLowerCase() === FieldType.ModularContent.toLowerCase()) {
                 const modularContent = element.value as string[];
                 for (const modularItem of modularContent) {
@@ -374,11 +374,11 @@ export class DeliveryFetchService {
         return linkedItems;
     }
 
-    private extractAssets(contentItem: ContentItem): IEmbeddedAsset[] {
+    private extractAssets(contentItem: IContentItem): IEmbeddedAsset[] {
         const assets: IEmbeddedAsset[] = [];
 
-        for (const elementCodename of Object.keys(contentItem.elements)) {
-            const element = contentItem.elements[elementCodename];
+        for (const elementCodename of Object.keys(contentItem.debug.rawElements)) {
+            const element = contentItem.debug.rawElements[elementCodename];
 
             // process asset elements
             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {

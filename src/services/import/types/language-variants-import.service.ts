@@ -311,6 +311,9 @@ export class LanguageVariantsImportService extends BaseService {
             for (const currentTaxonomyTerm of currentTaxonomyTerms) {
                 const candidateTaxonomyTerm = this.findTaxonomyTermRecursively(currentTaxonomyTerm.codename, candidateTaxonomy.originalItem.terms);
                 if (!candidateTaxonomyTerm) {
+                    console.log(prerequisities.taxonomies);
+                    console.log(candidateTaxonomy);
+                    console.log(currentTaxonomyTerm);
                     throw Error(`Cannot find taxonomy term '${currentTaxonomyTerm.codename}' for taxonomy group '${candidateTaxonomy.originalItem.system.codename}' referenced by field '${field.elementCodename}' in '${contentType.originalItem.system.codename}' content type 
                     and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
                 }
@@ -364,11 +367,14 @@ export class LanguageVariantsImportService extends BaseService {
     }
 
     private findTaxonomyTermRecursively(taxonomyTermToFind: string, originalTerms: ITaxonomyTermModel[]): ITaxonomyTermModel | undefined {
+        const foundTerm = originalTerms.find(m => m.codename.toLowerCase() === taxonomyTermToFind.toLowerCase());
+
+        if (foundTerm) {
+            return foundTerm;
+        }
+
         for (const taxonomyTerm of originalTerms) {
-            if (taxonomyTerm.codename.toLowerCase() === taxonomyTermToFind.toLowerCase()) {
-                return taxonomyTerm;
-            }
-            this.findTaxonomyTermRecursively(taxonomyTermToFind, taxonomyTerm.terms);
+            return this.findTaxonomyTermRecursively(taxonomyTermToFind, taxonomyTerm.terms);
         }
     }
 
