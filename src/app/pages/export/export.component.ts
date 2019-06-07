@@ -94,6 +94,7 @@ export class ExportComponent extends BasePageComponent {
           sourceProjectId: config.projectId,
           targetProjectCmApiKey: 'xxx',
           targetProjectId: 'xxx',
+          depth: 1
         }).pipe(
           map((result) => {
           this.importData = result;
