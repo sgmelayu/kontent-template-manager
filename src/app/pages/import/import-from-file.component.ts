@@ -72,8 +72,8 @@ export class ImportFromFileComponent extends BasePageComponent {
       const storedData = dependencies.importDataStorageService.getImportData();
       if (storedData) {
         this.formGroup.controls['projectId'].setValue(storedData.targetProjectId);
-        this.formGroup.controls['cmApiKey'].setValue(storedData.targetProjectApiKey)
-        this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems)
+        this.formGroup.controls['cmApiKey'].setValue(storedData.targetProjectApiKey);
+        this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems);
       }
     }
   }
@@ -229,7 +229,8 @@ export class ImportFromFileComponent extends BasePageComponent {
     this.dependencies.importDataStorageService.updateImportData({
       targetProjectApiKey: cmApiKey,
       publishContentItems: publishAllItems,
-      targetProjectId: projectId
+      targetProjectId: projectId,
+      depth: 0 // not required when importing from file
     });
 
     return <IImportFromFileConfig>{

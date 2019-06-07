@@ -101,7 +101,8 @@ export class ExportService extends BaseService {
             flatMap(types => {
                 data.contentTypes.push(...types);
                 return this.deliveryFetchService.getAllContentItems(config.sourceProjectId, config.languages, {
-                    useProcessingService: true
+                    useProcessingService: true,
+                    depth: config.depth
                 });
             }),
             flatMap(contentItemsResult => {

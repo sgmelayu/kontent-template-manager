@@ -7,6 +7,7 @@ export const environment = {
   appName: 'Template manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
+    depth: 10,
     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
     // tslint:disable-next-line:max-line-length
     sourceProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxM2VkMmI4ODQ1NDg0ZjIwYjVkNWVhOTRlZDVlOWY0YSIsImlhdCI6IjE1NTQzNjg0NjgiLCJleHAiOiIxODk5OTY4NDY4IiwicHJvamVjdF9pZCI6ImYyNDllYjgzMThmZDAxYjgyZGI3YzU2MWJjYjFlZDFlIiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.UJ8rpJ5fKrCco4_1JvVtMFvUIyrIHr1Wo-VTRbdx34M',

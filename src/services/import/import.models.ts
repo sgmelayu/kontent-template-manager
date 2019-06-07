@@ -29,6 +29,7 @@ export interface IImportFromProjectWithCMConfig extends IImportConfig {
 }
 
 export interface IImportFromProjectWithDeliveryConfig extends IImportConfig {
+    depth: number;
     languages: string[];
     targetProjectId: string;
     targetProjectCmApiKey: string;
@@ -38,6 +39,7 @@ export interface IImportFromProjectWithDeliveryConfig extends IImportConfig {
 // tslint:disable-next-line:no-empty-interface
 export interface IImportConfig {
     publishAllItems: boolean;
+    depth: number;
 }
 
 export interface IContentTypeImportPrerequisities {

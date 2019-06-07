@@ -57,6 +57,12 @@
             <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
         </div>
 
+        <div libCard class="push-top">
+            <mat-form-field class="push-top w-full-width">
+                <input autocomplete="off" matInput placeholder="Depth" formControlName="depth" required>
+            </mat-form-field>
+        </div>
+
         <div class="push-top" *ngIf="!isLoading">
             <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handlePreview()">Prepare import
                 data</button>

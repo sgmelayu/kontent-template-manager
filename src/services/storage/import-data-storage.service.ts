@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { StorageService } from './storage.service';
 
 export interface IImporDataStorage {
+    depth: number;
     sourceProjectId?: string;
     sourceProjectLanguages?: string[];
     targetProjectId?: string;

@@ -3,11 +3,12 @@ import {
     DeliveryClient,
     FieldContracts,
     FieldType,
+    IContentItem,
     IDeliveryClient,
     IDeliveryClientConfig,
     ItemResponses,
-    IContentItem,
 } from 'kentico-cloud-delivery';
+import { getType } from 'mime';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -30,8 +31,7 @@ import {
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
-import { IFetchConfig } from './fetch-models';
-import { getType }from 'mime';
+import { IContentItemsFetchConfig, IFetchConfig } from './fetch-models';
 
 @Injectable({
     providedIn: 'root'
@@ -125,7 +125,7 @@ export class DeliveryFetchService {
             );
     }
 
-    getAllContentItems(projectId: string, languageCodenames: string[], config: IFetchConfig): Observable<IDeliveryContentItemsResult> {
+    getAllContentItems(projectId: string, languageCodenames: string[], config: IContentItemsFetchConfig): Observable<IDeliveryContentItemsResult> {
         const contentItems: IContentItemModel[] = [];
         const obs: Observable<void>[] = [];
 
@@ -187,19 +187,20 @@ export class DeliveryFetchService {
 
             assets.push(...contentItem.assets.map(m => {
                 // delivery API does not return asset/file in all cases - use custom generated one for such scenarios
-                const assetId = !m.id ? stringHelper.newGuid() : m.id; 
+                const assetId = !m.id ? stringHelper.newGuid() : m.id;
 
-               return  <IAssetModel>{
-                deliveryUrl: m.asset.url,
-                fileName: m.asset.name,
-                id: assetId,
-                type: m.asset.type,
-                description: m.asset.description,
-                size: m.size,
-                zipFilePath: zipHelper.getFullAssetPath(assetId, m.asset.name),
-                externalId: undefined, // N/A Delivery API
-                title: m.name // N/A Delivery API
-            }}));
+                return <IAssetModel>{
+                    deliveryUrl: m.asset.url,
+                    fileName: m.asset.name,
+                    id: assetId,
+                    type: m.asset.type,
+                    description: m.asset.description,
+                    size: m.size,
+                    zipFilePath: zipHelper.getFullAssetPath(assetId, m.asset.name),
+                    externalId: undefined, // N/A Delivery API
+                    title: m.name // N/A Delivery API
+                }
+            }));
 
             slimContentItems.push(
                 {
@@ -295,7 +296,31 @@ export class DeliveryFetchService {
         }
     }
 
-    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], config: IFetchConfig, languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
+    private addContentItem(config: IContentItemsFetchConfig, response: ItemResponses.DeliveryItemListingResponse<IContentItem>, sourceItem: IContentItem, contentItems: IContentItemModel[]): void {
+        const contentItem = <IContentItemModel>{
+            elements: sourceItem.debug.rawElements,
+            system: sourceItem.system,
+            assets: this.extractAssets(sourceItem),
+            linkedItemCodenames: this.extractLinkedItemCodenames(sourceItem)
+        };
+
+        contentItems.push(contentItem);
+
+        if (config.useProcessingService) {
+            this.processingService.addProcessedItem(<IProcessingItem>{
+                type: 'content item',
+                action: 'get',
+                data: sourceItem,
+                name: `[${sourceItem.system.language}] ${sourceItem.system.name}`
+            }
+            );
+        }
+
+        // make sure that components are added to result as well - needed because of components in rich text elements
+        this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
+    }
+
+    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], config: IContentItemsFetchConfig, languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).items();
@@ -309,33 +334,23 @@ export class DeliveryFetchService {
         }
 
         return query
+            .depthParameter(config.depth)
             .toObservable()
             .pipe(
                 map(response => {
                     for (const item of response.items) {
+                        // process main items
                         if (!contentItems.find(m => m.system.codename === item.system.codename)) {
-                            const contentItem = <IContentItemModel>{
-                                elements: item.debug.rawElements,
-                                system: item.system,
-                                assets: this.extractAssets(item),
-                                linkedItemCodenames: this.extractLinkedItemCodenames(item)
-                            };
+                            this.addContentItem(config, response, item, contentItems);
+                        }
+                    }
 
-                            contentItems.push(contentItem);
-
-                            if (config.useProcessingService) {
-                                this.processingService.addProcessedItems(response.items.map(m => {
-                                    return <IProcessingItem>{
-                                        type: 'content item',
-                                        action: 'get',
-                                        data: m,
-                                        name: `[${m.system.language}] ${m.system.name}`
-                                    }
-                                }))
-                            }
-
-                            // make sure that components are added to result as well - needed because of components in rich text elements
-                            this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
+                    // process linked items that are part of 'modular_items_ response
+                    const linkedItemCodenames = Object.keys(response.linkedItems);
+                    for (const linkedItemCodename of linkedItemCodenames) {
+                        if (!contentItems.find(m => m.system.codename === linkedItemCodename)) {
+                            const item = response.linkedItems[linkedItemCodename];
+                            this.addContentItem(config, response, item, contentItems);
                         }
                     }
 
@@ -410,7 +425,7 @@ export class DeliveryFetchService {
 
                     if (!fileType) {
                         throw Error(`Cannot determine type of asset from '${image.url}'. This is referenced by '${contentItem.system.codename}' content item in element '${element.name}'`);
-                       }
+                    }
 
                     assets.push({
                         assetSource: 'richTexElementtImages',
@@ -439,6 +454,6 @@ export class DeliveryFetchService {
     }
 
     private extractMimeTypeFromUrl(url: string): string | null {
-       return getType(url);
+        return getType(url);
     }
 }

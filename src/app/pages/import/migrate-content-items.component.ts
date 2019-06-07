@@ -71,6 +71,7 @@ export class MigrateContentItemsComponent extends BasePageComponent {
       languages: [environment.defaultProjects.languages],
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
       publishAllItems: [true],
+      depth: [environment.defaultProjects.depth, Validators.required],
     });
 
     // init stored values
@@ -82,6 +83,7 @@ export class MigrateContentItemsComponent extends BasePageComponent {
         this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems);
         this.formGroup.controls['sourceProjectId'].setValue(storedData.sourceProjectId);
         this.formGroup.controls['languages'].setValue(storedData.sourceProjectLanguages);
+        this.formGroup.controls['depth'].setValue(storedData.depth || environment.defaultProjects.depth);
       }
     }
   }
@@ -172,6 +174,7 @@ export class MigrateContentItemsComponent extends BasePageComponent {
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
     const publishAllItems = this.formGroup.controls['publishAllItems'].value;
     const languages = this.parsedLanguages;
+    const depth = +this.formGroup.controls['depth'].value;
 
     if (!sourceProjectId) {
       this.error = 'Invalid source project id';
@@ -188,13 +191,19 @@ export class MigrateContentItemsComponent extends BasePageComponent {
       return;
     }
 
+    if (!depth) {
+      this.error = 'Invalid depth';
+      return;
+    }
+
     // store values
     this.dependencies.importDataStorageService.updateImportData({
       targetProjectApiKey: targetProjectCmApiKey,
       publishContentItems: publishAllItems,
       targetProjectId: targetProjectId,
       sourceProjectId: sourceProjectId,
-      sourceProjectLanguages: languages
+      sourceProjectLanguages: languages,
+      depth: depth
     });
 
     return <IImportFromProjectWithDeliveryConfig>{
@@ -203,6 +212,7 @@ export class MigrateContentItemsComponent extends BasePageComponent {
       sourceProjectId: sourceProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
       targetProjectId: targetProjectId,
+      depth: depth
     };
   }
 

@@ -3,6 +3,7 @@ export const environment = {
   appName: 'Template manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
+    depth: 10,
     languages: '',
     sourceProjectApiKey: '',
     sourceProjectId: '',
