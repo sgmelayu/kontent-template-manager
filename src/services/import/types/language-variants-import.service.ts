@@ -124,6 +124,31 @@ export class LanguageVariantsImportService extends BaseService {
                     if (linkAttributes.getNamedItem('target')) {
                         linkAttributes.removeNamedItem('target');
                     }
+
+                    // transform links for linked items
+                    const dataItemIdAttribute = linkAttributes.getNamedItem('data-item-id');
+                    if (dataItemIdAttribute) {
+                        // find original item
+                        const linkedItem = prerequisities.contentItems.find(m => m.originalItem.id === dataItemIdAttribute.value);
+                        if (!linkedItem) {
+                            throw Error(`Could not find linked item with id '${dataItemIdAttribute.value}'. This item is required by rich text element.`);
+                        }
+                        dataItemIdAttribute.value = linkedItem.importedItem.id;
+
+                        linkAttributes.removeNamedItem('href');
+                    }
+
+                    const dataItemExternalIdAttribute = linkAttributes.getNamedItem('data-item-external-id');
+                    if (dataItemExternalIdAttribute) {
+                        // find original item
+                        const linkedItem = prerequisities.contentItems.find(m => m.originalItem.externalId === dataItemExternalIdAttribute.value);
+                        if (!linkedItem) {
+                            throw Error(`Could not find linked item with external id '${dataItemExternalIdAttribute.value}'. This item is required by rich text element.`);
+                        }
+                        dataItemExternalIdAttribute.value = linkedItem.importedItem.id;
+
+                        linkAttributes.removeNamedItem('href');
+                    }
                 }
 
                 // process assets
