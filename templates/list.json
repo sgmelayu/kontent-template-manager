@@ -38,7 +38,7 @@
             "email": "ondrej.chrastina@kentico.com"
         },
         "lastUpdate": "2019-05-20T16:00:00.000Z",
-        "version": "1",
+        "forVersion": "1",
         "technology": "GatsbyJs"
     }
 ]
