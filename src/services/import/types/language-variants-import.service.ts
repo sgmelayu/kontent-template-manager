@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { element } from '@angular/core/src/render3';
 import { IContentManagementClient, LanguageVariantModels, SharedContracts } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,6 +13,8 @@ import {
     IContentItemElement,
     ILanguageVariantModel,
     IMultipleChoiceElementValue,
+    ITaxonomyTermModel,
+    ITaxonomyTermsFieldValueModel,
 } from '../../shared/shared.models';
 import {
     IImportConfig,
@@ -110,6 +113,132 @@ export class LanguageVariantsImportService extends BaseService {
             for (let i = 0; i < htmlCollection.length; i++) {
                 const element = htmlCollection[i];
 
+                // process links 
+                if (element.nodeName.toLowerCase() === 'a'.toLowerCase()) {
+                    const linkAttributes = element.attributes;
+                    // remove attributes not allowed by CM API
+                    if (linkAttributes.getNamedItem('rel')) {
+                        linkAttributes.removeNamedItem('rel');
+                    }
+
+                    if (linkAttributes.getNamedItem('target')) {
+                        linkAttributes.removeNamedItem('target');
+                    }
+
+                    // transform links for linked items
+                    const dataItemIdAttribute = linkAttributes.getNamedItem('data-item-id');
+                    if (dataItemIdAttribute) {
+                        // find original item
+                        const linkedItem = prerequisities.contentItems.find(m => m.originalItem.id === dataItemIdAttribute.value);
+                        if (!linkedItem) {
+                            throw Error(`Could not find linked item with id '${dataItemIdAttribute.value}'. This item is required by rich text element.`);
+                        }
+                        dataItemIdAttribute.value = linkedItem.importedItem.id;
+
+                        linkAttributes.removeNamedItem('href');
+                    }
+
+                    const dataItemExternalIdAttribute = linkAttributes.getNamedItem('data-item-external-id');
+                    if (dataItemExternalIdAttribute) {
+                        // find original item
+                        const linkedItem = prerequisities.contentItems.find(m => m.originalItem.externalId === dataItemExternalIdAttribute.value);
+                        if (!linkedItem) {
+                            throw Error(`Could not find linked item with external id '${dataItemExternalIdAttribute.value}'. This item is required by rich text element.`);
+                        }
+                        dataItemExternalIdAttribute.value = linkedItem.importedItem.id;
+
+                        linkAttributes.removeNamedItem('href');
+                    }
+                }
+
+                // process assets
+                if (element.nodeName.toLowerCase() === 'figure'.toLowerCase()) {
+                    const assetAttributes = element.getAttributeNames();
+                    // remove attributes not allowed by CM API
+                    const allowedAttributes: string[] = ['data-asset-id', 'data-asset-external-id'];
+
+                    for (const assetAttribute of assetAttributes) {
+                        if (!allowedAttributes.includes(assetAttribute)) {
+                            element.attributes.removeNamedItem(assetAttribute);
+                        }
+                    }
+
+                    const dataAssetId = element.attributes.getNamedItem('data-asset-id');
+                    const dataImageExternalId = element.attributes.getNamedItem('data-asset-external-id');
+
+                    if (dataAssetId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.id === dataAssetId.value);
+
+
+                        if (!asset) {
+                            throw Error(`Asset with id '${dataAssetId.value}' could not be found in source data`);
+                        }
+                        element.attributes.removeNamedItem('data-asset-id')
+                        element.setAttribute('data-asset-id', asset.importedItem.id);
+                    }
+
+                    if (dataImageExternalId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.externalId === dataImageExternalId.value);
+
+                        if (!asset) {
+                            throw Error(`Asset with external id '${dataImageExternalId.value}' could not be found in source data`);
+                        }
+
+                        const externalIdOfImportedAsset = asset.importedItem.externalId;
+
+                        if (!externalIdOfImportedAsset) {
+                            throw Error(`ExternalId of asset is not set`);
+                        }
+                        element.attributes.removeNamedItem('data-asset-exgternal-id')
+                        element.setAttribute('data-asset-external-id', externalIdOfImportedAsset);
+                    }
+                }
+
+                // process images
+                if (element.nodeName.toLowerCase() === 'img'.toLowerCase()) {
+                    const dataImageId = element.attributes.getNamedItem('data-image-id');
+                    const dataImageExternalId = element.attributes.getNamedItem('data-image-external-id');
+
+                    if (dataImageId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.id === dataImageId.value);
+
+                        if (!asset) {
+                            throw Error(`Asset with id '${dataImageId.value}' could not be found in source data`);
+                        }
+                        element.setAttribute('data-asset-id', asset.importedItem.id);
+                        element.attributes.removeNamedItem('data-image-id')
+                    }
+
+                    if (dataImageExternalId) {
+                        // get imported asset
+                        const asset = prerequisities.assets.find(m => m.originalItem.externalId === dataImageExternalId.value);
+
+                        if (!asset) {
+                            throw Error(`Asset with external id '${dataImageExternalId.value}' could not be found in source data`);
+                        }
+
+                        const externalIdOfImportedAsset = asset.importedItem.externalId;
+
+                        if (!externalIdOfImportedAsset) {
+                            throw Error(`ExternalId of asset is not set`);
+                        }
+                        element.setAttribute('data-asset-external-id', externalIdOfImportedAsset);
+                        element.attributes.removeNamedItem('data-image-externa-id')
+                    }
+
+                    const allowedAttributes: string[] = ['data-asset-id', 'data-asset-external-id'];
+                    const assetAttributes = element.getAttributeNames();
+
+                    for (const assetAttribute of assetAttributes) {
+                        if (!allowedAttributes.includes(assetAttribute)) {
+                            element.attributes.removeNamedItem(assetAttribute);
+                        }
+                    }
+                }
+
                 const typeAttribute = element.attributes ? element.attributes.getNamedItem('type') : undefined;
 
                 // process linked items (modular items)
@@ -189,22 +318,37 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         if (field.elementModel.type === ElementType.taxonomy) {
-            const currentTaxonomies = field.value as string[];
-            const newTaxonomies: SharedContracts.IReferenceObjectContract[] = [];
+            const currentTaxonomyTerms = field.value as ITaxonomyTermsFieldValueModel[];
+            const newTaxonomyTerms: SharedContracts.IReferenceObjectContract[] = [];
 
-            for (const currentTaxonomyCodename of currentTaxonomies) {
-                const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === currentTaxonomyCodename);
+            if (!field.elementModel.taxonomyGroup) {
+                throw Error(`Taxonomy is not set for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
+                and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
+            }
 
-                if (!candidateTaxonomy) {
-                    throw Error(`Cannot find taxonomy with id '${currentTaxonomyCodename}'`);
+            const candidateTaxonomy = prerequisities.taxonomies.find(m => m.originalItem.system.codename === field.elementModel.taxonomyGroup);
+
+            if (!candidateTaxonomy) {
+                throw Error(`Could not find candidate taxonomy group '${field.elementModel.taxonomyGroup}' for field '${field.elementCodename}' referenced by '${contentType.originalItem.system.codename}' content type 
+                and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
+            }
+
+            for (const currentTaxonomyTerm of currentTaxonomyTerms) {
+                const candidateTaxonomyTerm = this.findTaxonomyTermRecursively(currentTaxonomyTerm.codename, candidateTaxonomy.originalItem.terms);
+                if (!candidateTaxonomyTerm) {
+                    console.log(prerequisities.taxonomies);
+                    console.log(candidateTaxonomy);
+                    console.log(currentTaxonomyTerm);
+                    throw Error(`Cannot find taxonomy term '${currentTaxonomyTerm.codename}' for taxonomy group '${candidateTaxonomy.originalItem.system.codename}' referenced by field '${field.elementCodename}' in '${contentType.originalItem.system.codename}' content type 
+                    and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
                 }
 
-                newTaxonomies.push({
-                    codename: candidateTaxonomy.importedItem.system.codename
+                newTaxonomyTerms.push({
+                    codename: candidateTaxonomyTerm.codename
                 });
             }
 
-            return newTaxonomies;
+            return newTaxonomyTerms;
         }
 
         if (field.elementModel.type === ElementType.multipleChoice) {
@@ -245,6 +389,18 @@ export class LanguageVariantsImportService extends BaseService {
         }
 
         return value;
+    }
+
+    private findTaxonomyTermRecursively(taxonomyTermToFind: string, originalTerms: ITaxonomyTermModel[]): ITaxonomyTermModel | undefined {
+        const foundTerm = originalTerms.find(m => m.codename.toLowerCase() === taxonomyTermToFind.toLowerCase());
+
+        if (foundTerm) {
+            return foundTerm;
+        }
+
+        for (const taxonomyTerm of originalTerms) {
+            return this.findTaxonomyTermRecursively(taxonomyTermToFind, taxonomyTerm.terms);
+        }
     }
 
     private getElements(contentItem: IImportContentItemResult, languageVariant: ILanguageVariantModel, prerequisities: ILanguageVariantsImportPrerequisities): LanguageVariantModels.ILanguageVariantElementCodename[] {

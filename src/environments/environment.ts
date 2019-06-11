@@ -7,6 +7,7 @@ export const environment = {
   appName: 'Template manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
+    depth: 10,
     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
     // tslint:disable-next-line:max-line-length
     sourceProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxM2VkMmI4ODQ1NDg0ZjIwYjVkNWVhOTRlZDVlOWY0YSIsImlhdCI6IjE1NTQzNjg0NjgiLCJleHAiOiIxODk5OTY4NDY4IiwicHJvamVjdF9pZCI6ImYyNDllYjgzMThmZDAxYjgyZGI3YzU2MWJjYjFlZDFlIiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.UJ8rpJ5fKrCco4_1JvVtMFvUIyrIHr1Wo-VTRbdx34M',
@@ -16,7 +17,7 @@ export const environment = {
     // tslint:disable-next-line:max-line-length
     targetProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84'
   },
-  requestDelay: 80,
+  requestDelay: 0,
   export: {
     filenames: {
       packagePrefix: 'export_',
@@ -28,6 +29,14 @@ export const environment = {
       assetsFolder: 'assets',
       metadata: 'metadata.json'
     }
+  },
+  google: {
+    enableTracking: false,
+    trackingPrefix: '/cloud-template-manager',
+    googleAnalyticsTrackingId: 'UA-69014260-7',
+  },
+  storage: {
+    storageName: 'templateManagerData'
   }
 };
 

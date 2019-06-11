@@ -10,14 +10,14 @@ import { environment } from '../../../../environments/environment';
 import { ICleanupData } from '../../../../services';
 import { previewHelper } from '../../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../../components/preview/preview-models';
-import { BaseComponent } from '../../../core/base.component';
+import { BasePageComponent } from '../../../core/base-page.component';
 import { CleanupConfirmComponent } from './cleanup-confirm.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cleanup.component.html',
 })
-export class CleanupComponent extends BaseComponent {
+export class CleanupComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;
@@ -73,6 +73,12 @@ export class CleanupComponent extends BaseComponent {
   prepareCleanup(): void {
     const config = this.getConfig();
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'cleanup',
+      });
+
       this.step = 'preview';
 
       super.startLoading();

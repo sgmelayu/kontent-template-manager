@@ -8,8 +8,8 @@ export interface ITemplate {
         name: string;
         email: String;
     };
+    forVersion: string;
     technology: string;
 
     lastUpdate?: Date;
-    version?: string;
 }

@@ -89,6 +89,7 @@ export class ExportService extends BaseService {
             assets: [],
             targetProjectId: config.targetProjectId,
             assetsFromFile: [],
+            requiredLanguages: [],
             metadata: {
                 version: versionInfo.version,
             }
@@ -100,13 +101,24 @@ export class ExportService extends BaseService {
             flatMap(types => {
                 data.contentTypes.push(...types);
                 return this.deliveryFetchService.getAllContentItems(config.sourceProjectId, config.languages, {
-                    useProcessingService: true
+                    useProcessingService: true,
+                    depth: config.depth
                 });
             }),
             flatMap(contentItemsResult => {
                 data.assets.push(...contentItemsResult.assets);
                 data.contentItems.push(...contentItemsResult.contentItems);
                 data.languageVariants.push(...contentItemsResult.languageVariants);
+
+                // find all languages used for language variants
+                const languages: string[] = [];
+                for (const languageVariant of contentItemsResult.languageVariants) {
+                    if (!languages.includes(languageVariant.languageCodename)) {
+                        languages.push(languageVariant.languageCodename);
+                    }
+                }
+
+                data.requiredLanguages.push(...languages);
 
                 return this.deliveryFetchService.getAllTaxonomies(config.sourceProjectId, [], {
                     useProcessingService: true
@@ -139,6 +151,7 @@ export class ExportService extends BaseService {
                     assets: [],
                     targetProjectId: config.projectId,
                     assetsFromFile: [],
+                    requiredLanguages: [],
                     metadata: {
                         version: versionInfo.version,
                     }
@@ -195,6 +208,16 @@ export class ExportService extends BaseService {
                         map(languageVariantsString => {
                             const languageVariants = JSON.parse(languageVariantsString) as ILanguageVariantModel[];
                             importData.languageVariants = languageVariants;
+
+                            // find all languages used for language variants
+                            const languages: string[] = [];
+                            for (const languageVariant of languageVariants) {
+                                if (!languages.includes(languageVariant.languageCodename)) {
+                                    languages.push(languageVariant.languageCodename);
+                                }
+                            }
+
+                            importData.requiredLanguages.push(...languages);
                         }),
 
                     )
@@ -227,6 +250,7 @@ export class ExportService extends BaseService {
             assets: [],
             targetProjectId: config.targetProjectId,
             assetsFromFile: [],
+            requiredLanguages: [],
             metadata: {
                 version: versionInfo.version,
             }

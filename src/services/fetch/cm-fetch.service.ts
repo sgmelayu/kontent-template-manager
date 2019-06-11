@@ -119,10 +119,9 @@ export class CmFetchService extends BaseService {
                                         }
 
                                         return <IContentItemElement>{
-                                            element: element.element,
                                             value: fieldValue,
                                             elementModel: contentTypeElement,
-                                            elementCodename: element.element.codename
+                                            elementCodename: element.element.codename,
                                         };
                                     }),
                                     itemCodename: contentItem.codename,

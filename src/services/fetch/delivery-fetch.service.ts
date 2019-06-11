@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
-    ContentItem,
     DeliveryClient,
     FieldContracts,
     FieldType,
+    IContentItem,
     IDeliveryClient,
     IDeliveryClientConfig,
     ItemResponses,
 } from 'kentico-cloud-delivery';
+import { getType } from 'mime';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -30,7 +31,7 @@ import {
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
-import { IFetchConfig } from './fetch-models';
+import { IContentItemsFetchConfig, IFetchConfig } from './fetch-models';
 
 @Injectable({
     providedIn: 'root'
@@ -39,7 +40,7 @@ export class DeliveryFetchService {
 
     constructor(
         private processingService: ProcessingService
-    ) {}
+    ) { }
 
     getAllTypes(projectId: string, allTypes: IContentTypeModel[], config: IFetchConfig, nextPageUrl?: string): Observable<IContentTypeModel[]> {
         const query = this.getDeliveryClient({
@@ -68,7 +69,7 @@ export class DeliveryFetchService {
 
                     if (config.useProcessingService) {
                         this.processingService.addProcessedItems(response.types.map(m => {
-                            return <IProcessingItem> {
+                            return <IProcessingItem>{
                                 type: 'content type',
                                 action: 'get',
                                 data: m,
@@ -107,7 +108,7 @@ export class DeliveryFetchService {
 
                     if (config.useProcessingService) {
                         this.processingService.addProcessedItems(response.taxonomies.map(m => {
-                            return <IProcessingItem> {
+                            return <IProcessingItem>{
                                 type: 'taxonomy',
                                 action: 'get',
                                 data: m,
@@ -124,7 +125,7 @@ export class DeliveryFetchService {
             );
     }
 
-    getAllContentItems(projectId: string, languageCodenames: string[], config: IFetchConfig): Observable<IDeliveryContentItemsResult> {
+    getAllContentItems(projectId: string, languageCodenames: string[], config: IContentItemsFetchConfig): Observable<IDeliveryContentItemsResult> {
         const contentItems: IContentItemModel[] = [];
         const obs: Observable<void>[] = [];
 
@@ -164,7 +165,7 @@ export class DeliveryFetchService {
                     const item = response.item;
 
                     return <IContentItemModel>{
-                        elements: item.elements,
+                        elements: item.debug.rawElements,
                         system: item.system,
                         assets: this.extractAssets(item),
                         linkedItemCodenames: this.extractLinkedItemCodenames(item)
@@ -183,18 +184,22 @@ export class DeliveryFetchService {
         const languageVariants: ILanguageVariantModel[] = [];
 
         for (const contentItem of contentItems) {
-            const fakeAssetId = stringHelper.newGuid(); // delivery API does not return asset/file id = generate new one
 
-            assets.push(...contentItem.assets.map(m => <IAssetModel>{
-                deliveryUrl: m.asset.url,
-                fileName: m.asset.name,
-                id: fakeAssetId,
-                type: m.asset.type,
-                description: m.asset.description,
-                size: m.size,
-                zipFilePath: zipHelper.getFullAssetPath(fakeAssetId, m.asset.name),
-                externalId: undefined, // N/A Delivery API
-                title: m.name // N/A Delivery API
+            assets.push(...contentItem.assets.map(m => {
+                // delivery API does not return asset/file in all cases - use custom generated one for such scenarios
+                const assetId = !m.id ? stringHelper.newGuid() : m.id;
+
+                return <IAssetModel>{
+                    deliveryUrl: m.asset.url,
+                    fileName: m.asset.name,
+                    id: assetId,
+                    type: m.asset.type,
+                    description: m.asset.description,
+                    size: m.size,
+                    zipFilePath: zipHelper.getFullAssetPath(assetId, m.asset.name),
+                    externalId: undefined, // N/A Delivery API
+                    title: m.name // N/A Delivery API
+                }
             }));
 
             slimContentItems.push(
@@ -230,19 +235,19 @@ export class DeliveryFetchService {
             if (field.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
                 const assetFieldValue = field.value as FieldContracts.IAssetContract[];
                 fieldValue = <IAssetElementValue[]>assetFieldValue;
-               
-            } 
+
+            }
             if (field.type.toLowerCase() === FieldType.MultipleChoice.toLowerCase()) {
                 const multipleFieldValue = field.value as FieldContracts.IMultipleChoiceOptionContract[];
                 fieldValue = <IMultipleChoiceElementValue[]>multipleFieldValue;
-            } 
+            }
             else {
                 fieldValue = field.value;
             }
 
             elements.push({
                 value: fieldValue,
-                elementCodename: field.name,
+                elementCodename: elementCodename,
                 elementModel: {
                     codename: elementCodename,
                     type: field.type as ElementType,
@@ -269,7 +274,7 @@ export class DeliveryFetchService {
         }, []);
     }
 
-    private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<ContentItem>, contentItems: IContentItemModel[]): void {
+    private addLinkedItemsToResponse(linkedItemCodenames: string[], response: ItemResponses.DeliveryItemListingResponse<IContentItem>, contentItems: IContentItemModel[]): void {
         for (const linkedItemCodename of linkedItemCodenames) {
             const existingItem = contentItems.find(m => m.system.codename === linkedItemCodename);
 
@@ -282,7 +287,7 @@ export class DeliveryFetchService {
                 }
 
                 contentItems.push({
-                    elements: linkedItem.elements,
+                    elements: linkedItem.debug.rawElements,
                     system: linkedItem.system,
                     assets: this.extractAssets(linkedItem),
                     linkedItemCodenames: this.extractLinkedItemCodenames(linkedItem)
@@ -291,7 +296,31 @@ export class DeliveryFetchService {
         }
     }
 
-    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], config: IFetchConfig, languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
+    private addContentItem(config: IContentItemsFetchConfig, response: ItemResponses.DeliveryItemListingResponse<IContentItem>, sourceItem: IContentItem, contentItems: IContentItemModel[]): void {
+        const contentItem = <IContentItemModel>{
+            elements: sourceItem.debug.rawElements,
+            system: sourceItem.system,
+            assets: this.extractAssets(sourceItem),
+            linkedItemCodenames: this.extractLinkedItemCodenames(sourceItem)
+        };
+
+        contentItems.push(contentItem);
+
+        if (config.useProcessingService) {
+            this.processingService.addProcessedItem(<IProcessingItem>{
+                type: 'content item',
+                action: 'get',
+                data: sourceItem,
+                name: `[${sourceItem.system.language}] ${sourceItem.system.name}`
+            }
+            );
+        }
+
+        // make sure that components are added to result as well - needed because of components in rich text elements
+        this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
+    }
+
+    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], config: IContentItemsFetchConfig, languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
         const query = this.getDeliveryClient({
             projectId: projectId
         }).items();
@@ -305,33 +334,23 @@ export class DeliveryFetchService {
         }
 
         return query
+            .depthParameter(config.depth)
             .toObservable()
             .pipe(
                 map(response => {
                     for (const item of response.items) {
+                        // process main items
                         if (!contentItems.find(m => m.system.codename === item.system.codename)) {
-                            const contentItem = <IContentItemModel>{
-                                elements: item.elements,
-                                system: item.system,
-                                assets: this.extractAssets(item),
-                                linkedItemCodenames: this.extractLinkedItemCodenames(item)
-                            };
+                            this.addContentItem(config, response, item, contentItems);
+                        }
+                    }
 
-                            contentItems.push(contentItem);
-
-                            if (config.useProcessingService) {
-                                this.processingService.addProcessedItems(response.items.map(m => {
-                                    return <IProcessingItem> {
-                                        type: 'content item',
-                                        action: 'get',
-                                        data: m,
-                                        name: `[${m.system.language}] ${m.system.name}`
-                                    }
-                                }))
-                            }
-
-                            // make sure that components are added to result as well - needed because of components in rich text elements
-                            this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
+                    // process linked items that are part of 'modular_items_ response
+                    const linkedItemCodenames = Object.keys(response.linkedItems);
+                    for (const linkedItemCodename of linkedItemCodenames) {
+                        if (!contentItems.find(m => m.system.codename === linkedItemCodename)) {
+                            const item = response.linkedItems[linkedItemCodename];
+                            this.addContentItem(config, response, item, contentItems);
                         }
                     }
 
@@ -343,11 +362,11 @@ export class DeliveryFetchService {
             );
     }
 
-    private extractLinkedItemCodenames(contentItem: ContentItem): string[] {
+    private extractLinkedItemCodenames(contentItem: IContentItem): string[] {
         const linkedItems: string[] = [];
 
-        for (const elementCodename of Object.keys(contentItem.elements)) {
-            const element = contentItem.elements[elementCodename];
+        for (const elementCodename of Object.keys(contentItem.debug.rawElements)) {
+            const element = contentItem.debug.rawElements[elementCodename];
             if (element.type.toLowerCase() === FieldType.ModularContent.toLowerCase()) {
                 const modularContent = element.value as string[];
                 for (const modularItem of modularContent) {
@@ -370,29 +389,71 @@ export class DeliveryFetchService {
         return linkedItems;
     }
 
-    private extractAssets(contentItem: ContentItem): IEmbeddedAsset[] {
+    private extractAssets(contentItem: IContentItem): IEmbeddedAsset[] {
         const assets: IEmbeddedAsset[] = [];
 
-        for (const elementCodename of Object.keys(contentItem.elements)) {
-            const element = contentItem.elements[elementCodename];
+        for (const elementCodename of Object.keys(contentItem.debug.rawElements)) {
+            const element = contentItem.debug.rawElements[elementCodename];
+
+            // process asset elements
             if (element.type.toLowerCase() === FieldType.Asset.toLowerCase()) {
                 const fieldAssets = element.value as IRawAssetModel[];
                 for (const asset of fieldAssets) {
                     assets.push({
+                        assetSource: 'assetElement',
                         languageCodename: contentItem.system.language,
                         asset: asset,
                         contentItemCodename: contentItem.system.codename,
                         contentItemId: contentItem.system.id,
                         fieldCodename: elementCodename,
                         description: asset.description,
-                        size: asset.size,
+                        size: asset.size || 0,
                         type: asset.type,
-                        name: asset.name
+                        name: asset.name,
+                        id: false,
+                    });
+                }
+            }
+
+            // process rich text elements
+            if (element.type.toLowerCase() === FieldType.RichText.toLowerCase()) {
+                const richTextElement = element as FieldContracts.IRichTextFieldContract;
+                for (const imageKey of Object.keys(richTextElement.images)) {
+                    const image = richTextElement.images[imageKey];
+
+                    const fileType = this.extractMimeTypeFromUrl(image.url);
+
+                    if (!fileType) {
+                        throw Error(`Cannot determine type of asset from '${image.url}'. This is referenced by '${contentItem.system.codename}' content item in element '${element.name}'`);
+                    }
+
+                    assets.push({
+                        assetSource: 'richTexElementtImages',
+                        asset: {
+                            description: image.description || '',
+                            name: image.image_id,
+                            size: 0, // not available
+                            type: fileType,
+                            url: image.url,
+                        },
+                        contentItemCodename: contentItem.system.codename,
+                        contentItemId: contentItem.system.id,
+                        fieldCodename: elementCodename,
+                        description: image.description,
+                        size: 0, // not available
+                        type: fileType,
+                        name: image.image_id,
+                        languageCodename: contentItem.system.language,
+                        id: image.image_id
                     });
                 }
             }
         }
 
         return assets;
+    }
+
+    private extractMimeTypeFromUrl(url: string): string | null {
+        return getType(url);
     }
 }

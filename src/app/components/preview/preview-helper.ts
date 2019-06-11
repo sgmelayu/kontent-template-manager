@@ -18,8 +18,8 @@ export class PreviewHelper {
                 data: m
             }),
             languageVariants: [],
-            taxonomies: cleanupData.assets.map(m => <IItemPreview>{
-                title: m.fileName,
+            taxonomies: cleanupData.taxonomies.map(m => <IItemPreview>{
+                title: m.system.name,
                 data: m
             }),
         }

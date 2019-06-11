@@ -9,13 +9,13 @@ import { environment } from '../../../environments/environment';
 import { IImportData } from '../../../services';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
-import { BaseComponent } from '../../core/base.component';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './export.component.html',
 })
-export class ExportComponent extends BaseComponent {
+export class ExportComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;
@@ -79,6 +79,12 @@ export class ExportComponent extends BaseComponent {
     if (config) {
       this.step = 'exporting';
 
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'export',
+      });
+
       super.startLoading();
       super.detectChanges();
       super.subscribeToObservable(
@@ -88,6 +94,7 @@ export class ExportComponent extends BaseComponent {
           sourceProjectId: config.projectId,
           targetProjectCmApiKey: 'xxx',
           targetProjectId: 'xxx',
+          depth: 1
         }).pipe(
           map((result) => {
           this.importData = result;

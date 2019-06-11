@@ -9,13 +9,13 @@ import { environment } from '../../../environments/environment';
 import { IImportData, IImportFromProjectWithDeliveryConfig, IImportResult } from '../../../services';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
-import { BaseComponent } from '../../core/base.component';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './import-from-project.component.html',
 })
-export class ImportFromProjectComponent extends BaseComponent {
+export class ImportFromProjectComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;
@@ -71,13 +71,33 @@ export class ImportFromProjectComponent extends BaseComponent {
       languages: [environment.defaultProjects.languages],
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
       publishAllItems: [true],
+      depth: [environment.defaultProjects.depth, Validators.required],
     });
+
+    // init stored values
+    if (environment.production) {
+      const storedData = dependencies.importDataStorageService.getImportData();
+      if (storedData) {
+        this.formGroup.controls['targetProjectId'].setValue(storedData.targetProjectId);
+        this.formGroup.controls['targetProjectCmApiKey'].setValue(storedData.targetProjectApiKey);
+        this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems);
+        this.formGroup.controls['sourceProjectId'].setValue(storedData.sourceProjectId);
+        this.formGroup.controls['languages'].setValue(storedData.sourceProjectLanguages);
+        this.formGroup.controls['depth'].setValue(storedData.depth || environment.defaultProjects.depth);
+      }
+    }
   }
 
   handlePreview(): void {
     const config = this.getConfig();
 
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'prepare-import-from-project',
+      });
+
       this.resetErrors();
       this.step = "preview";
       super.startLoading();
@@ -117,6 +137,11 @@ export class ImportFromProjectComponent extends BaseComponent {
     const config = this.getConfig();
 
     if (config && this.importData) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'import-from-project',
+      });
 
       this.step = 'importing';
 
@@ -150,6 +175,7 @@ export class ImportFromProjectComponent extends BaseComponent {
     const targetProjectCmApiKey = this.formGroup.controls['targetProjectCmApiKey'].value;
     const publishAllItems = this.formGroup.controls['publishAllItems'].value;
     const languages = this.parsedLanguages;
+    const depth = +this.formGroup.controls['depth'].value;
 
     if (!sourceProjectId) {
       this.error = 'Invalid source project id';
@@ -165,6 +191,21 @@ export class ImportFromProjectComponent extends BaseComponent {
       this.error = 'Invalid api key';
       return;
     }
+    
+    if (!depth) {
+      this.error = 'Invalid depth';
+      return;
+    }
+
+    // store values
+    this.dependencies.importDataStorageService.updateImportData({
+      targetProjectApiKey: targetProjectCmApiKey,
+      publishContentItems: publishAllItems,
+      targetProjectId: targetProjectId,
+      sourceProjectId: sourceProjectId,
+      sourceProjectLanguages: languages,
+      depth: depth
+    });
 
     return <IImportFromProjectWithDeliveryConfig>{
       languages: languages,
@@ -172,6 +213,7 @@ export class ImportFromProjectComponent extends BaseComponent {
       sourceProjectId: sourceProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
       targetProjectId: targetProjectId,
+      depth: depth
     };
   }
 

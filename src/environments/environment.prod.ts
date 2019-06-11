@@ -3,6 +3,7 @@ export const environment = {
   appName: 'Template manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
+    depth: 10,
     languages: '',
     sourceProjectApiKey: '',
     sourceProjectId: '',
@@ -21,5 +22,13 @@ export const environment = {
       assetsFolder: 'assets',
       metadata: 'metadata.json'
     }
+  },
+  google: {
+    enableTracking: true,
+    trackingPrefix: '/cloud-template-manager',
+    googleAnalyticsTrackingId: 'UA-69014260-7',
+  },
+  storage: {
+    storageName: 'templateManagerData'
   }
 };

@@ -11,13 +11,13 @@ import { IImportData, IImportFromFileConfig, IImportResult } from '../../../serv
 import { zipHelper } from '../../../utilities';
 import { previewHelper } from '../../components/preview/preview-helper';
 import { IDataPreviewWrapper } from '../../components/preview/preview-models';
-import { BaseComponent } from '../../core/base.component';
+import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './import-from-file.component.html',
 })
-export class ImportFromFileComponent extends BaseComponent {
+export class ImportFromFileComponent extends BasePageComponent {
 
   public formGroup: FormGroup;
   public error?: string;
@@ -44,6 +44,15 @@ export class ImportFromFileComponent extends BaseComponent {
     return this.formGroup.valid && (this.file ? true : false);
   }
 
+  public get requiredLanguagesWarningMessage(): string | undefined {
+    if (!this.importData || this.importData.requiredLanguages.length === 0) {
+      return undefined;
+    }
+
+    const languagesListHtml = `<ul>${this.importData.requiredLanguages.map(m => `<li>${m}</li>`).join('')}</ul>`;
+    return `In order for import to work, make sure that your target project contains languages with following codenames: ${languagesListHtml}`;
+  }
+
   public importResult?: IImportResult | undefined = undefined;
 
   constructor(
@@ -57,12 +66,28 @@ export class ImportFromFileComponent extends BaseComponent {
       cmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
       publishAllItems: [true],
     });
+
+    // init stored values
+    if (environment.production) {
+      const storedData = dependencies.importDataStorageService.getImportData();
+      if (storedData) {
+        this.formGroup.controls['projectId'].setValue(storedData.targetProjectId);
+        this.formGroup.controls['cmApiKey'].setValue(storedData.targetProjectApiKey);
+        this.formGroup.controls['publishAllItems'].setValue(storedData.publishContentItems);
+      }
+    }
   }
 
   handlePreview(): void {
     const config = this.getConfig();
 
     if (config) {
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'prepare-import-from-file',
+      });
+
       this.resetErrors();
       this.step = "preview";
       super.startLoading();
@@ -107,6 +132,13 @@ export class ImportFromFileComponent extends BaseComponent {
     const config = this.getConfig();
 
     if (config && this.importData) {
+
+      // track gEvent
+      super.trackEvent({
+        eventCategory: 'button',
+        eventAction: 'import-from-file',
+      });
+
       this.resetErrors();
       this.step = 'importing';
       super.startLoading();
@@ -192,6 +224,14 @@ export class ImportFromFileComponent extends BaseComponent {
       this.error = 'File is not uploaded';
       return;
     }
+
+    // store values
+    this.dependencies.importDataStorageService.updateImportData({
+      targetProjectApiKey: cmApiKey,
+      publishContentItems: publishAllItems,
+      targetProjectId: projectId,
+      depth: 0 // not required when importing from file
+    });
 
     return <IImportFromFileConfig>{
       apiKey: cmApiKey,
