@@ -40,5 +40,19 @@
         "lastUpdate": "2019-05-20T16:00:00.000Z",
         "forVersion": "1",
         "technology": "GatsbyJs"
+    },
+    {
+        "name": "ASP.NET Core MVC",
+        "description": "Kentico Cloud web template built with ASP.NET Core MVC",
+        "repoUrl": "https://github.com/Simply007/cloud-template-dotnet-core",
+        "exportPackageUrl": "https://github.com/Simply007/cloud-template-dotnet-core/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-dotnet-core/master/template.jpg",
+        "author": {
+            "name": "Ondřej Chrastina",
+            "email": "ondrej.chrastina@kentico.com"
+        },
+        "lastUpdate": "2019-06-11T16:00:00.000Z",
+        "forVersion": "1",
+        "technology": ".NET Core MVC"
     }
 ]
