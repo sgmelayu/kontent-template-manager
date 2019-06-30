@@ -57,7 +57,7 @@
     },
     {
         "name": "Freelancer",
-        "description": "Start Bootstra Freelancer template based on ASP.NET Core Blazor",
+        "description": "Start Bootstrap Freelancer template based on ASP.NET Core Blazor",
         "repoUrl": "https://github.com/petrsvihlik/StartBootstrap.Freelancer.Blazor",
         "exportPackageUrl": "https://github.com/petrsvihlik/StartBootstrap.Freelancer.Blazor/archive/master.zip",
         "imageUrl": "https://repository-images.githubusercontent.com/194238112/db381080-9b34-11e9-961a-89b79eaeb650",
@@ -66,7 +66,7 @@
             "email": "petr.svihlik@kentico.com"
         },
         "lastUpdate": "2019-06-30T16:00:00.000Z",
-        "forVersion": "1",
+        "forVersion": "0.0.8",
         "technology": "ASP.NET Core Blazor"
     }
 ]
