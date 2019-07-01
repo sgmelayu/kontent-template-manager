@@ -336,9 +336,6 @@ export class LanguageVariantsImportService extends BaseService {
             for (const currentTaxonomyTerm of currentTaxonomyTerms) {
                 const candidateTaxonomyTerm = this.findTaxonomyTermRecursively(currentTaxonomyTerm.codename, candidateTaxonomy.originalItem.terms);
                 if (!candidateTaxonomyTerm) {
-                    console.log(prerequisities.taxonomies);
-                    console.log(candidateTaxonomy);
-                    console.log(currentTaxonomyTerm);
                     throw Error(`Cannot find taxonomy term '${currentTaxonomyTerm.codename}' for taxonomy group '${candidateTaxonomy.originalItem.system.codename}' referenced by field '${field.elementCodename}' in '${contentType.originalItem.system.codename}' content type 
                     and used by '${languageVariant.itemCodename}' language variant with language '${languageVariant.languageCodename}'`);
                 }

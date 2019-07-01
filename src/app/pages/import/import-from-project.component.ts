@@ -72,6 +72,7 @@ export class ImportFromProjectComponent extends BasePageComponent {
       targetProjectCmApiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required],
       publishAllItems: [true],
       depth: [environment.defaultProjects.depth, Validators.required],
+      sourceProjectSecureApiKey: [''],
     });
 
     // init stored values
@@ -84,6 +85,7 @@ export class ImportFromProjectComponent extends BasePageComponent {
         this.formGroup.controls['sourceProjectId'].setValue(storedData.sourceProjectId);
         this.formGroup.controls['languages'].setValue(storedData.sourceProjectLanguages);
         this.formGroup.controls['depth'].setValue(storedData.depth || environment.defaultProjects.depth);
+        this.formGroup.controls['sourceProjectSecureApiKey'].setValue(storedData.sourceProjectSecureApiKey);
       }
     }
   }
@@ -176,6 +178,7 @@ export class ImportFromProjectComponent extends BasePageComponent {
     const publishAllItems = this.formGroup.controls['publishAllItems'].value;
     const languages = this.parsedLanguages;
     const depth = +this.formGroup.controls['depth'].value;
+    const sourceProjectSecureApiKey = this.formGroup.controls['sourceProjectSecureApiKey'].value;
 
     if (!sourceProjectId) {
       this.error = 'Invalid source project id';
@@ -204,7 +207,8 @@ export class ImportFromProjectComponent extends BasePageComponent {
       targetProjectId: targetProjectId,
       sourceProjectId: sourceProjectId,
       sourceProjectLanguages: languages,
-      depth: depth
+      depth: depth,
+      sourceProjectSecureApiKey: sourceProjectSecureApiKey
     });
 
     return <IImportFromProjectWithDeliveryConfig>{
@@ -213,7 +217,8 @@ export class ImportFromProjectComponent extends BasePageComponent {
       sourceProjectId: sourceProjectId,
       targetProjectCmApiKey: targetProjectCmApiKey,
       targetProjectId: targetProjectId,
-      depth: depth
+      depth: depth,
+      sourceProjectSecureApiKey: sourceProjectSecureApiKey
     };
   }
 

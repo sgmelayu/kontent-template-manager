@@ -95,15 +95,19 @@ export class ExportService extends BaseService {
             }
         };
 
-        return this.deliveryFetchService.getAllTypes(config.sourceProjectId, [], {
-            useProcessingService: true
-        }).pipe(
+        return this.deliveryFetchService.getAllTypes({
+            projectId: config.sourceProjectId,
+            useProcessingService: true,
+            securedApiKey: config.sourceProjectSecureApiKey
+        }, []).pipe(
             flatMap(types => {
                 data.contentTypes.push(...types);
-                return this.deliveryFetchService.getAllContentItems(config.sourceProjectId, config.languages, {
+                return this.deliveryFetchService.getAllContentItems({
                     useProcessingService: true,
-                    depth: config.depth
-                });
+                    depth: config.depth,
+                    securedApiKey: config.sourceProjectSecureApiKey,
+                    projectId: config.sourceProjectId
+                }, config.languages)
             }),
             flatMap(contentItemsResult => {
                 data.assets.push(...contentItemsResult.assets);
@@ -120,9 +124,11 @@ export class ExportService extends BaseService {
 
                 data.requiredLanguages.push(...languages);
 
-                return this.deliveryFetchService.getAllTaxonomies(config.sourceProjectId, [], {
+                return this.deliveryFetchService.getAllTaxonomies({
+                    projectId: config.sourceProjectId,
+                    securedApiKey: config.sourceProjectSecureApiKey,
                     useProcessingService: true
-                });
+                }, []);
             }),
             map(taxonomies => {
                 data.taxonomies.push(...taxonomies);

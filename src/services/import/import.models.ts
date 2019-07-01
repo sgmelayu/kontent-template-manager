@@ -34,6 +34,7 @@ export interface IImportFromProjectWithDeliveryConfig extends IImportConfig {
     targetProjectId: string;
     targetProjectCmApiKey: string;
     sourceProjectId: string;
+    sourceProjectSecureApiKey?: string;
 }
 
 // tslint:disable-next-line:no-empty-interface

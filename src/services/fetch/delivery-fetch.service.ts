@@ -5,7 +5,6 @@ import {
     FieldType,
     IContentItem,
     IDeliveryClient,
-    IDeliveryClientConfig,
     ItemResponses,
 } from 'kentico-cloud-delivery';
 import { getType } from 'mime';
@@ -31,7 +30,7 @@ import {
     ISlimContentItemModel,
     ITaxonomyModel,
 } from '../shared/shared.models';
-import { IContentItemsFetchConfig, IFetchConfig } from './fetch-models';
+import { IDeliveryContentItemsFetchConfig, IDeliveryFetchConfig } from './fetch-models';
 
 @Injectable({
     providedIn: 'root'
@@ -42,10 +41,8 @@ export class DeliveryFetchService {
         private processingService: ProcessingService
     ) { }
 
-    getAllTypes(projectId: string, allTypes: IContentTypeModel[], config: IFetchConfig, nextPageUrl?: string): Observable<IContentTypeModel[]> {
-        const query = this.getDeliveryClient({
-            projectId: projectId
-        }).types();
+    getAllTypes(config: IDeliveryFetchConfig, allTypes: IContentTypeModel[], nextPageUrl?: string): Observable<IContentTypeModel[]> {
+        const query = this.getDeliveryClient(config).types();
 
         if (nextPageUrl) {
             query.withUrl(nextPageUrl);
@@ -79,17 +76,15 @@ export class DeliveryFetchService {
                     }
 
                     if (response.pagination.nextPage) {
-                        this.getAllTypes(projectId, allTypes, config, response.pagination.nextPage);
+                        this.getAllTypes(config, allTypes, response.pagination.nextPage);
                     }
                     return allTypes;
                 })
             );
     }
 
-    getAllTaxonomies(projectId: string, taxonomies: ITaxonomyModel[], config: IFetchConfig, nextPageUrl?: string): Observable<ITaxonomyModel[]> {
-        const query = this.getDeliveryClient({
-            projectId: projectId
-        }).taxonomies();
+    getAllTaxonomies(config: IDeliveryFetchConfig, taxonomies: ITaxonomyModel[], nextPageUrl?: string): Observable<ITaxonomyModel[]> {
+        const query = this.getDeliveryClient(config).taxonomies();
 
         if (nextPageUrl) {
             query.withUrl(nextPageUrl);
@@ -118,20 +113,20 @@ export class DeliveryFetchService {
                     }
 
                     if (response.pagination.nextPage) {
-                        this.getAllTaxonomies(projectId, taxonomies, config, response.pagination.nextPage);
+                        this.getAllTaxonomies(config, taxonomies, response.pagination.nextPage);
                     }
                     return taxonomies;
                 })
             );
     }
 
-    getAllContentItems(projectId: string, languageCodenames: string[], config: IContentItemsFetchConfig): Observable<IDeliveryContentItemsResult> {
+    getAllContentItems(config: IDeliveryContentItemsFetchConfig, languageCodenames: string[]): Observable<IDeliveryContentItemsResult> {
         const contentItems: IContentItemModel[] = [];
         const obs: Observable<void>[] = [];
 
         if (languageCodenames.length === 0) {
             // get content items in default language withous specifying any language param
-            return this.getContentItemsForLanguage(projectId, contentItems, config, undefined, undefined).pipe(
+            return this.getContentItemsForLanguage(config, contentItems, undefined, undefined).pipe(
                 map(result => {
                     return this.processContentItemsResult(result);
                 })
@@ -140,7 +135,7 @@ export class DeliveryFetchService {
 
         for (const languageCodename of languageCodenames) {
             obs.push(
-                this.getContentItemsForLanguage(projectId, [], config, languageCodename, undefined).pipe(
+                this.getContentItemsForLanguage(config, [], languageCodename, undefined).pipe(
                     map(response => {
                         contentItems.push(...response);
                     })
@@ -155,10 +150,8 @@ export class DeliveryFetchService {
         )
     }
 
-    getContentItemByCodename(projectId: string, codename: string): Observable<IContentItemModel> {
-        return this.getDeliveryClient({
-            projectId: projectId
-        })
+    getContentItemByCodename(config: IDeliveryFetchConfig, codename: string): Observable<IContentItemModel> {
+        return this.getDeliveryClient(config)
             .item(codename)
             .toObservable().pipe(
                 map(response => {
@@ -174,8 +167,12 @@ export class DeliveryFetchService {
             )
     }
 
-    getDeliveryClient(config: IDeliveryClientConfig): IDeliveryClient {
-        return new DeliveryClient(config);
+    getDeliveryClient(config: IDeliveryFetchConfig): IDeliveryClient {
+        return new DeliveryClient({
+            projectId: config.projectId,
+            enableSecuredMode: config.securedApiKey ? true : false,
+            securedApiKey: config.securedApiKey
+        });
     }
 
     private processContentItemsResult(contentItems: IContentItemModel[]): IDeliveryContentItemsResult {
@@ -296,7 +293,7 @@ export class DeliveryFetchService {
         }
     }
 
-    private addContentItem(config: IContentItemsFetchConfig, response: ItemResponses.DeliveryItemListingResponse<IContentItem>, sourceItem: IContentItem, contentItems: IContentItemModel[]): void {
+    private addContentItem(config: IDeliveryContentItemsFetchConfig, response: ItemResponses.DeliveryItemListingResponse<IContentItem>, sourceItem: IContentItem, contentItems: IContentItemModel[]): void {
         const contentItem = <IContentItemModel>{
             elements: sourceItem.debug.rawElements,
             system: sourceItem.system,
@@ -320,10 +317,8 @@ export class DeliveryFetchService {
         this.addLinkedItemsToResponse(contentItem.linkedItemCodenames, response, contentItems);
     }
 
-    private getContentItemsForLanguage(projectId: string, contentItems: IContentItemModel[], config: IContentItemsFetchConfig, languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
-        const query = this.getDeliveryClient({
-            projectId: projectId
-        }).items();
+    private getContentItemsForLanguage(config: IDeliveryContentItemsFetchConfig, contentItems: IContentItemModel[], languageCodename?: string, nextPageUrl?: string): Observable<IContentItemModel[]> {
+        const query = this.getDeliveryClient(config).items();
 
         if (languageCodename) {
             query.languageParameter(languageCodename);
@@ -355,7 +350,7 @@ export class DeliveryFetchService {
                     }
 
                     if (response.pagination.nextPage) {
-                        this.getContentItemsForLanguage(projectId, contentItems, config, languageCodename, response.pagination.nextPage);
+                        this.getContentItemsForLanguage(config, contentItems, languageCodename, response.pagination.nextPage);
                     }
                     return contentItems;
                 })

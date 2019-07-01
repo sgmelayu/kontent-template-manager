@@ -29,6 +29,11 @@
                     formControlName="languages">
             </mat-form-field>
 
+            <mat-form-field class="push-top w-full-width">
+                <input autocomplete="off" matInput placeholder="Secured API Key (optional)"
+                    formControlName="sourceProjectSecureApiKey">
+            </mat-form-field>
+
             <div class="push-top" *ngIf="languagesWarningMessage">
                 <lib-message [type]="'warning'" [html]="languagesWarningMessage"></lib-message>
             </div>
