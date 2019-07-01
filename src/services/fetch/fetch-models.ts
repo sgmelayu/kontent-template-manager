@@ -1,7 +1,9 @@
-export interface IFetchConfig {
+export interface IDeliveryFetchConfig {
+    projectId: string;
     useProcessingService: boolean,
+    securedApiKey?: string;
 }
 
-export interface IContentItemsFetchConfig extends IFetchConfig {
-    depth: number
+export interface IDeliveryContentItemsFetchConfig extends IDeliveryFetchConfig {
+    depth: number;
 }
