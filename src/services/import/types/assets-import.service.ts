@@ -14,6 +14,8 @@ import { IAssetFromFile, IGetAssetData, IImportAssetResult, IImportConfig } from
 })
 export class AssetsImportService extends BaseService {
 
+    private readonly maxAssetTitleLength: number = 50;
+
     constructor(
         private processingService: ProcessingService
     ) {
@@ -82,7 +84,7 @@ export class AssetsImportService extends BaseService {
                                     });
 
                                     return targetClient.addAsset().withData({
-                                        title: asset.title,
+                                        title: this.getTrimmedAssetTitle(asset.title),
                                         descriptions: [],
                                         fileReference: {
                                             id: response.data.id,
@@ -157,7 +159,7 @@ export class AssetsImportService extends BaseService {
                         });
 
                         return targetClient.addAsset().withData({
-                            title: assetFromFile.asset.fileName,
+                            title: this.getTrimmedAssetTitle(assetFromFile.asset.fileName),
                             descriptions: [],
                             fileReference: {
                                 id: response.data.id,
@@ -186,6 +188,16 @@ export class AssetsImportService extends BaseService {
         return observableHelper.flatMapObservables(obs, this.cmRequestDelay).pipe(
             map(() => createdAssets)
         );
+    }
+
+    private getTrimmedAssetTitle(title?: string): string {
+        if (!title) {
+            return 'unknown-title';
+        }
+        if (title.length <= this.maxAssetTitleLength) {
+            return title;
+        }
+        return title.substr(0, this.maxAssetTitleLength);
     }
 
 }
