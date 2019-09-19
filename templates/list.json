@@ -29,7 +29,7 @@
     },
     {
         "name": "GatsbyJs Photon",
-        "description": "Kentico Cloud & GatsbyJs template based on Photon",
+        "description": "Kentico Kontent & GatsbyJs template based on Photon",
         "repoUrl": "https://github.com/Simply007/cloud-template-gatsby",
         "exportPackageUrl": "https://github.com/Simply007/cloud-template-gatsby/archive/master.zip",
         "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-gatsby/master/template.jpg",
@@ -43,7 +43,7 @@
     },
     {
         "name": "ASP.NET Core MVC",
-        "description": "Kentico Cloud web template built with ASP.NET Core MVC",
+        "description": "Kentico Kontent web template built with ASP.NET Core MVC",
         "repoUrl": "https://github.com/Simply007/cloud-template-dotnet-core",
         "exportPackageUrl": "https://github.com/Simply007/cloud-template-dotnet-core/archive/master.zip",
         "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-dotnet-core/master/template.jpg",

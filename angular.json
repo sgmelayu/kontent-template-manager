@@ -41,7 +41,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "https://kentico.github.io/cloud-template-manager/",
+              "baseHref": "https://kentico.github.io/kontent-template-manager/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
