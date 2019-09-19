@@ -6,7 +6,7 @@
 @include push-utilities();
 @include card();
 
-$primaryColor: #008ae1;
-$accentColor: #f05a22;
+$primaryColor: #f05a22;
+$accentColor: rgba(0, 0, 0, 0.87);
 $primaryColorContrast: white;
 $accentColorContrast: white;

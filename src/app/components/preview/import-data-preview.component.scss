@@ -1,3 +1,5 @@
+@import '../../../assets/styles/styles-core.scss';
+
 .w-inactive-item {
     background-color: #e0e0e0;
     color: black;
@@ -5,13 +7,13 @@
 }
 
 .w-active-item {
-    background-color: #008ae1;
+    background-color: $primaryColor;
     color: #ffffff;
     cursor: pointer;
 }
 
 .w-preview-link {
-    color: #008ae1;
+    color: $primaryColor;
     cursor: pointer;
     font-weight: 600;
 }
