@@ -30,14 +30,14 @@
     {
         "name": "GatsbyJs Photon",
         "description": "Kentico Kontent & GatsbyJs template based on Photon",
-        "repoUrl": "https://github.com/Simply007/cloud-template-gatsby",
-        "exportPackageUrl": "https://github.com/Simply007/cloud-template-gatsby/archive/master.zip",
-        "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-gatsby/master/template.jpg",
+        "repoUrl": "https://github.com/Simply007/kontent-template-gatsby-landing-page-photon",
+        "exportPackageUrl": "https://github.com/Simply007/kontent-template-gatsby-landing-page-photon/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/kontent-template-gatsby-landing-page-photon/master/template.jpg",
         "author": {
             "name": "Ondřej Chrastina",
             "email": "ondrej.chrastina@kentico.com"
         },
-        "lastUpdate": "2019-05-20T16:00:00.000Z",
+        "lastUpdate": "2019-11-04T16:00:00.000Z",
         "forVersion": "1",
         "technology": "GatsbyJs"
     },
