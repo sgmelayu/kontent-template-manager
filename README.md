@@ -40,6 +40,8 @@ If you want to submit a Kentico Kontent Web Template to the [Templates Gallery](
 #### Repository structure
 
 * **/source**<br>Contains template implementation (open-source)
+
+    * (optional) - it is also possible to place the source code under the root folder, if there are no conflicts with the other files
     
 * **content.zip**<br>ZIP package generated via [https://kentico.github.io/kontent-template-manager](https://kentico.github.io/kontent-template-manager)
 
