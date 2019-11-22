@@ -71,7 +71,7 @@
     },
     {
         "name": "Nerd Cafe",
-        "description": "Kentico Kontent web template built with Svelte",
+        "description": "Kentico Kontent web template built with Svelte and Sapper",
         "repoUrl": "https://github.com/Simply007/kontent-sample-app-svelte-sapper",
         "exportPackageUrl": "https://github.com/Simply007/kontent-sample-app-svelte-sapper/archive/master.zip",
         "imageUrl": "https://raw.githubusercontent.com/Simply007/kontent-sample-app-svelte-sapper/master/template.jpg",
