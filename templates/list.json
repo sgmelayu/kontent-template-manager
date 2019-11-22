@@ -68,5 +68,19 @@
         "lastUpdate": "2019-06-30T16:00:00.000Z",
         "forVersion": "0.0.8",
         "technology": "ASP.NET Core Blazor"
-    }
+    },
+    {
+        "name": "Nerd Cafe",
+        "description": "Kentico Kontent web template built with Svelte",
+        "repoUrl": "https://github.com/Simply007/kontent-sample-app-svelte-sapper",
+        "exportPackageUrl": "https://github.com/Simply007/kontent-sample-app-svelte-sapper/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/kontent-sample-app-svelte-sapper/master/template.jpg",
+        "author": {
+            "name": "Ondřej Chrastina",
+            "email": "ondrej.chrastina@kentico.com"
+        },
+        "lastUpdate": "2019-11-22T14:00:00.000Z",
+        "forVersion": "1",
+        "technology": "Svelte & Sapper"
+    },
 ]
