@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { element } from '@angular/core/src/render3';
 import { IContentManagementClient, LanguageVariantModels, SharedContracts } from 'kentico-cloud-content-management';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
