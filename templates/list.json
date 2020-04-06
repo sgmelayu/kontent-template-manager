@@ -82,5 +82,19 @@
         "lastUpdate": "2019-11-22T14:00:00.000Z",
         "forVersion": "1",
         "technology": "Svelte & Sapper"
+    },
+    {
+        "name": "GatsbyJs Lumen",
+        "description": "Kentico Kontent & GatsbyJs template based on Lumen",
+        "repoUrl": "https://github.com/Kentico/gatsby-starter-kontent-lumen",
+        "exportPackageUrl": "https://github.com/Kentico/gatsby-starter-kontent-lumen/archive/master.zip",
+        "imageUrl": "https://camo.githubusercontent.com/4be6d07a837fcea5fe5337dd14a5c08ca9e55f46/68747470733a2f2f692e696d6775722e636f6d2f494d7a556565442e706e67",
+        "author": {
+            "name": "Martin Makarský",
+            "email": "martinm@kentico.com"
+        },
+        "lastUpdate": "2020-04-06T16:00:00.000Z",
+        "forVersion": "1",
+        "technology": "GatsbyJs"
     }
 ]
