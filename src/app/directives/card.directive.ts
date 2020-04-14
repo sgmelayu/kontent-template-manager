@@ -11,7 +11,6 @@ export class CardDirective implements OnInit {
     protected readonly padClass = 'pad';
     protected readonly standardCardClass = 'w-card';
 
-
     constructor(
         private hostElement: ElementRef,
         private renderer: Renderer2) {

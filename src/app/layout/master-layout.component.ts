@@ -29,21 +29,9 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'section'
     },
     {
-      title: 'Import from project',
+      title: 'Import',
       routerLink: '/',
       icon: 'settings_backup_restore',
-      type: 'link'
-    },
-    {
-      title: 'Import from file',
-      routerLink: '/import-from-file',
-      icon: 'settings_backup_restore',
-      type: 'link'
-    },
-    {
-      title: 'Migrate items between projects',
-      routerLink: '/migrate-content-items',
-      icon: 'sync',
       type: 'link'
     },
     {

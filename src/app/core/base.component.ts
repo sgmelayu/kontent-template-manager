@@ -68,7 +68,6 @@ export abstract class BaseComponent implements OnDestroy {
             .pipe(
                 takeUntil(this.ngUnsubscribe),
                 catchError(error => {
-                    this.markForCheck();
                     return throwError(error);
                 })
             )
