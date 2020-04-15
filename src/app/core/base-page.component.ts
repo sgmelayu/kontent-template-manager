@@ -29,4 +29,8 @@ export abstract class BasePageComponent extends BaseComponent {
     }): void {
         this.dependencies.googleAnalyticsService.logEvent(data);
     }
+
+    protected setTitle(title: string): void {
+        this.dependencies.layoutService.setTitle(title);
+    }
 }

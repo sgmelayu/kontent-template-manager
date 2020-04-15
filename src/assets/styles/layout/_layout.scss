@@ -1,5 +1,22 @@
-@import '../../assets/styles/styles-core.scss';
-.w-layout-container {
+@mixin layout($theme) {
+
+    
+    /**
+    Background is set on the <body> tag, but it also has to be here so that it overrides default color of sidenav
+    */
+    .w-layout-background,
+    .mat-drawer-container {
+        background-color: unset !important;
+    }
+
+.w-layout-subheader {
+    background-color: darken(map-get($theme, backgroundColor), 5);
+    font-size: 24px;
+    font-weight: 300;
+    padding: 24px 32px;
+}
+
+.w-layout-container-2 {
     position: absolute;
     top: 64px;
     bottom: 0;
@@ -28,13 +45,11 @@
     font-size: 14px;
     cursor: pointer;
     &:hover {
-        /* background-color: $accentColor; */
-        color: $primaryColor;
+        color: map-get($theme, primaryColor);
     }
 
     &.active {
-       /* background-color: rgb(238, 238, 238); */
-        color: $primaryColor;
+        color: map-get($theme, primaryColor);
         background: rgb(240, 240, 240);
     }
  
@@ -53,4 +68,5 @@
 
 .w-layout-version {
     font-size: 12px;
+}
 }

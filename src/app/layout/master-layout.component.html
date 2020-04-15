@@ -31,7 +31,8 @@
 <mat-sidenav-container class="w-layout-container">
 
     <mat-sidenav #sidenav opened [mode]="isSmallScreen ? 'over' : 'side'" [opened]="isSmallScreen ? 'false' : 'true'"
-        class="w-layout-side-menu">
+        class="w-layout-side-menu"   [fixedInViewport]="layoutOptions.fixed" [fixedTopGap]="layoutOptions.topGap"
+        [fixedBottomGap]="layoutOptions.bottomGap" [autoFocus]="false">
 
         <div fxLayout="row">
             <div fxLayout="column" fxFlex="100%" class="push-top push-bottom">
@@ -60,6 +61,10 @@
             </div>
         </ng-container>
     </mat-sidenav>
+
+    <div class="w-layout-subheader">
+        {{ title }}
+    </div>
 
     <div class="w-layout-content">
         <router-outlet></router-outlet>

@@ -4,6 +4,7 @@ import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
 import { stringHelper } from '../../utilities';
 import { BaseComponent } from '../core/base.component';
+import { map } from 'rxjs/operators';
 
 interface INavigationItem {
   routerLink?: string;
@@ -12,16 +13,20 @@ interface INavigationItem {
   type: 'link' | 'section'
 }
 
+interface ILayoutOptions {
+  fixed: boolean;
+  topGap: number;
+  bottomGap: number;
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './master-layout.component.html',
-  styleUrls: [
-    './master-layout.component.scss'
-  ]
+  templateUrl: './master-layout.component.html'
 })
 export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public appName: string = environment.appName;
+  public title?: string =  environment.appName;
 
   public navigationItems: INavigationItem[] = [
     {
@@ -72,6 +77,12 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
     }
   ];
 
+  public readonly layoutOptions: ILayoutOptions = {
+    fixed: true,
+    topGap: 64,
+    bottomGap: 0
+};
+
   constructor(
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef) {
@@ -79,6 +90,11 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    super.subscribeToObservable(this.dependencies.layoutService.componentConfigChanged$.pipe(
+      map(title => {
+        this.title = title;
+      })
+    ))
   }
 
   menuItemIsActive(path: string, exactMatch: boolean = true): boolean {

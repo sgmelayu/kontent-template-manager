@@ -7,6 +7,7 @@ import {
     ImportDataStorageService,
     TemplatesService,
     ProcessingService,
+    LayoutService,
 } from '../services';
 
 @Injectable({
@@ -21,5 +22,6 @@ export class ComponentDependencies {
         public templatesService: TemplatesService,
         public googleAnalyticsService: GoogleAnalyticsService,
         public importDataStorageService: ImportDataStorageService,
+        public layoutService: LayoutService,
     ) { }
 }

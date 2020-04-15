@@ -1,5 +1,4 @@
-@import '../../../assets/styles/styles-core.scss';
-
+@mixin preview-data($theme) {
 .w-inactive-item {
     background-color: #e0e0e0;
     color: black;
@@ -7,13 +6,14 @@
 }
 
 .w-active-item {
-    background-color: $primaryColor;
-    color: #ffffff;
+    background-color: map-get($theme, primaryColor);
+    color: map-get($theme, primaryColorContrast);
     cursor: pointer;
 }
 
 .w-preview-link {
-    color: $primaryColor;
+    color: map-get($theme, primaryColor);
     cursor: pointer;
     font-weight: 600;
+}
 }

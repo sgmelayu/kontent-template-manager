@@ -1,14 +1,41 @@
-<div class="push-bottom" *ngIf="error">
-    <lib-message [type]="'error'" [text]="error"></lib-message>
-</div>
-
-<h1>
-    Export data
-</h1>
 
 <p class="push-top push-bottom">
-    This function enables you to create <em>json</em> export package of data from given project
+    This feature creates a zip package with all data (including asset binaries) from a given project
 </p>
 
 <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+<form [formGroup]="formGroup">
+    <div libCard [addPad]="false" class="pad-xl">
+        <div fxLayout="row">
+            <div fxLayout="column" fxFlex>
+                <div libText3>Source project id</div>
+                <mat-form-field appearance="fill" class="push-top-sm">
+                    <input matInput formControlName="projectId">
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="push-top">
+            <div fxLayout="row">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Api key</div>
+
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input matInput formControlName="apiKey">
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="push-top" *ngIf="error">
+        <lib-message [type]="'error'">error</lib-message>
+    </div>
+
+    <div class="push-top" fxLayout="row">
+        <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+            <lib-button (click)="handleExport()" [disabled]="formGroup.invalid" [matIcon]="'import_export'" >Export</lib-button>
+        </div>
+    </div>
+</form>

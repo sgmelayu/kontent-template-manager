@@ -52,7 +52,7 @@ export abstract class BaseComponent implements OnDestroy {
     }
 
     protected detectChanges(): void {
-        this.cdr.detectChanges();
+        throw Error(`Change detection should not be used`);
     }
 
     protected markForCheck(): void {

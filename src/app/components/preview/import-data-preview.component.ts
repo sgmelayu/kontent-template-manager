@@ -8,7 +8,6 @@ import { ActiveType, IDataPreviewWrapper, IItemPreview, IItemPreviewWithIndex } 
   selector: 'lib-import-data-preview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './import-data-preview.component.html',
-  styleUrls: ['./import-data-preview.component.scss']
 })
 export class ImportDataPreview extends BaseComponent implements OnInit {
 

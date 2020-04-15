@@ -1,0 +1,67 @@
+@mixin message($theme) {
+    .w-message {
+        padding: 8px 16px;
+    
+        &.error {
+            background-color: rgb(228, 77, 66);
+            color: white;
+    
+            .title {
+                font-size: 22px;
+                padding: 8px 12px;
+                display: block;
+                background-color: darken(#F44336, 10);
+            }
+        }
+    
+        &.info {
+            background-color: rgb(74, 86, 195);
+            color: white;
+    
+            .title {
+                font-size: 22px;
+                padding: 8px 12px;
+                display: block;
+                background-color: darken(rgb(74, 86, 195), 10);
+            }
+    
+            .text {
+                padding: 8px 12px;
+            }
+        }
+    
+        &.success {
+            background-color: #8BC34A;
+            color: white;
+    
+            .title {
+                font-size: 22px;
+                padding: 8px 12px;
+                display: block;
+                background-color: darken(#8BC34A, 10);
+            }
+    
+            .text {
+                padding: 8px 12px;
+            }
+        }
+    
+        &.warning {
+            background-color: rgb(250, 208, 83);
+            color: black;
+    
+            .title {
+                font-size: 22px;
+                padding: 8px 12px;
+                display: block;
+                background-color: darken(#FFC107, 10);
+            }
+    
+            .text {
+                padding: 8px 12px;
+            }
+        }
+    
+    
+    }
+}
