@@ -15,7 +15,7 @@ const routes: Routes = [
       { path: 'export', component: ExportComponent },
       { path: 'cleanup', component: CleanupComponent },
       { path: 'templates', component: TemplateListComponent },
-      { path: 'limitations', component: LimitationsComponent },
+      { path: 'faq', component: LimitationsComponent },
     ]
   },
 ];

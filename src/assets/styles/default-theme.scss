@@ -1,10 +1,10 @@
 @mixin default-theme() {
 
-  $primaryColor: #f05a22;
+  $primaryColor: #F05A22;
   $primaryColorGradient: darken($primaryColor, 10);
   $primaryColorContrast: white;
   $accentColor: rgba(0, 0, 0, 0.87);
-  $accentColorGradient: darken($accentColor, 10);
+  $accentColorGradient: lighten($accentColor, 20);
   $accentColorContrast: white;
   $disabledColor: #424242;
   $disabledColorContrast: #ffffff;
@@ -12,7 +12,7 @@
 
   $backgroundColor: #f3f3f3;
 
-  $textColor: #484644;
+  $textColor: #2b2b2b;
   $textColorContrast: darken(#ffffff, 10);
   $lightTextColor: #777777;
 
@@ -29,7 +29,14 @@
     disabledColorContrast: $disabledColorContrast,
     disabledColorGradient: $disabledColorGradient,
     lightTextColor: $lightTextColor,
-    backgroundColor: $backgroundColor
+    backgroundColor: $backgroundColor,
+
+    sideBackgroundColor: darken($backgroundColor, 12),
+    sideTextColor: $textColor,
+
+    headerBackgroundColor: $primaryColor,
+    headerBackground: linear-gradient(90deg, $primaryColor 0%, lighten($primaryColor, 10) 100%),
+    headerTextColor: $primaryColorContrast,
     );
 
   // below defines your custom color to build a theme palette from

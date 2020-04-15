@@ -1,6 +1,6 @@
 @mixin layout($theme) {
 
-    
+
     /**
     Background is set on the <body> tag, but it also has to be here so that it overrides default color of sidenav
     */
@@ -9,64 +9,84 @@
         background-color: unset !important;
     }
 
-.w-layout-subheader {
-    background-color: darken(map-get($theme, backgroundColor), 5);
-    font-size: 24px;
-    font-weight: 300;
-    padding: 24px 32px;
-}
+    .w-layout-fixed-toolbar {
+        height: 64px;
+        z-index: 2;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: map-get($theme, headeBackgroundColor);
+        background: map-get($theme, headerBackground);
+        color: map-get($theme, headerTextColor);
 
-.w-layout-container-2 {
-    position: absolute;
-    top: 64px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgb(240, 240, 240);
-}
+        a {
+            color: map-get($theme, headerTextColor);
+            text-decoration: none;
+            font-size: 20px;
 
-.w-layout-side-menu {
-    width: 270px;
-}
+            &:hover {
+                color: map-get($theme, headerTextColor);
+            }
+        }
 
-.w-layout-content {
-    margin: 16px;
-}
-
-.w-layout-github-logo {
-    height: 40px;
-}
-
-.w-layout-side-item {
-    display: block;
-    text-decoration: none;
-    padding: 12px;
-    color: rgb(95, 95, 95);
-    font-size: 14px;
-    cursor: pointer;
-    &:hover {
-        color: map-get($theme, primaryColor);
+        .mat-button-wrapper {
+            font-size: 14px;
+        }
     }
 
-    &.active {
-        color: map-get($theme, primaryColor);
-        background: rgb(240, 240, 240);
+    .w-layout-container-push {
+        margin-top: 64px;
     }
- 
-}
 
-.w-layout-side-section {
-    display: block;
-    text-align: left;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 12px;
-    font-size: 12px;
-    color :rgb(43, 43, 43);
-    border-top: solid 1px rgb(201, 201, 201);
-}
+    .w-layout-subheader {
+        background-color: darken(map-get($theme, backgroundColor), 5);
+        font-size: 24px;
+        font-weight: 300;
+        padding: 24px 32px;
+    }
 
-.w-layout-version {
-    font-size: 12px;
-}
+    .w-layout-side-menu {
+        background-color: map-get($theme, sideBackgroundColor);
+        border: solid 1px darken(map-get($theme, sideBackgroundColor), 5);
+
+        .w-layout-side-item {
+            display: block;
+            text-decoration: none;
+            color: map-get($theme, sideTextColor);
+            font-size: 11px;
+            padding: 8px;
+            cursor: pointer;
+
+            &:hover {
+                color: map-get($theme, sideTextColor);
+                background: darken(map-get($theme, sideBackgroundColor), 10);
+
+                mat-icon {
+                    color: map-get($theme, sideTextColor);
+                }
+            }
+
+            &.active {
+                color: map-get($theme, sideTextColor);
+                background: darken(map-get($theme, sideBackgroundColor), 10);
+
+                mat-icon {
+                    color: map-get($theme, sideTextColor);
+                }
+            }
+        }
+    }
+
+    .w-layout-content {
+        padding: 32px;
+    }
+
+    .w-layout-github-logo {
+        height: 40px;
+    }
+
+    .w-layout-version {
+        font-size: 12px;
+    }
 }

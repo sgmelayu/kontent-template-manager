@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -10,7 +10,7 @@ import { CleanupConfirmComponent } from './cleanup-confirm.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cleanup.component.html',
 })
-export class CleanupComponent extends BasePageComponent {
+export class CleanupComponent extends BasePageComponent implements OnInit {
 
   constructor(
     dependencies: ComponentDependencies,
@@ -30,6 +30,10 @@ export class CleanupComponent extends BasePageComponent {
         if (dialogRef.componentInstance.confirmed) {
       }
     })
+  }
+
+  ngOnInit(): void {
+    super.setTitle('Clean');
   }
 
 }

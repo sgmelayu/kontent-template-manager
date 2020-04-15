@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class LayoutService {
 
-    private readonly componentConfigSource = new Subject<string | undefined>();
+    private readonly componentConfigSource = new BehaviorSubject<string | undefined>(undefined);
     public readonly componentConfigChanged$ = this.componentConfigSource.asObservable();
 
     constructor(

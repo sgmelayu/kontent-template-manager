@@ -26,7 +26,7 @@ interface ILayoutOptions {
 export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public appName: string = environment.appName;
-  public title?: string =  environment.appName;
+  public title?: string;
 
   public navigationItems: INavigationItem[] = [
     {
@@ -70,8 +70,8 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'section'
     },
     {
-      title: 'Limitations',
-      routerLink: '/limitations',
+      title: 'FAQ',
+      routerLink: '/faq',
       icon: 'help',
       type: 'link'
     }
@@ -93,6 +93,7 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
     super.subscribeToObservable(this.dependencies.layoutService.componentConfigChanged$.pipe(
       map(title => {
         this.title = title;
+        super.detectChanges();
       })
     ))
   }

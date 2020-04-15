@@ -37,6 +37,10 @@ export class ImportFromFileComponent extends BasePageComponent {
       }
   }
 
+  ngOnInit(): void {
+    super.setTitle('Import data');
+  }
+
   handlePreview(): void {
       // track gEvent
       super.trackEvent({
