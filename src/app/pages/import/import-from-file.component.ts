@@ -1,15 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CloudError } from 'kentico-cloud-core';
-import { FileSystemFileEntry,NgxFileDropEntry } from 'ngx-file-drop';
-import { throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { NgxFileDropEntry } from 'ngx-file-drop';
 
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
-import { zipHelper } from '../../../utilities';
-import { previewHelper } from '../../components/preview/preview-helper';
-import { IDataPreviewWrapper } from '../../components/preview/preview-models';
 import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
