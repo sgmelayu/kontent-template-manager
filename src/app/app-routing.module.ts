@@ -5,7 +5,7 @@ import { MasterLayoutComponent } from './layout';
 import { ExportComponent } from './pages/export/export.component';
 import { LimitationsComponent } from './pages/faq/limitations.component';
 import { ImportFromFileComponent } from './pages/import/import-from-file.component';
-import { CleanupComponent } from './pages/shared/cleanup/cleanup.component';
+import { CleanupComponent } from './pages/cleanup/cleanup.component';
 import { TemplateListComponent } from './pages/templates/template-list.component';
 
 const routes: Routes = [

@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  appName: 'Template manager',
+  appName: 'Kontent Template Manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   google: {
     enableTracking: true,

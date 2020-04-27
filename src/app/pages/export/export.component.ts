@@ -61,12 +61,6 @@ export class ExportComponent extends BasePageComponent implements OnInit {
 
    const exportData = await exportService.exportAllAsync()
 
-    this.dependencies.processingService.addProcessedItem({
-      data: {},
-      title: 'Finished',
-      type: 'status'
-    });
-
     // create zip file
     const fileName = this.dependencies.templateManagerZipService.getDefaultBackupFilename() + '.zip';
     const zipFile = await this.dependencies.templateManagerZipService.createZipAsync(exportData, fileName, {

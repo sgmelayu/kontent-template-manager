@@ -140,11 +140,6 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         this.success = true;
         this.processsing = false;
 
-        this.dependencies.processingService.addProcessedItem({
-          data: {},
-          title: 'Finished',
-          type: 'status'
-        });
         super.markForCheck();
       });
   }

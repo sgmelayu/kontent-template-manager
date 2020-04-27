@@ -4,9 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { CleanService } from '@kentico/kontent-backup-manager';
 import { environment } from 'src/environments/environment';
 
-import { ComponentDependencies } from '../../../../di';
-import { BasePageComponent } from '../../../core/base-page.component';
-import { ConfirmationDialogComponent } from '../../dialogs/confirmation-dialog.component';
+import { ComponentDependencies } from '../../../di';
+import { BasePageComponent } from '../../core/base-page.component';
+import { ConfirmationDialogComponent } from '../dialogs/confirmation-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,12 +86,6 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
   });
 
    await cleanService.cleanAllAsync();
-
-    this.dependencies.processingService.addProcessedItem({
-      data: {},
-      title: 'Finished',
-      type: 'status'
-    });
 
     this.processsing = false;
     this.success = true;
