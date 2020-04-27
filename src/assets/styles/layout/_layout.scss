@@ -78,6 +78,11 @@
         }
     }
 
+    .w-layout-height-spacer {
+        align-self: stretch;
+        flex: 1;
+    }
+
     .w-layout-content {
         padding: 32px;
     }

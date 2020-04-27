@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TypographyModule } from 'src/typography/typography.module';
 
 import { ExternalModule } from '../external';
 import { MasterLayoutComponent } from './master-layout.component';
@@ -12,7 +13,8 @@ import { MasterLayoutComponent } from './master-layout.component';
   imports: [
     CommonModule,
     RouterModule,
-    ExternalModule
+    ExternalModule,
+    TypographyModule
   ],
   providers: [
   ],

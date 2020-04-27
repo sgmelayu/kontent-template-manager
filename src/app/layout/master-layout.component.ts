@@ -27,6 +27,7 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public appName: string = environment.appName;
   public title?: string;
+  public year: number = new Date().getFullYear();
 
   public navigationItems: INavigationItem[] = [
     {
