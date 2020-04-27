@@ -1,23 +1,27 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { ComponentDependencies } from '../../../../di';
-import { BaseComponent } from '../../../core/base.component';
+import { ComponentDependencies } from '../../../di';
+import { BaseComponent } from '../../core/base.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './cleanup-confirm.component.html',
+  templateUrl: './confirmation-dialog.component.html',
 })
-export class CleanupConfirmComponent extends BaseComponent {
+export class ConfirmationDialogComponent extends BaseComponent {
 
   public confirmed: boolean = false;
+  public text: string = 'Are you sure to continue?';
 
   constructor(
-    public dialogRef: MatDialogRef<CleanupConfirmComponent>,
+    public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef) {
     super(dependencies, cdr);
+    if (data.text) {
+      this.text = data.text;
+    }
   }
 
   close(): void {

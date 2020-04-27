@@ -1,6 +1,48 @@
-<div class="push-bottom" *ngIf="error">
-    <lib-message [type]="'error'" [text]="error"></lib-message>
+<mat-progress-bar *ngIf="processsing" mode="indeterminate"></mat-progress-bar>
+
+<div class="push-bottom-md" *ngIf="success">
+    <lib-message [type]="'success'">Data in given project were deleted</lib-message>
 </div>
 
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+<div>
+    <lib-processed-items></lib-processed-items>
+</div>
 
+<ng-container *ngIf="!processsing && !success">
+    <p class="push-top-md push-bottom-md">
+        This feature deletes everything from a given project. This action is not reversible.
+    </p>
+
+    <form [formGroup]="formGroup">
+        <div libCard>
+            <div fxLayout="row">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Source project id</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input matInput formControlName="projectId">
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="push-top">
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlex>
+                        <div libText3>Api key</div>
+
+                        <mat-form-field appearance="fill" class="push-top-sm">
+                            <input matInput formControlName="apiKey">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="push-top" fxLayout="row">
+            <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+                <lib-button (click)="deleteWithConfirm()" [disabled]="formGroup.invalid" [matIcon]="'import_export'">Delete all project data
+                </lib-button>
+            </div>
+        </div>
+    </form>
+
+</ng-container>

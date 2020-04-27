@@ -8,6 +8,7 @@
   $accentColorContrast: white;
   $disabledColor: #424242;
   $disabledColorContrast: #ffffff;
+  $cardBackgroundColor: #ffffff;
   $disabledColorGradient: #292929;
 
   $backgroundColor: #f3f3f3;
@@ -30,6 +31,7 @@
     disabledColorGradient: $disabledColorGradient,
     lightTextColor: $lightTextColor,
     backgroundColor: $backgroundColor,
+    cardDackgroundColor: $cardBackgroundColor,
 
     sideBackgroundColor: darken($backgroundColor, 12),
     sideTextColor: $textColor,

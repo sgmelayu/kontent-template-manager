@@ -1,39 +1,48 @@
+<mat-progress-bar *ngIf="processsing" mode="indeterminate"></mat-progress-bar>
 
-<p class="push-top push-bottom">
-    This feature creates a zip package with all data (including asset binaries) from a given project
-</p>
+<div class="push-bottom-md" *ngIf="success">
+    <lib-message [type]="'success'">Project data successfully exported</lib-message>
+</div>
 
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+<div>
+    <lib-processed-items></lib-processed-items>
+</div>
 
-<form [formGroup]="formGroup">
-    <div libCard [addPad]="false" class="pad-xl">
-        <div fxLayout="row">
-            <div fxLayout="column" fxFlex>
-                <div libText3>Source project id</div>
-                <mat-form-field appearance="fill" class="push-top-sm">
-                    <input matInput formControlName="projectId">
-                </mat-form-field>
-            </div>
-        </div>
+<ng-container *ngIf="!processsing && !success">
+    <p class="push-top-md push-bottom-md">
+        This feature creates a zip package with all data (including asset binaries) from a given project
+    </p>
 
-        <div class="push-top">
+    <form [formGroup]="formGroup">
+        <div libCard>
             <div fxLayout="row">
                 <div fxLayout="column" fxFlex>
-                    <div libText3>Api key</div>
-
+                    <div libText3>Source project id</div>
                     <mat-form-field appearance="fill" class="push-top-sm">
-                        <input matInput formControlName="apiKey">
+                        <input matInput formControlName="projectId">
                     </mat-form-field>
                 </div>
             </div>
+
+            <div class="push-top">
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlex>
+                        <div libText3>Api key</div>
+
+                        <mat-form-field appearance="fill" class="push-top-sm">
+                            <input matInput formControlName="apiKey">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-
-
-    <div class="push-top" fxLayout="row">
-        <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-            <lib-button (click)="handleExport()" [disabled]="formGroup.invalid" [matIcon]="'import_export'" >Export</lib-button>
+        <div class="push-top" fxLayout="row">
+            <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+                <lib-button (click)="handleExport()" [disabled]="formGroup.invalid" [matIcon]="'import_export'">Export data
+                </lib-button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+
+</ng-container>

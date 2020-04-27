@@ -1,33 +1,16 @@
-<div libCard>
-    <p class="push-top">
-        Currently, the <em>export package</em> is created using <strong>Delivery API</strong>, and as such it cannot
-        make
-        an
-        identical copy of your project. Some information is not available through Delivery API and is lost during
-        export/import process. Once the <strong>Content managemenent API</strong> is mature enough, this application
-        will switch to it to create better export packages with more information.
-    </p>
-</div>
+<div>
+    <div libTitle3>Limitations & caveats</div>
 
-<div class="push-top">
-    <h3>Current limitations include:</h3>
+    <div libCard class="push-top">
 
-    <div libCard>
-        <mat-list role="list">
-            <mat-list-item role="listitem">1) Content type snippets are not preserved, but data is not lost. Instead,
-                these
-                elements are created on each content type separately.</mat-list-item>
-            <mat-list-item role="listitem">2) Components in rich text elements are created as standalone linked items
-                (they
-                are preserved correctly in rich text values)</mat-list-item>
-            <mat-list-item role="listitem">3) Content type configuration is lost (e.g. size limitations for assets,
-                allowed content types for linked item elements...). After importing you should go through the content types and add necessary configuration.</mat-list-item>
-            <mat-list-item role="listitem">4) Only published items are exported</mat-list-item>
-            <mat-list-item role="listitem">5) Assets folder categorization is not preserved and assets are created in
-                flat structure</mat-list-item>
-            <mat-list-item role="listitem">6) API does not allow setting specific codenames and it may happen that
-                certain items/types/assets will have different codename and in some cases name (e.g. asset name might not be present in Delivery response)</mat-list-item>
-            <mat-list-item role="listitem">7) API does not allow to set the element guidelines, this information is not preserved.</mat-list-item>
-        </mat-list>
+        <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center"
+            *ngFor="let limitation of limitations; let first = first; let i = index" [class.push-top]="!first">
+            <div fxLayout="column" fxFlex="15px" libText2>
+                {{ i + 1}})
+            </div>
+            <div fxLayout="column" fxFlex>
+                {{ limitation}}
+            </div>
+        </div>
     </div>
 </div>

@@ -36,15 +36,15 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'section'
     },
     {
-      title: 'Import',
+      title: 'Export',
       routerLink: '/',
-      icon: 'settings_backup_restore',
+      icon: 'cloud_download',
       type: 'link'
     },
     {
-      title: 'Export',
-      routerLink: '/export',
-      icon: 'cloud_download',
+      title: 'Import',
+      routerLink: '/import',
+      icon: 'settings_backup_restore',
       type: 'link'
     },
     {

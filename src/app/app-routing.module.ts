@@ -11,8 +11,8 @@ import { TemplateListComponent } from './pages/templates/template-list.component
 const routes: Routes = [
   {
     path: '', component: MasterLayoutComponent, children: [
-      { path: '', component: ImportFromFileComponent },
-      { path: 'export', component: ExportComponent },
+      { path: '', component: ExportComponent },
+      { path: 'import', component: ImportFromFileComponent },
       { path: 'cleanup', component: CleanupComponent },
       { path: 'templates', component: TemplateListComponent },
       { path: 'faq', component: LimitationsComponent },

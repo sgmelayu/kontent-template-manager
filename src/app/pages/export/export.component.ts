@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ExportService } from '@kentico/kontent-backup-manager';
+import { saveAs } from 'filesaver.js';
 
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
@@ -12,8 +14,8 @@ import { BasePageComponent } from '../../core/base-page.component';
 export class ExportComponent extends BasePageComponent implements OnInit {
 
   public formGroup: FormGroup;
-  public error?: string;
-  
+  public success: boolean = false;
+
   constructor(
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef,
@@ -34,13 +36,50 @@ export class ExportComponent extends BasePageComponent implements OnInit {
   handleDownloadFile(): void  {
   }
 
-  handleExport(): void {
-    if (this.formGroup.invalid) {
+  async handleExport(): Promise<void> {
+    await super.runWithErrorHandlerAsync(async () => {
+    if (this.formGroup.invalid || this.processsing) {
       return;
     }
 
-   
+    this.processsing = true;
+    super.markForCheck();
+
+    super.trackEvent({
+      eventCategory: 'button',
+      eventAction: 'export',
+    });
+
+    const exportService = new ExportService({
+      projectId: this.formGroup.controls['projectId'].value,
+      apiKey:  this.formGroup.controls['apiKey'].value,
+      onExport: item => {
+          this.dependencies.processingService.addProcessedItem(item);
+      }
+      
+  });
+
+   const exportData = await exportService.exportAllAsync()
+
+    this.dependencies.processingService.addProcessedItem({
+      data: {},
+      title: 'Finished',
+      type: 'status'
+    });
+
+    // create zip file
+    const fileName = this.dependencies.templateManagerZipService.getDefaultBackupFilename() + '.zip';
+    const zipFile = await this.dependencies.templateManagerZipService.createZipAsync(exportData, fileName, {
+      enableLog: true,
+      filename: fileName
+    });
+
+    this.processsing = false;
+    this.success = true;
+    super.markForCheck();
+
+    // download file
+    saveAs(zipFile, `${this.dependencies.templateManagerZipService.getDefaultBackupFilename()}.zip`);
+  });
   }
-
-
 }

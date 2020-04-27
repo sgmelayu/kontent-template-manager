@@ -8,6 +8,7 @@ import {
     TemplatesService,
     ProcessingService,
     LayoutService,
+    TemplateManagerZipService,
 } from '../services';
 
 @Injectable({
@@ -23,5 +24,6 @@ export class ComponentDependencies {
         public googleAnalyticsService: GoogleAnalyticsService,
         public importDataStorageService: ImportDataStorageService,
         public layoutService: LayoutService,
+        public templateManagerZipService: TemplateManagerZipService
     ) { }
 }

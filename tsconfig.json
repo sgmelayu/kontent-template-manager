@@ -16,6 +16,7 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "noImplicitAny": true,
+    "skipLibCheck": false,
     "target": "es2015",
     "typeRoots": [
       "node_modules/@types",
@@ -28,6 +29,6 @@
       "node_modules/*": [
         "node_modules/*"
       ],
-    },
+    }
   }
 }

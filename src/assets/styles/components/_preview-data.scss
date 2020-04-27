@@ -1,19 +1,23 @@
 @mixin preview-data($theme) {
-.w-inactive-item {
-    background-color: #e0e0e0;
-    color: black;
-    cursor: pointer;
-}
 
-.w-active-item {
-    background-color: map-get($theme, primaryColor);
-    color: map-get($theme, primaryColorContrast);
-    cursor: pointer;
-}
+    $color: #fff;
 
-.w-preview-link {
-    color: map-get($theme, primaryColor);
-    cursor: pointer;
-    font-weight: 600;
-}
+    .w-inactive-item {
+        background-color: darken($color, 10);
+        color: black;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .w-active-item {
+        background-color: darken($color, 30);
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .w-preview-link {
+        color: map-get($theme, primaryColor);
+        cursor: pointer;
+        font-weight: 400;
+    }
 }
