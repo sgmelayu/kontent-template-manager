@@ -1,12 +1,12 @@
 <div class="w-message" [class]="type">
-    <div fxLayout="row" fxLayoutGap="16px" class="pad-left pad-right pad-top-sm pad-bottom-sm" fxLayoutAlign="start center">
+    <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="start center">
         <div fxLayout="column" fxFlex="initial">
             <mat-icon *ngIf="type === 'error'">report</mat-icon>
             <mat-icon *ngIf="type === 'info'">info</mat-icon>
             <mat-icon *ngIf="type === 'success'">check</mat-icon>
             <mat-icon *ngIf="type === 'warning'">danger</mat-icon>
         </div>
-        <div fxLayout="column" fxFlex>
+        <div fxLayout="column" fxFlex class="text">
             <ng-content></ng-content>
         </div>
     </div>

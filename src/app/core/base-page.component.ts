@@ -1,4 +1,4 @@
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
@@ -7,7 +7,7 @@ import { BaseComponent } from './base.component';
 type eventCategory = 'button';
 type eventAction = 'download-template' | 'export' | 'prepare-import-from-project' | 'prepare-import-from-file' | 'import-from-file' | 'import-from-project' | 'prepare-cleanup' | 'cleanup' | 'prepare-migrate-from-project' | 'migrate-from-project'
 
-export abstract class BasePageComponent extends BaseComponent {
+export abstract class BasePageComponent extends BaseComponent implements OnDestroy {
 
     constructor(
         protected dependencies: ComponentDependencies,
@@ -21,6 +21,11 @@ export abstract class BasePageComponent extends BaseComponent {
         });
     }
 
+    ngOnDestroy(): void {
+        super.ngOnDestroy();
+        this.resetErrors();
+      }
+
     protected trackEvent(data: {
         eventCategory: eventCategory,
         eventAction: eventAction,
@@ -33,4 +38,12 @@ export abstract class BasePageComponent extends BaseComponent {
     protected setTitle(title: string): void {
         this.dependencies.layoutService.setTitle(title);
     }
+
+    protected setError(error: string): void {
+        this.dependencies.layoutService.setError(error);
+    }
+
+    protected resetErrors(): void {
+        this.dependencies.layoutService.setError(undefined);
+      }
 }

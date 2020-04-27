@@ -5,6 +5,7 @@ import { TypographyModule } from 'src/typography/typography.module';
 
 import { ExternalModule } from '../external';
 import { MasterLayoutComponent } from './master-layout.component';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { MasterLayoutComponent } from './master-layout.component';
     CommonModule,
     RouterModule,
     ExternalModule,
-    TypographyModule
+    TypographyModule,
+    ComponentsModule
   ],
   providers: [
   ],

@@ -38,9 +38,9 @@ export class ExportComponent extends BasePageComponent implements OnInit {
     if (this.formGroup.invalid) {
       return;
     }
+
+   
   }
 
-  private resetErrors(): void {
-    this.error = undefined;
-  }
+
 }

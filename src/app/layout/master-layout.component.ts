@@ -27,6 +27,7 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public appName: string = environment.appName;
   public title?: string;
+  public error?: string;
   public year: number = new Date().getFullYear();
 
   public navigationItems: INavigationItem[] = [
@@ -88,12 +89,21 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef) {
     super(dependencies, cdr);
+
+   
   }
 
   ngOnInit(): void {
-    super.subscribeToObservable(this.dependencies.layoutService.componentConfigChanged$.pipe(
+    super.subscribeToObservable(this.dependencies.layoutService.titleChanged$.pipe(
       map(title => {
         this.title = title;
+        super.detectChanges();
+      })
+    ));
+
+    super.subscribeToObservable(this.dependencies.layoutService.errorChanged$.pipe(
+      map(error => {
+        this.error = error;
         super.detectChanges();
       })
     ))

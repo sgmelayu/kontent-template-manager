@@ -6,15 +6,22 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class LayoutService {
 
-    private readonly componentConfigSource = new BehaviorSubject<string | undefined>(undefined);
-    public readonly componentConfigChanged$ = this.componentConfigSource.asObservable();
+    private readonly titleSource = new BehaviorSubject<string | undefined>(undefined);
+    public readonly titleChanged$ = this.titleSource.asObservable();
+
+    private readonly errorSource = new BehaviorSubject<string | undefined>(undefined);
+    public readonly errorChanged$ = this.errorSource.asObservable();
 
     constructor(
     ) {
     }
 
     setTitle(title?: string): void {
-        this.componentConfigSource.next(title);
+        this.titleSource.next(title);
+    }
+
+    setError(error?: string): void {
+        this.errorSource.next(error);
     }
 
 }

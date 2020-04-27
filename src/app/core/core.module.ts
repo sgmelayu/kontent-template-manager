@@ -7,14 +7,12 @@ import { ServicesModule } from '../../services';
 import { TypographyModule } from '../../typography';
 import { CardModule } from '../directives/directives.module';
 import { ExternalModule } from '../external';
-import { LayoutModule } from '../layout';
 
 @NgModule({
     exports: [
         CommonModule,
         BrowserAnimationsModule,
         ServicesModule,
-        LayoutModule,
         ExternalModule,
         TypographyModule,
         FormsModule,

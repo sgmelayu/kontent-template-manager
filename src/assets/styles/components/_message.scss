@@ -1,16 +1,14 @@
 @mixin message($theme) {
     .w-message {
-        padding: 8px 16px;
+        padding: 16px 32px;
+        border-radius: 5px;
     
         &.error {
-            background-color: rgb(228, 77, 66);
+            background-color: rgb(223, 46, 33);
             color: white;
     
-            .title {
-                font-size: 22px;
-                padding: 8px 12px;
-                display: block;
-                background-color: darken(#F44336, 10);
+            .text {
+                font-size: 16px;
             }
         }
     
@@ -18,15 +16,8 @@
             background-color: rgb(74, 86, 195);
             color: white;
     
-            .title {
-                font-size: 22px;
-                padding: 8px 12px;
-                display: block;
-                background-color: darken(rgb(74, 86, 195), 10);
-            }
-    
             .text {
-                padding: 8px 12px;
+                font-size: 14px;
             }
         }
     
@@ -34,15 +25,8 @@
             background-color: #8BC34A;
             color: white;
     
-            .title {
-                font-size: 22px;
-                padding: 8px 12px;
-                display: block;
-                background-color: darken(#8BC34A, 10);
-            }
-    
             .text {
-                padding: 8px 12px;
+                font-size: 16px;
             }
         }
     
@@ -50,15 +34,8 @@
             background-color: rgb(250, 208, 83);
             color: black;
     
-            .title {
-                font-size: 22px;
-                padding: 8px 12px;
-                display: block;
-                background-color: darken(#FFC107, 10);
-            }
-    
             .text {
-                padding: 8px 12px;
+                font-size: 16px;
             }
         }
     
