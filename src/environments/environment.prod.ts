@@ -7,6 +7,12 @@ export const environment = {
     trackingPrefix: '/cloud-template-manager',
     googleAnalyticsTrackingId: 'UA-69014260-7',
   },
+  defaultProjects: {
+    sourceProjectId: '',
+    sourceProjectApiKey: '',
+    targetProjectId: '',
+    targetProjectApiKey: ''
+  },
   storage: {
     storageName: 'templateManagerData'
   }
