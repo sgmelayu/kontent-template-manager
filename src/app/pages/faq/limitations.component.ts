@@ -12,7 +12,7 @@ export class LimitationsComponent extends BasePageComponent implements OnInit {
 
   public limitations: string[] = [
     `CM API does not support deleting languages which is why 'clean' action does not delete any.`,
-    `External id values will be overwritten for all imported & exported using this tool. The value of external_id property will equal to original system id of the object. This is used to preserve references between objects.`,
+    `External id values will be overwritten for all imported & exported objets using this tool. The value of 'external_id' property will equal to original system id of the object. This is used to preserve references between objects.`,
     `This tool should primarily be used to import data into clean (empty) projects as to avoid issues with existing content`,
   ];
 
