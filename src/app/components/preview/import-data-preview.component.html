@@ -50,7 +50,7 @@
                             No item is selected
                         </div>
                         <div *ngIf="activePreviewedItem">
-                            <ngx-json-viewer [json]="activePreviewedItem.data"></ngx-json-viewer>
+                            <ngx-json-viewer [expanded]="false" [json]="activePreviewedItem.data"></ngx-json-viewer>
                         </div>
                     </div>
                 </div>
