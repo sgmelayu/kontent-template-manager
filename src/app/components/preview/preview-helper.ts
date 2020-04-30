@@ -1,84 +1,64 @@
-import { ICleanupData, IImportData, IImportResult } from '../../../services';
 import { IDataPreviewWrapper, IItemPreview } from './preview-models';
+import { IImportSource } from '@kentico/kontent-backup-manager';
 
 export class PreviewHelper {
 
-    convertFromCleanupData(cleanupData: ICleanupData): IDataPreviewWrapper {
-        return {
-            assets: cleanupData.assets.map(m => <IItemPreview>{
-                title: m.fileName,
-                data: m
-            }),
-            contentItems: cleanupData.contentItems.map(m => <IItemPreview>{
-                title: m.name,
-                data: m
-            }),
-            contentTypes: cleanupData.contentTypes.map(m => <IItemPreview>{
-                title: m.system.name,
-                data: m
-            }),
-            languageVariants: [],
-            taxonomies: cleanupData.taxonomies.map(m => <IItemPreview>{
-                title: m.system.name,
-                data: m
-            }),
-        }
-    }
-
-    convertFromImportData(importData: IImportData): IDataPreviewWrapper {
+    convertFromImportData(importData: IImportSource): IDataPreviewWrapper {
         const files: IItemPreview[] = [];
-        files.push(...importData.assets.map(m => <IItemPreview>{
-            title: m.fileName,
+        files.push(...importData.importData.assets.map(m => <IItemPreview>{
+            title: m.file_name,
             data: m
         }));
-        files.push(...importData.assetsFromFile.map(m => <IItemPreview>{
-            title: m.asset.fileName,
-            data: m
-        }));
+
+        const dataInconsistencies: IItemPreview[] = [];
+        for (const typeIssue of importData.validation.type_issues) {
+            for (const issue of typeIssue.issues) {
+                dataInconsistencies.push({
+                    data: issue,
+                    title: `${issue.element.codename}: ${issue.messages.join(', ')}`
+                })
+            }
+        }
+        for (const typeIssue of importData.validation.variant_issues) {
+            for (const issue of typeIssue.issues) {
+                dataInconsistencies.push({
+                    data: issue,
+                    title: `${issue.element.codename}: ${issue.messages.join(', ')}`
+                })
+            }
+        }
 
         return {
             assets: files,
-            taxonomies: importData.taxonomies.map(m => <IItemPreview>{
-                title: m.system.name,
-                data: m
-            }),
-            contentItems: importData.contentItems.map(m => <IItemPreview>{
+            taxonomies: importData.importData.taxonomies.map(m => <IItemPreview>{
                 title: m.name,
                 data: m
             }),
-            contentTypes: importData.contentTypes.map(m => <IItemPreview>{
-                title: m.system.name,
+            contentItems: importData.importData.contentItems.map(m => <IItemPreview>{
+                title: m.name,
                 data: m
             }),
-            languageVariants: importData.languageVariants.map(m => <IItemPreview>{
-                title: `${m.itemCodename} [${m.languageCodename}]`,
+            contentTypes: importData.importData.contentTypes.map(m => <IItemPreview>{
+                title: m.name,
                 data: m
-            })
-        };
-    }
-
-    convertFromImportResult(importResult: IImportResult): IDataPreviewWrapper {
-        return {
-            assets: importResult.importedAssets.map(m => <IItemPreview>{
-                title: m.importedItem.fileName,
-                data: m.importedItem
             }),
-            taxonomies: importResult.importedTaxonomies.map(m => <IItemPreview>{
-                title: m.importedItem.system.name,
-                data: m.importedItem
+            languageVariants: importData.importData.languageVariants.map(m => <IItemPreview>{
+                title: `${m.item.id} [${m.language.id}]`,
+                data: m
             }),
-            contentItems: importResult.importedContentItems.map(m => <IItemPreview>{
-                title: m.importedItem.name,
-                data: m.importedItem
+            contentTypeSnippets: importData.importData.contentTypeSnippets.map(m => <IItemPreview>{
+                title: m.name,
+                data: m
             }),
-            contentTypes: importResult.importedContentTypes.map(m => <IItemPreview>{
-                title: m.importedItem.system.name,
-                data: m.importedItem
+            languages: importData.importData.languages.map(m => <IItemPreview>{
+                title: m.name,
+                data: m
             }),
-            languageVariants: importResult.importedLanguageVariants.map(m => <IItemPreview>{
-                title: `${m.importedItem.item.id} [${m.originalItem.languageCodename}]`,
-                data: m.importedItem
-            })
+            dataInconsistencies: dataInconsistencies,
+            assetFolders: importData.assetFolders.map(m => <IItemPreview>{
+                title: m.name,
+                data: m
+            }),
         };
     }
 }

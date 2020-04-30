@@ -1,46 +1,56 @@
-<h1>
-    Browse templates
-</h1>
+<div libCard fxLayout="row">
+    <div fxLayout="column" fxFlex>
+        <mat-form-field class="example-full-width">
+            <input autocomplete="off" matInput placeholder="Search" [formControl]="searchControl">
+        </mat-form-field>
+    </div>
+</div>
 
-<div fxLayout="row wrap" fxLayoutGap="16px grid">
-    <div fxLayout="column" fxFlex="33%" fxFlex.gt-lg="25%" fxFlex.lg="25%" fxFlex.lt-lg="33%" fxFlex.lt-md="50%"
-        fxFlex.sm="50%" fxFlex.xs="100%" *ngFor="let template of templates">
-        <div libCard [addPad]="false" fxFlexFill fxLayout="row wrap">
-            <div fxLayout="column" fxFlex="100%">
-                <div class="pad" libTitle2 style="margin:0">
-                    {{ template.name }}
-                </div>
-                <img style="width:100%" [src]="template.imageUrl" [alt]="'Image for ' + template.name">
-                <div class="pad" fxLayout="row" fxLayoutAlign="end end">
-                    <div fxLayout="column" fxFlex>
-                        <div libTextCaption fxLayout="row" fxLayoutGap="8px">
-                            <div fxLayout="column" fxFlex>
-                                <span>By <strong>{{ template.author.name }}</strong></span>
+<div class="push-top">
+    <div fxLayout="row wrap" fxLayoutGap="24px grid">
+        <div fxLayout="column" [fxFlex]="100 / 3" fxFlex.lt-md="100%" *ngFor="let template of filteredTemplates">
+            <div libCard [addPad]="false" fxFlexFill fxLayout="row wrap">
+                <div fxLayout="column" fxFlex="100%">
+                    <div class="pad-md" libTitle4 style="margin:0">
+                        {{ template.name }}
+                    </div>
+                    <mat-divider></mat-divider>
+                    <img style="width:100%" [src]="template.imageUrl" [alt]="'Image for ' + template.name">
+                    <mat-divider></mat-divider>
+                    <div class="pad" fxLayout="row" fxLayoutAlign="end end">
+                        <div fxLayout="column" fxFlex>
+                            <div libTextCaption fxLayout="row" fxLayoutGap="8px">
+                                <div fxLayout="column" fxFlex>
+                                    <span>By <strong>{{ template.author.name }}</strong></span>
+                                </div>
+                                <div fxLayout="column" fxFlex="initial">
+                                    {{ template.technology }}
+                                </div>
+                                <div fxLayout="column" fxFlex="initial" fxHide>
+                                    {{ template.lastUpdate }}
+                                </div>
                             </div>
-                            <div fxLayout="column" fxFlex="initial">
-                                {{ template.technology }}
-                            </div>
-                            <div fxLayout="column" fxFlex="initial" fxHide>
-                                {{ template.lastUpdate }}
+                            <div class="push-top-sm">
+                                {{ template.description }}
                             </div>
                         </div>
-                        <div class="push-top-sm">
-                            {{ template.description }}
-                        </div>
                     </div>
                 </div>
-            </div>
-            <div fxLayout="column" fxFlex="100%" class="pad" fxLayoutAlign="end">
-                <div fxLayout="row" fxLayoutGap="8px" class="push-top">
-                    <div fxLayout="column">
-                        <a (click)="handleDownloadClick(template)" mat-raised-button color="accent" target="_blank"
-                            [href]="template.exportPackageUrl">Download</a>
-                    </div>
-                    <div fxLayout="column" fxFlex>
-
-                    </div>
-                    <div fxLayout="column">
-                        <a mat-button target="_blank" color="primary" [href]="template.repoUrl">GitHub</a>
+                <div fxLayout="column" fxFlex="100%" class="pad" fxLayoutAlign="end">
+                    <div fxLayout="row" fxLayoutGap="8px" class="push-top">
+                        <div fxLayout="column">
+                            <a (click)="handleDownloadClick(template)" [href]="template.exportPackageUrl"
+                                target="_blank" class="w-no-underline">
+                                <lib-button matIcon="save_alt" color="accent">
+                                    Download
+                                </lib-button>
+                            </a>
+                        </div>
+                        <div fxLayout="column" fxFlex>
+                        </div>
+                        <div fxLayout="column">
+                            <a mat-button target="_blank" color="primary" [href]="template.repoUrl">GitHub</a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -7,33 +7,27 @@ import { CoreModule } from '../core/core.module';
 import { ExportComponent } from './export/export.component';
 import { LimitationsComponent } from './faq/limitations.component';
 import { ImportFromFileComponent } from './import/import-from-file.component';
-import { ImportFromProjectComponent } from './import/import-from-project.component';
-import { MigrateContentItemsComponent } from './import/migrate-content-items.component';
-import { CleanupConfirmComponent } from './shared/cleanup/cleanup-confirm.component';
-import { CleanupComponent } from './shared/cleanup/cleanup.component';
+import { CleanupComponent } from './cleanup/cleanup.component';
 import { TemplateListComponent } from './templates/template-list.component';
+import { NgxFileDropModule } from 'ngx-file-drop';
+import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
-    ImportFromProjectComponent,
     ExportComponent,
     ImportFromFileComponent,
-    MigrateContentItemsComponent,
     ExportComponent,
     CleanupComponent,
-    CleanupConfirmComponent,
-    MigrateContentItemsComponent,
+    ConfirmationDialogComponent,
     TemplateListComponent,
-    LimitationsComponent
-  ],
-  entryComponents: [
-    CleanupConfirmComponent
+    LimitationsComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     CoreModule,
-    ComponentsModule
+    ComponentsModule,
+    NgxFileDropModule
   ],
 })
 export class PagesModule { }

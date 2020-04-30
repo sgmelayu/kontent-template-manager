@@ -26,8 +26,6 @@ export abstract class BaseComponent implements OnDestroy {
         return !this.isSmallScreen;
     }
 
-    public isLoading: boolean = false;
-
     constructor(
         protected dependencies: ComponentDependencies,
         protected cdr: ChangeDetectorRef
@@ -41,14 +39,6 @@ export abstract class BaseComponent implements OnDestroy {
     protected destroy(): void {
         this.ngUnsubscribe.next();
         this.ngUnsubscribe.complete();
-    }
-
-    protected startLoading(): void {
-        this.isLoading = true;
-    }
-
-    protected stopLoading(): void {
-        this.isLoading = false;
     }
 
     protected detectChanges(): void {
@@ -68,7 +58,6 @@ export abstract class BaseComponent implements OnDestroy {
             .pipe(
                 takeUntil(this.ngUnsubscribe),
                 catchError(error => {
-                    this.markForCheck();
                     return throwError(error);
                 })
             )

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TypographyModule } from 'src/typography/typography.module';
 
-import { DependenciesModule } from '../../di';
 import { ExternalModule } from '../external';
 import { MasterLayoutComponent } from './master-layout.component';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   declarations: [
@@ -13,8 +14,9 @@ import { MasterLayoutComponent } from './master-layout.component';
   imports: [
     CommonModule,
     RouterModule,
-    DependenciesModule,
-    ExternalModule
+    ExternalModule,
+    TypographyModule,
+    ComponentsModule
   ],
   providers: [
   ],

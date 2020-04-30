@@ -1,4 +1,4 @@
-import { ScrollDispatchModule } from '@angular/cdk/scrolling';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { FileDropModule } from 'ngx-file-drop';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
@@ -29,11 +29,11 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
     MatCardModule,
     MatButtonModule,
     MatProgressBarModule,
-    ScrollDispatchModule,
+    ScrollingModule,
     MatDividerModule,
     MatListModule,
     MatDialogModule,
-    FileDropModule,
+    NgxFileDropModule,
     MatCheckboxModule,
     NgxJsonViewerModule
   ],

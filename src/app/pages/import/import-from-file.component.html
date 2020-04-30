@@ -1,99 +1,98 @@
-<h1>
-    Import from export package
-</h1>
+<mat-progress-bar *ngIf="processsing" mode="indeterminate"></mat-progress-bar>
 
-<div class="push-bottom" *ngIf="error">
-    <lib-message [type]="'error'" [text]="error"></lib-message>
+<div class="push-bottom-md" *ngIf="success">
+    <lib-message [type]="'success'">Data successfully imported</lib-message>
 </div>
 
-<ng-container *ngIf="step === 'initial'" [formGroup]="formGroup">
+<div>
+    <lib-processed-items></lib-processed-items>
+</div>
 
-    <div libTitle1 class="push-top">
-        Target Project
+
+<div *ngIf="importPreviewData && !processsing && !success">
+
+    <div *ngIf="displayInconsistenciesNotice" class="push-bottom-md">
+        <lib-message [type]="'warning'">
+            Project contains data inconsistencies. You may proceed with import, but it is possible that import will fail.
+        </lib-message>
     </div>
 
-    <div libCard>
-        <mat-form-field class="w-full-width">
-            <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
-        </mat-form-field>
-
-        <mat-form-field class="push-top w-full-width">
-            <input autocomplete="off" matInput placeholder="CM API Key" formControlName="cmApiKey" required>
-        </mat-form-field>
-
-        <div class="push-top">
-            <file-drop dropZoneLabel="Drop export package here" (onFileDrop)="dropped($event)">
-                <span></span>
-            </file-drop>
-            <div class="push-top">
-                Or select file <input #selectFileElem (change)="handleManualInputOnChange($event)" type="file"
-                    accept=".zip">
-            </div>
-
-            <div *ngIf="file" class="push-top" libTextCaption>
-                <em>{{ file.name }} </em>
+    <div class="push-bottom-md">
+        <div fxLayout="row">
+            <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+                <lib-button (click)="importWithConfirm()" [disabled]="formGroup.invalid || !file" [matIcon]="'import_export'">Import data
+                </lib-button>
             </div>
         </div>
-    </div>
-
-    <div libTitle1 class="push-top">
-        Configuration
-    </div>
-
-    <div libCard>
-        <mat-checkbox formControlName="publishAllItems">Publish imported items</mat-checkbox>
-        <div>
-
-            <div class="push-top" *ngIf="!isLoading">
-                <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handlePreview()">Prepare
-                    import
-                    data</button>
-                <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Prepare import data</button>
-            </div>
+        <div class="push-top-sm" libText3>
+            * This will import data to target project. This action is not reversible.
         </div>
-    </div>
-</ng-container>
-
-<ng-container *ngIf="step === 'preview'">
-    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
-
-    <div class="push-bottom" *ngIf="requiredLanguagesWarningMessage">
-        <lib-message [type]="'warning'" [html]="requiredLanguagesWarningMessage"></lib-message>
-    </div>
-
-    <div class="push-bottom" *ngIf="!isLoading">
-        <button *ngIf="canSubmit" mat-raised-button color="accent" (click)="handleImport()">Proceed with import</button>
-        <button *ngIf="!canSubmit" mat-raised-button color="warn" disabled>Proceed with import</button>
-    </div>
-
-    <div libTitle1 class="push-top">
-        Import data preview
     </div>
 
     <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
+</div>
 
-</ng-container>
+<ng-container *ngIf="!processsing && !success && !importPreviewData">
+    <p class="push-top-md push-bottom-md">
+        This feature enables you to import data from uploaded .zip export package.
+    </p>
 
-<ng-container *ngIf="step === 'importing'">
-    <div libTitle1>
-        Processed items
-    </div>
+    <form [formGroup]="formGroup">
 
-    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
-    <div libCard>
-        <lib-processed-items *ngIf="isLoading || importCompleted"></lib-processed-items>
-    </div>
-</ng-container>
+        <div class="w-uploader push-top-md">
+            <ngx-file-drop [multiple]="false" [contentClassName]="'w-uploader-content'" [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
+               
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
 
-<ng-container *ngIf="step === 'completed'">
-    <lib-message [type]="'success'" [text]="'Data was imported successfully'"></lib-message>
+                    <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="center center">
+                        <div fxLayout="column" fxFlex="initial">
+                          Drop export file here
+                        </div>
+                        <div fxLayout="column" fxFlex="initial">
+                            <lib-button [matIcon]="'open_in_browser'" (click)="openFileSelector()">
+                                Or choose a file
+                            </lib-button>
+                        </div>
+                    </div>
+                </ng-template>
+            </ngx-file-drop>
+            <div *ngIf="file" class="push-top" >
+               <span libText3>{{ file.name }}</span> 
+            </div>
+        </div>
 
-    <div libTitle1 class="push-top">
-        Overview of imported items:
-    </div>
+        <div libCard class="push-top-md">
+            <div fxLayout="row">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Target project id</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input matInput formControlName="projectId">
+                    </mat-form-field>
+                </div>
+            </div>
 
-    <div class="push-top">
-        <lib-import-data-preview [previewData]="resultPreviewData"></lib-import-data-preview>
-    </div>
+            <div class="push-top">
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlex>
+                        <div libText3>Api key</div>
+
+                        <mat-form-field appearance="fill" class="push-top-sm">
+                            <input matInput formControlName="apiKey">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="push-top" fxLayout="row">
+            <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+                <lib-button (click)="handlePreview()" [disabled]="formGroup.invalid || !file" [matIcon]="'import_export'">Prepare import data
+                </lib-button>
+            </div>
+        </div>
+        <div class="push-top-sm" libText3>
+            * Data will not yet be imported. You will be able to confirm import after previewing data.
+        </div>
+    </form>
 
 </ng-container>

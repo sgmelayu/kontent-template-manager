@@ -1,47 +1,13 @@
-<ng-container *ngIf="type === 'error'">
-    <div class="w-message error">
-        <div class="title">
-            Error
+<div class="w-message" [class]="type">
+    <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="start center">
+        <div fxLayout="column" fxFlex="initial">
+            <mat-icon *ngIf="type === 'error'">report</mat-icon>
+            <mat-icon *ngIf="type === 'info'">info</mat-icon>
+            <mat-icon *ngIf="type === 'success'">check</mat-icon>
+            <mat-icon *ngIf="type === 'warning'">warning</mat-icon>
         </div>
-        <div class="text" *ngIf="text">
-            {{ text }}
+        <div fxLayout="column" fxFlex class="text">
+            <ng-content></ng-content>
         </div>
-        <div class="text" *ngIf="html" [innerHtml]="html"></div>
     </div>
-</ng-container>
-
-<ng-container *ngIf="type === 'success'">
-    <div class="w-message success">
-        <div class="title">
-            Success
-        </div>
-        <div class="text" *ngIf="text">
-            {{ text }}
-        </div>
-        <div class="text" *ngIf="html" [innerHtml]="html"></div>
-    </div>
-</ng-container>
-
-<ng-container *ngIf="type === 'info'">
-    <div class="w-message info">
-        <div class="title">
-            Info
-        </div>
-        <div class="text" *ngIf="text">
-            {{ text }}
-        </div>
-        <div class="text" *ngIf="html" [innerHtml]="html"></div>
-    </div>
-</ng-container>
-
-<ng-container *ngIf="type === 'warning'">
-    <div class="w-message warning">
-        <div class="title">
-            Warning
-        </div>
-        <div class="text" *ngIf="text">
-            {{ text }}
-        </div>
-        <div class="text" *ngIf="html" [innerHtml]="html"></div>
-    </div>
-</ng-container>
+</div>

@@ -16,6 +16,7 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "noImplicitAny": true,
+    "skipLibCheck": false,
     "target": "es2015",
     "typeRoots": [
       "node_modules/@types",
@@ -25,18 +26,9 @@
       "dom"
     ],
     "paths": {
-      "*": [
-        "types/*"
+      "node_modules/*": [
+        "node_modules/*"
       ],
-      "core-js/es7/reflect": [
-        "./node_modules/core-js/proposals/reflect-metadata"
-      ],
-      "core-js/es6/*": [
-        "./node_modules/core-js/es"
-      ],
-      "jszip": [
-        "node_modules/jszip/dist/jszip.min.js"
-      ]
     }
   }
 }
