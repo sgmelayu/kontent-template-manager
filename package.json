@@ -1,6 +1,6 @@
 {
   "name": "import-tool",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "ng": "ng",
     "start": "npm run set-version && ng serve",
@@ -9,7 +9,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build-gh-pages": "npm run set-version && ng build --prod",
-    "set-version": "node ./src/version-generator.js"
+    "set-version": "node ./src/version-generator.js",
+    "release": "standard-version"
   },
   "private": true,
   "standard-version": {
