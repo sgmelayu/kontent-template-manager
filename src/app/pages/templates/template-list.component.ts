@@ -52,7 +52,7 @@ export class TemplateListComponent extends BasePageComponent implements OnInit {
             if (m.name?.toLowerCase().includes(lowercaseSearch)) {
               return m;
             }
-            if (m.technology.includes(lowercaseSearch)) {
+            if (m.technology?.toLowerCase().includes(lowercaseSearch)) {
               return m;
             }
             return false;
