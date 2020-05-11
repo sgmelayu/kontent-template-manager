@@ -31,12 +31,14 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
     public navigationItems: INavigationItem[] = [
         {
-            title: 'Import & export',
-            type: 'section'
+            title: 'Home',
+            routerLink: '/',
+            icon: 'home',
+            type: 'link'
         },
         {
             title: 'Export',
-            routerLink: '/',
+            routerLink: '/export',
             icon: 'cloud_download',
             type: 'link'
         },
@@ -47,28 +49,16 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
             type: 'link'
         },
         {
-            title: 'Common',
-            type: 'section'
-        },
-        {
             title: 'Cleanup',
             routerLink: '/cleanup',
             icon: 'delete',
             type: 'link'
         },
         {
-            title: 'Gallery',
-            type: 'section'
-        },
-        {
             title: 'Templates',
             routerLink: '/templates',
             icon: 'list',
             type: 'link'
-        },
-        {
-            title: 'FAQ',
-            type: 'section'
         },
         {
             title: 'FAQ',

@@ -7,9 +7,11 @@ import { ServicesModule } from '../../services';
 import { TypographyModule } from '../../typography';
 import { CardModule } from '../directives/directives.module';
 import { ExternalModule } from '../external';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
     exports: [
+        RouterModule,
         CommonModule,
         BrowserAnimationsModule,
         ServicesModule,

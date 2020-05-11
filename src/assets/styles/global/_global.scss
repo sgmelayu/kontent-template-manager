@@ -40,6 +40,10 @@
     
     .w-text-3 {
         color: map-get($theme, lightTextColor);
-        font-size: 12px;
+        font-size: 13px;
+    }
+
+    .w-button-link {
+        text-decoration: none;
     }
 }
