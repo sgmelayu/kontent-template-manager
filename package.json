@@ -12,6 +12,11 @@
     "set-version": "node ./src/version-generator.js"
   },
   "private": true,
+  "standard-version": {
+    "scripts": {
+      "postchangelog": "npm run set-version"
+    }
+  },
   "dependencies": {
     "@angular/animations": "9.1.6",
     "@angular/cdk": "9.2.3",
@@ -65,7 +70,8 @@
     "protractor": "5.4.4",
     "ts-node": "8.10.1",
     "tslint": "6.1.2",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "standard-version": "8.0.0"
   },
   "browser": {
     "fs": false,
