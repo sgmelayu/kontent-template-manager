@@ -38,6 +38,22 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         return false;
     }
 
+    public get importDataVersion(): string {
+        return this.importData?.metadata.version ?? '';
+    }
+
+    public get mismatchVersionImport(): boolean {
+        if (!this.importData) {
+            return false;
+        }
+
+        if (this.importData.metadata.version !== this.kbmVersion) {
+            return true;
+        }
+
+        return false;
+    }
+
     constructor(
         dependencies: ComponentDependencies,
         cdr: ChangeDetectorRef,

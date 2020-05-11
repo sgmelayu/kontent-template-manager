@@ -4,6 +4,16 @@
     <lib-message [type]="'success'">Data successfully imported</lib-message>
 </div>
 
+<div class="push-bottom-md" *ngIf="mismatchVersionImport">
+    <lib-message [type]="'warning'">
+        <div>
+            You are attempting to import package from version '{{ importDataVersion }}', but this web based tool is currently using version '{{ kbmVersion }}'.
+        </div>
+        <div class="push-top">
+            You can still try importing data, but it may fail due to possible inconsistencies in package versions. You can also download specific version of <a [href]="backupManagerUrl" target="_blank">{{ backupManagerName }}</a> and run import using CLI. 
+        </div> </lib-message>
+</div>
+
 <div>
     <lib-processed-items></lib-processed-items>
 </div>
@@ -13,14 +23,16 @@
 
     <div *ngIf="displayInconsistenciesNotice" class="push-bottom-md">
         <lib-message [type]="'warning'">
-            Project contains data inconsistencies. You may proceed with import, but it is possible that import will fail.
+            Project contains data inconsistencies. You may proceed with import, but it is possible that import will
+            fail.
         </lib-message>
     </div>
 
     <div class="push-bottom-md">
         <div fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="importWithConfirm()" [disabled]="formGroup.invalid || !file" [matIcon]="'import_export'">Import data
+                <lib-button (click)="importWithConfirm()" [disabled]="formGroup.invalid || !file"
+                    [matIcon]="'import_export'">Import data
                 </lib-button>
             </div>
         </div>
@@ -40,13 +52,14 @@
     <form [formGroup]="formGroup">
 
         <div class="w-uploader push-top-md">
-            <ngx-file-drop *ngIf="!file" [multiple]="false" [contentClassName]="'w-uploader-content'" [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
-               
+            <ngx-file-drop *ngIf="!file" [multiple]="false" [contentClassName]="'w-uploader-content'"
+                [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
+
                 <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
 
                     <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="center center">
                         <div fxLayout="column" fxFlex="initial">
-                          Drop export file here
+                            Drop export file here
                         </div>
                         <div fxLayout="column" fxFlex="initial">
                             <lib-button [matIcon]="'open_in_browser'" (click)="openFileSelector()">
@@ -61,7 +74,9 @@
                     {{ file.name }}
                 </div>
                 <div fxLayout="column" fxFlex="initial">
-                    <button (click)="clearFile()" mat-icon-button><mat-icon>clear</mat-icon></button>
+                    <button (click)="clearFile()" mat-icon-button>
+                        <mat-icon>clear</mat-icon>
+                    </button>
                 </div>
             </div>
         </div>
@@ -91,7 +106,8 @@
 
         <div class="push-top" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="handlePreview()" [disabled]="formGroup.invalid || !file" [matIcon]="'import_export'">Prepare for import
+                <lib-button (click)="handlePreview()" [disabled]="formGroup.invalid || !file"
+                    [matIcon]="'import_export'">Prepare for import
                 </lib-button>
             </div>
         </div>

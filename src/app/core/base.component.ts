@@ -5,12 +5,25 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { ComponentDependencies } from '../../di';
 import { observableHelper } from '../../utilities';
 import { versionInfo } from '../../version';
+import { environment } from 'src/environments/environment';
 
 export abstract class BaseComponent implements OnDestroy {
     protected readonly ngUnsubscribe: Subject<void> = new Subject<void>();
 
+    public get backupManagerName(): string {
+        return environment.backupManagerName;
+    }
+
+    public get backupManagerUrl(): string {
+        return environment.backupManagerUrl;
+    }
+
     public get version(): string {
         return versionInfo.version;
+    }
+
+    public get kbmVersion(): string {
+        return versionInfo.kbmVersion;
     }
 
     public get isSmallScreen(): boolean {

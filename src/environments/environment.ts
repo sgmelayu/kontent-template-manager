@@ -6,6 +6,8 @@ export const environment = {
   production: false,
   appName: 'Kontent Template Manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
+  backupManagerName: 'Kontent backup manager',
+  backupManagerUrl: 'https://github.com/Kentico/kontent-backup-manager-js',
   defaultProjects: {
     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
     // tslint:disable-next-line:max-line-length

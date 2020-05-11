@@ -11,6 +11,10 @@
         textarea:focus {
             outline: none;
         }
+
+        a {
+            color: map-get($theme, textColor);
+        }
     }
 
     .w-no-underline {

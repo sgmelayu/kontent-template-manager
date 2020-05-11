@@ -59,13 +59,18 @@
 
                 <div class="w-layout-height-spacer"></div>
 
-                <div fxLayout="row" fxLayoutAlign="center center" class="push-bottom-sm" libText3 fxLayoutGap="24px">
-                    <div fxLayout="column" fxFlex="initial">
+
+                <div class="push-bottom w-text-center" libText3>
+                    <div>
+                       Template manager: {{ version }}
+                    </div>
+                    <div class="push-top-sm">
+                        Backup manager: {{ kbmVersion }}
+                    </div>
+                    <div class="push-top-sm">
                         © {{ year }}
                     </div>
-                    <div fxLayout="column" fxFlex="initial">
-                        v{{ version }}
-                    </div>
+                  
                 </div>
             </div>
         </div>
