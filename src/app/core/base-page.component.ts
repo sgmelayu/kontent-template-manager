@@ -1,26 +1,32 @@
 import { ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { SharedModels } from '@kentico/kontent-management';
 
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
 import { BaseComponent } from './base.component';
-import { SharedModels } from '@kentico/kontent-management';
 
 type eventCategory = 'button';
-type eventAction = 'download-template' | 'export' | 'prepare-import-from-project' | 'prepare-import-from-file' | 'import-from-file' | 'import-from-project' | 'prepare-cleanup' | 'cleanup' | 'prepare-migrate-from-project' | 'migrate-from-project'
+type eventAction =
+    | 'download-template'
+    | 'export'
+    | 'prepare-import-from-project'
+    | 'prepare-import-from-file'
+    | 'import-from-file'
+    | 'import-from-project'
+    | 'prepare-cleanup'
+    | 'cleanup'
+    | 'prepare-migrate-from-project'
+    | 'migrate-from-project';
 
 export abstract class BasePageComponent extends BaseComponent implements OnDestroy {
-
     public processsing: boolean = false;
 
-    constructor(
-        protected dependencies: ComponentDependencies,
-        protected cdr: ChangeDetectorRef,
-    ) {
+    constructor(protected dependencies: ComponentDependencies, protected cdr: ChangeDetectorRef) {
         super(dependencies, cdr);
 
         dependencies.googleAnalyticsService.trackPageview({
             pageTitle: `${environment.google.trackingPrefix}${dependencies.router.url}`,
-            pagePath: `${environment.google.trackingPrefix}${dependencies.router.url}`,
+            pagePath: `${environment.google.trackingPrefix}${dependencies.router.url}`
         });
     }
 
@@ -34,22 +40,20 @@ export abstract class BasePageComponent extends BaseComponent implements OnDestr
             await func();
         } catch (error) {
             this.processsing = false;
-    
             if (error instanceof SharedModels.ContentManagementBaseKontentError) {
-              this.setError(`${error.message} ${error.validationErrors.join(', ')}`);
-            } else  {
+                this.setError(`${error.message} ${error.validationErrors.join(', ')}`);
+            } else {
                 this.setError('Unknown error during data import');
             }
-    
             super.markForCheck();
-          }
+        }
     }
 
     protected trackEvent(data: {
-        eventCategory: eventCategory,
-        eventAction: eventAction,
-        eventLabel?: string,
-        eventValue?: number
+        eventCategory: eventCategory;
+        eventAction: eventAction;
+        eventLabel?: string;
+        eventValue?: number;
     }): void {
         this.dependencies.googleAnalyticsService.logEvent(data);
     }
@@ -64,5 +68,5 @@ export abstract class BasePageComponent extends BaseComponent implements OnDestr
 
     protected resetErrors(): void {
         this.dependencies.layoutService.setError(undefined);
-      }
+    }
 }

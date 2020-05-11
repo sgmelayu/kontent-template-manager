@@ -1,5 +1,13 @@
-export type ActiveType = 'taxonomies' | 
-'contentTypes' | 'assets' | 'contentItems' | 'languageVariants' | 'languages' | 'dataInconsistencies' | 'contentTypeSnippets' | 'assetFolders'
+export type ActiveType =
+    | 'taxonomies'
+    | 'contentTypes'
+    | 'assets'
+    | 'contentItems'
+    | 'languageVariants'
+    | 'languages'
+    | 'dataInconsistencies'
+    | 'contentTypeSnippets'
+    | 'assetFolders';
 
 export interface IDataPreviewWrapper {
     contentTypes: IItemPreview[];

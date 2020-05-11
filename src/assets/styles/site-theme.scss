@@ -2,6 +2,7 @@
 @import './utilities/pad';
 @import './directives/card';
 @import './global/_global';
+@import './global/_overrides';
 @import './layout/_layout';
 @import './components/_button';
 @import './components/_message';
@@ -19,5 +20,6 @@
     @include preview-data($theme);
     @include button($theme);
     @include uploader($theme);
+    @include overrides($theme);
 }
 

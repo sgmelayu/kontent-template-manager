@@ -40,6 +40,8 @@
     "zone.js": "0.10.3"
   },
   "devDependencies": {
+    "tslint-angular": "3.0.2",
+    "rxjs-tslint-rules": "4.31.0",
     "@angular-devkit/schematics": "9.1.5",
     "@angular-devkit/core": "9.1.5",
     "@angular-devkit/architect": "0.901.5",

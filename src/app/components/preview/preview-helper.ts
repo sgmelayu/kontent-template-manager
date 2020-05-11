@@ -16,7 +16,7 @@ export class PreviewHelper {
                 dataInconsistencies.push({
                     data: issue,
                     title: `${issue.element.codename}: ${issue.messages.join(', ')}`
-                })
+                });
             }
         }
         for (const typeIssue of importData.validation.variant_issues) {
@@ -24,7 +24,7 @@ export class PreviewHelper {
                 dataInconsistencies.push({
                     data: issue,
                     title: `${issue.element.codename}: ${issue.messages.join(', ')}`
-                })
+                });
             }
         }
 

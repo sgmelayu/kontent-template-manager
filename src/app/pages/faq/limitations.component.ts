@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import { ComponentDependencies } from '../../../di';
-import { BaseComponent } from '../../core/base.component';
 import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({

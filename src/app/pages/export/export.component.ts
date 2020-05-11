@@ -8,72 +8,65 @@ import { environment } from '../../../environments/environment';
 import { BasePageComponent } from '../../core/base-page.component';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './export.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './export.component.html'
 })
 export class ExportComponent extends BasePageComponent implements OnInit {
+    public formGroup: FormGroup;
+    public success: boolean = false;
 
-  public formGroup: FormGroup;
-  public success: boolean = false;
+    constructor(dependencies: ComponentDependencies, cdr: ChangeDetectorRef, private fb: FormBuilder) {
+        super(dependencies, cdr);
 
-  constructor(
-    dependencies: ComponentDependencies,
-    cdr: ChangeDetectorRef,
-    private fb: FormBuilder) {
-    super(dependencies, cdr);
-
-    this.formGroup = this.fb.group({
-      projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
-      apiKey: [environment.defaultProjects.sourceProjectApiKey, Validators.required],
-    });
-
-  }
-
-  ngOnInit(): void {
-    super.setTitle('Export project data');
-  }
-
-  handleDownloadFile(): void  {
-  }
-
-  async handleExport(): Promise<void> {
-    await super.runWithErrorHandlerAsync(async () => {
-    if (this.formGroup.invalid || this.processsing) {
-      return;
+        this.formGroup = this.fb.group({
+            projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
+            apiKey: [environment.defaultProjects.sourceProjectApiKey, Validators.required]
+        });
     }
 
-    this.processsing = true;
-    super.markForCheck();
+    ngOnInit(): void {
+        super.setTitle('Export project data');
+    }
 
-    super.trackEvent({
-      eventCategory: 'button',
-      eventAction: 'export',
-    });
+    handleDownloadFile(): void {}
 
-    const exportService = new ExportService({
-      projectId: this.formGroup.controls['projectId'].value,
-      apiKey:  this.formGroup.controls['apiKey'].value,
-      onExport: item => {
-          this.dependencies.processingService.addProcessedItem(item);
-      }
-      
-  });
+    async handleExport(): Promise<void> {
+        await super.runWithErrorHandlerAsync(async () => {
+            if (this.formGroup.invalid || this.processsing) {
+                return;
+            }
 
-   const exportData = await exportService.exportAllAsync()
+            this.processsing = true;
+            super.markForCheck();
 
-    // create zip file
-    const fileName = this.dependencies.templateManagerZipService.getDefaultBackupFilename() + '.zip';
-    const zipFile = await this.dependencies.templateManagerZipService.createZipAsync(exportData, fileName, {
-      enableLog: true,
-      filename: fileName
-    });
+            super.trackEvent({
+                eventCategory: 'button',
+                eventAction: 'export'
+            });
 
-    this.processsing = false;
-    this.success = true;
-    super.markForCheck();
+            const exportService = new ExportService({
+                projectId: this.formGroup.controls['projectId'].value,
+                apiKey: this.formGroup.controls['apiKey'].value,
+                onExport: (item) => {
+                    this.dependencies.processingService.addProcessedItem(item);
+                }
+            });
 
-    // download file
-    saveAs(zipFile, `${this.dependencies.templateManagerZipService.getDefaultBackupFilename()}.zip`);
-  });
-  }
+            const exportData = await exportService.exportAllAsync();
+
+            // create zip file
+            const fileName = this.dependencies.templateManagerZipService.getDefaultBackupFilename() + '.zip';
+            const zipFile = await this.dependencies.templateManagerZipService.createZipAsync(exportData, fileName, {
+                enableLog: true,
+                filename: fileName
+            });
+
+            this.processsing = false;
+            this.success = true;
+            super.markForCheck();
+
+            // download file
+            saveAs(zipFile, `${this.dependencies.templateManagerZipService.getDefaultBackupFilename()}.zip`);
+        });
+    }
 }

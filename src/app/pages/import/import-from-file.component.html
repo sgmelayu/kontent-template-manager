@@ -40,7 +40,7 @@
     <form [formGroup]="formGroup">
 
         <div class="w-uploader push-top-md">
-            <ngx-file-drop [multiple]="false" [contentClassName]="'w-uploader-content'" [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
+            <ngx-file-drop *ngIf="!file" [multiple]="false" [contentClassName]="'w-uploader-content'" [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
                
                 <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
 
@@ -56,8 +56,13 @@
                     </div>
                 </ng-template>
             </ngx-file-drop>
-            <div *ngIf="file" class="push-top" >
-               <span libText3>{{ file.name }}</span> 
+            <div *ngIf="file" fxLayout="row" libCard fxLayoutAlign="start center">
+                <div fxLayout="column" fxFlex libTitle2>
+                    {{ file.name }}
+                </div>
+                <div fxLayout="column" fxFlex="initial">
+                    <button (click)="clearFile()" mat-icon-button><mat-icon>clear</mat-icon></button>
+                </div>
             </div>
         </div>
 
@@ -86,12 +91,12 @@
 
         <div class="push-top" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="handlePreview()" [disabled]="formGroup.invalid || !file" [matIcon]="'import_export'">Prepare import data
+                <lib-button (click)="handlePreview()" [disabled]="formGroup.invalid || !file" [matIcon]="'import_export'">Prepare for import
                 </lib-button>
             </div>
         </div>
         <div class="push-top-sm" libText3>
-            * Data will not yet be imported. You will be able to confirm import after previewing data.
+            * Data will not yet be imported. You will be able to confirm import after reviewing data.
         </div>
     </form>
 

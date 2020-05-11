@@ -7,7 +7,6 @@ import { observableHelper } from '../../utilities';
 import { versionInfo } from '../../version';
 
 export abstract class BaseComponent implements OnDestroy {
-
     protected readonly ngUnsubscribe: Subject<void> = new Subject<void>();
 
     public get version(): string {
@@ -26,11 +25,7 @@ export abstract class BaseComponent implements OnDestroy {
         return !this.isSmallScreen;
     }
 
-    constructor(
-        protected dependencies: ComponentDependencies,
-        protected cdr: ChangeDetectorRef
-    ) {
-    }
+    constructor(protected dependencies: ComponentDependencies, protected cdr: ChangeDetectorRef) {}
 
     ngOnDestroy(): void {
         this.destroy();
@@ -56,15 +51,13 @@ export abstract class BaseComponent implements OnDestroy {
     protected subscribeToObservable(observable: Observable<any>): void {
         observable
             .pipe(
-                takeUntil(this.ngUnsubscribe),
-                catchError(error => {
+                catchError((error) => {
                     return throwError(error);
-                })
+                }),
+                takeUntil(this.ngUnsubscribe)
             )
             .subscribe(() => {
                 this.markForCheck();
             });
     }
-
-
 }

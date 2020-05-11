@@ -1,154 +1,153 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
 import { stringHelper } from '../../utilities';
 import { BaseComponent } from '../core/base.component';
-import { map } from 'rxjs/operators';
 
 interface INavigationItem {
-  routerLink?: string;
-  title: string;
-  icon?: string;
-  type: 'link' | 'section'
+    routerLink?: string;
+    title: string;
+    icon?: string;
+    type: 'link' | 'section';
 }
 
 interface ILayoutOptions {
-  fixed: boolean;
-  topGap: number;
-  bottomGap: number;
+    fixed: boolean;
+    topGap: number;
+    bottomGap: number;
 }
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './master-layout.component.html'
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './master-layout.component.html'
 })
 export class MasterLayoutComponent extends BaseComponent implements OnInit {
+    public appName: string = environment.appName;
+    public title?: string;
+    public error?: string;
+    public year: number = new Date().getFullYear();
 
-  public appName: string = environment.appName;
-  public title?: string;
-  public error?: string;
-  public year: number = new Date().getFullYear();
+    public navigationItems: INavigationItem[] = [
+        {
+            title: 'Import & export',
+            type: 'section'
+        },
+        {
+            title: 'Export',
+            routerLink: '/',
+            icon: 'cloud_download',
+            type: 'link'
+        },
+        {
+            title: 'Import',
+            routerLink: '/import',
+            icon: 'settings_backup_restore',
+            type: 'link'
+        },
+        {
+            title: 'Common',
+            type: 'section'
+        },
+        {
+            title: 'Cleanup',
+            routerLink: '/cleanup',
+            icon: 'delete',
+            type: 'link'
+        },
+        {
+            title: 'Gallery',
+            type: 'section'
+        },
+        {
+            title: 'Templates',
+            routerLink: '/templates',
+            icon: 'list',
+            type: 'link'
+        },
+        {
+            title: 'FAQ',
+            type: 'section'
+        },
+        {
+            title: 'FAQ',
+            routerLink: '/faq',
+            icon: 'help',
+            type: 'link'
+        }
+    ];
 
-  public navigationItems: INavigationItem[] = [
-    {
-      title: 'Import & export',
-      type: 'section'
-    },
-    {
-      title: 'Export',
-      routerLink: '/',
-      icon: 'cloud_download',
-      type: 'link'
-    },
-    {
-      title: 'Import',
-      routerLink: '/import',
-      icon: 'settings_backup_restore',
-      type: 'link'
-    },
-    {
-      title: 'Common',
-      type: 'section'
-    },
-    {
-      title: 'Cleanup',
-      routerLink: '/cleanup',
-      icon: 'delete',
-      type: 'link'
-    },
-    {
-      title: 'Gallery',
-      type: 'section'
-    },
-    {
-      title: 'Templates',
-      routerLink: '/templates',
-      icon: 'list',
-      type: 'link'
-    },
-    {
-      title: 'FAQ',
-      type: 'section'
-    },
-    {
-      title: 'FAQ',
-      routerLink: '/faq',
-      icon: 'help',
-      type: 'link'
-    }
-  ];
+    public readonly layoutOptions: ILayoutOptions = {
+        fixed: true,
+        topGap: 64,
+        bottomGap: 0
+    };
 
-  public readonly layoutOptions: ILayoutOptions = {
-    fixed: true,
-    topGap: 64,
-    bottomGap: 0
-};
-
-  constructor(
-    dependencies: ComponentDependencies,
-    cdr: ChangeDetectorRef) {
-    super(dependencies, cdr);
-
-   
-  }
-
-  ngOnInit(): void {
-    super.subscribeToObservable(this.dependencies.layoutService.titleChanged$.pipe(
-      map(title => {
-        this.title = title;
-        super.detectChanges();
-      })
-    ));
-
-    super.subscribeToObservable(this.dependencies.layoutService.errorChanged$.pipe(
-      map(error => {
-        this.error = error;
-        super.detectChanges();
-      })
-    ))
-  }
-
-  menuItemIsActive(path: string, exactMatch: boolean = true): boolean {
-    const currentUrlWithoutQueryString = this.removeQueryStringFromUrl(this.dependencies.router.url);
-
-    // get urls to compare
-    const processedCurrentUrl = this.getActionUrl(currentUrlWithoutQueryString);
-    const processedItemUrl = this.getActionUrl(path);
-
-    if (exactMatch) {
-      return processedCurrentUrl.toLowerCase() === processedItemUrl.toLowerCase();
+    constructor(dependencies: ComponentDependencies, cdr: ChangeDetectorRef) {
+        super(dependencies, cdr);
     }
 
-    return processedCurrentUrl.startsWith(processedItemUrl);
-  }
+    ngOnInit(): void {
+        super.subscribeToObservable(
+            this.dependencies.layoutService.titleChanged$.pipe(
+                map((title) => {
+                    this.title = title;
+                    super.detectChanges();
+                })
+            )
+        );
 
-  getActionUrl(action: string | undefined): string {
-    if (!action) {
-      return '';
+        super.subscribeToObservable(
+            this.dependencies.layoutService.errorChanged$.pipe(
+                map((error) => {
+                    this.error = error;
+                    super.detectChanges();
+                })
+            )
+        );
     }
 
-    // prepare route url
-    let routeUrl = action;
+    menuItemIsActive(path: string, exactMatch: boolean = true): boolean {
+        const currentUrlWithoutQueryString = this.removeQueryStringFromUrl(this.dependencies.router.url);
 
-    // add starting '/'
-    if (!routeUrl.startsWith('/')) {
-      routeUrl = '/' + routeUrl;
+        // get urls to compare
+        const processedCurrentUrl = this.getActionUrl(currentUrlWithoutQueryString);
+        const processedItemUrl = this.getActionUrl(path);
+
+        if (exactMatch) {
+            return processedCurrentUrl.toLowerCase() === processedItemUrl.toLowerCase();
+        }
+
+        return processedCurrentUrl.startsWith(processedItemUrl);
     }
 
-    // remove '/' from end
-    if (routeUrl.endsWith('/')) {
-      routeUrl = routeUrl.substring(0, routeUrl.length - 1);
+    getActionUrl(action: string | undefined): string {
+        if (!action) {
+            return '';
+        }
+
+        // prepare route url
+        let routeUrl = action;
+
+        // add starting '/'
+        if (!routeUrl.startsWith('/')) {
+            routeUrl = '/' + routeUrl;
+        }
+
+        // remove '/' from end
+        if (routeUrl.endsWith('/')) {
+            routeUrl = routeUrl.substring(0, routeUrl.length - 1);
+        }
+
+        return routeUrl;
     }
 
-    return routeUrl;
-  }
+    protected removeQueryStringFromUrl(url: string): string {
+        if (!url) {
+            return '';
+        }
 
-  protected removeQueryStringFromUrl(url: string): string {
-    if (!url) {
-      return '';
+        return stringHelper.removeEverythingAfterIncludingSeparator(url, '?');
     }
-
-    return stringHelper.removeEverythingAfterIncludingSeparator(url, '?');
-  }
 }
