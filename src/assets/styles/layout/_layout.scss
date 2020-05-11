@@ -54,13 +54,18 @@
             display: block;
             text-decoration: none;
             color: map-get($theme, sideTextColor);
-            font-size: 11px;
-            padding: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            padding: 16px 64px 16px 48px;
             cursor: pointer;
+
+            .mat-icon {
+                color: lighten(map-get($theme, sideTextColor), 15);
+            }
 
             &:hover {
                 color: map-get($theme, sideTextColor);
-                background: darken(map-get($theme, sideBackgroundColor), 10);
+                background: darken(map-get($theme, sideBackgroundColor), 9);
 
                 mat-icon {
                     color: map-get($theme, sideTextColor);
@@ -69,7 +74,7 @@
 
             &.active {
                 color: map-get($theme, sideTextColor);
-                background: darken(map-get($theme, sideBackgroundColor), 10);
+                background: darken(map-get($theme, sideBackgroundColor), 7);
 
                 mat-icon {
                     color: map-get($theme, sideTextColor);

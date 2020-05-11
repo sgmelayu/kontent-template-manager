@@ -44,31 +44,27 @@
 
         <div fxLayout="row" fxFlexFill fxLayoutAlign="center stretch">
             <div fxLayout="column" fxFlex="initial">
-                <div>
-                    <ng-container *ngFor="let item of navigationItems">
-
-                        <a *ngIf="item.type === 'link'" class="w-layout-side-item w-text-center"
-                            [class.active]="menuItemIsActive(item.routerLink)" [routerLink]="item.routerLink">
-                            <div>
-                                <mat-icon>{{ item.icon }}</mat-icon>
-                            </div>
-                            <div>
-                                {{ item.title}}
-                            </div>
-                        </a>
-                    </ng-container>
+                <div *ngFor="let item of navigationItems">
+                    <a fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px" *ngIf="item.type === 'link'"
+                        class="w-layout-side-item" [class.active]="menuItemIsActive(item.routerLink)"
+                        [routerLink]="item.routerLink">
+                        <div fxLayout="column" fxFlex="initial">
+                            <mat-icon>{{ item.icon }}</mat-icon>
+                        </div>
+                        <div fxLayout="column" fxFlex>
+                            {{ item.title}}
+                        </div>
+                    </a>
                 </div>
 
                 <div class="w-layout-height-spacer"></div>
 
-                <div fxLayout="row" fxLayoutAlign="center center" class="push-bottom-sm" libText3>
-                    <div fxLayout="column" fxFlex="initial">
-                        v{{ version }}
-                    </div>
-                </div>
-                <div fxLayout="row" fxLayoutAlign="center center" class="push-bottom" libText3>
+                <div fxLayout="row" fxLayoutAlign="center center" class="push-bottom-sm" libText3 fxLayoutGap="24px">
                     <div fxLayout="column" fxFlex="initial">
                         © {{ year }}
+                    </div>
+                    <div fxLayout="column" fxFlex="initial">
+                        v{{ version }}
                     </div>
                 </div>
             </div>

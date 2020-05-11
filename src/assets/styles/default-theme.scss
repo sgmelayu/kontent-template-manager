@@ -34,7 +34,7 @@
     cardDackgroundColor: $cardBackgroundColor,
 
     sideBackgroundColor: darken($backgroundColor, 12),
-    sideTextColor: $textColor,
+    sideTextColor: lighten($textColor, 5),
 
     headerBackgroundColor: $primaryColor,
     headerBackground: linear-gradient(90deg, $primaryColor 0%, lighten($primaryColor, 10) 100%),
