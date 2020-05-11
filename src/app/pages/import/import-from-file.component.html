@@ -4,22 +4,21 @@
     <lib-message [type]="'success'">Data successfully imported</lib-message>
 </div>
 
-<div class="push-bottom-md" *ngIf="mismatchVersionImport">
-    <lib-message [type]="'warning'">
-        <div>
-            You are attempting to import package from version '{{ importDataVersion }}', but this web based tool is currently using version '{{ kbmVersion }}'.
-        </div>
-        <div class="push-top">
-            You can still try importing data, but it may fail due to possible inconsistencies in package versions. You can also download specific version of <a [href]="backupManagerUrl" target="_blank">{{ backupManagerName }}</a> and run import using CLI. 
-        </div> </lib-message>
-</div>
-
 <div>
     <lib-processed-items></lib-processed-items>
 </div>
 
-
 <div *ngIf="importPreviewData && !processsing && !success">
+
+    <div class="push-bottom-md" *ngIf="mismatchVersionImport">
+        <lib-message [type]="'warning'">
+            <div>
+                You are attempting to import package from version '{{ importDataVersion }}', but this web based tool is currently using version '{{ kbmVersion }}'.
+            </div>
+            <div class="push-top">
+                You can still try importing data, but it may fail due to possible inconsistencies in package versions. You can also download specific version of <a [href]="backupManagerUrl" target="_blank">{{ backupManagerName }}</a> and run import using CLI. 
+            </div> </lib-message>
+    </div>
 
     <div *ngIf="displayInconsistenciesNotice" class="push-bottom-md">
         <lib-message [type]="'warning'">

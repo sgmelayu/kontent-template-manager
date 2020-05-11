@@ -41,7 +41,7 @@ export abstract class BasePageComponent extends BaseComponent implements OnDestr
         } catch (error) {
             this.processsing = false;
             if (error instanceof SharedModels.ContentManagementBaseKontentError) {
-                this.setError(`${error.message} ${error.validationErrors.join(', ')}`);
+                this.setError(`${error.message} ${error.validationErrors.map(m => m.message).join(', ')}`);
             } else {
                 this.setError('Unknown error during data import');
             }
