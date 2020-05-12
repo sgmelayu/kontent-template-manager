@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/Kentico/kontent-template-manager/compare/v0.1.2...v1.1.0) (2020-05-12)
+
+
+### Features
+
+* adds icon and increases button icon gap ([03f9fe8](https://github.com/Kentico/kontent-template-manager/commit/03f9fe8df214fb07ff7f064d5ae3e561fcb5f4bf))
+* displays proper error message for validation errors & updates kontent-backup-manager ([74d80c8](https://github.com/Kentico/kontent-template-manager/commit/74d80c897f153cfa6d9097c424d13fbf2b048f56))
+
+
+### Bug Fixes
+
+* resets errors when input data changes ([9dc9a6d](https://github.com/Kentico/kontent-template-manager/commit/9dc9a6dc0cb4baff0c3d7f2b6278818a6ab984d5))
+
 ### 1.0.0 (2020-05-11)
 
 
