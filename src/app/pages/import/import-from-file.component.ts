@@ -89,10 +89,12 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
     }
 
     clearFile(): void {
+        super.resetErrors();
         this.file = undefined;
     }
 
     dropped(files: NgxFileDropEntry[]) {
+        super.resetErrors();
         if (files.length !== 1) {
             super.setError('Exactly 1 file can be uploaded at a time');
             return;
@@ -122,6 +124,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
 
     handleManualInputOnChange(change: Event): void {
         this.file = undefined;
+        super.resetErrors();
         if (change.target) {
             const fileList = (change.target as any)['files'] as FileList;
 
@@ -133,6 +136,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
     }
 
     async handleImport(): Promise<void> {
+        super.resetErrors();
         if (this.formGroup.invalid || this.processsing || !this.importData) {
             return;
         }
