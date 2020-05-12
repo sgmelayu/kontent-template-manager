@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/Kentico/kontent-template-manager/compare/v1.1.0...v1.1.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* prevents clean / import actions if button is disabled ([fb41058](https://github.com/Kentico/kontent-template-manager/commit/fb410589ee9b5845ea6f568c9118617ee163e82b))
+
 ## [1.1.0](https://github.com/Kentico/kontent-template-manager/compare/v0.1.2...v1.1.0) (2020-05-12)
 
 
