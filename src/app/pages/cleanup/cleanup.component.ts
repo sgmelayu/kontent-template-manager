@@ -16,6 +16,10 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
     public formGroup: FormGroup;
     public success: boolean = false;
 
+    public get canClean(): boolean {
+        return this.formGroup.valid;
+    }
+
     constructor(
         dependencies: ComponentDependencies,
         cdr: ChangeDetectorRef,
@@ -47,6 +51,10 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
     }
 
     async deleteWithConfirm(): Promise<void> {
+        if (!this.canClean) {
+            return;
+        }
+
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
             width: '400px',
             data: {

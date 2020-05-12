@@ -105,7 +105,7 @@
 
         <div class="push-top" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="handlePreview()" [disabled]="formGroup.invalid || !file"
+                <lib-button (click)="handlePreview()" [disabled]="!canPrepareImport"
                     [matIcon]="'import_export'">Prepare for import
                 </lib-button>
             </div>

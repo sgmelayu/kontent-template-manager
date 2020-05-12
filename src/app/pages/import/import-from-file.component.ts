@@ -54,6 +54,13 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         return false;
     }
 
+    public get canPrepareImport(): boolean {
+        if (this.formGroup.valid && this.file) {
+            return true;
+        }
+        return false;
+    }
+
     constructor(
         dependencies: ComponentDependencies,
         cdr: ChangeDetectorRef,
@@ -167,6 +174,10 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
     }
 
     async handlePreview(): Promise<void> {
+        if (!this.canPrepareImport) {
+            return;
+        }
+
         // track gEvent
         super.trackEvent({
             eventCategory: 'button',

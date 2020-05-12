@@ -39,7 +39,7 @@
 
         <div class="push-top" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="deleteWithConfirm()" [disabled]="formGroup.invalid" [matIcon]="'import_export'">Delete all project data
+                <lib-button (click)="deleteWithConfirm()" [disabled]="!canClean" [matIcon]="'import_export'">Delete all project data
                 </lib-button>
             </div>
         </div>
