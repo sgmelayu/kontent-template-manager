@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Kentico/kontent-template-manager/compare/v1.1.1...v1.2.0) (2020-05-19)
+
+
+### Features
+
+* Makes API key labels more clear ([24673bc](https://github.com/Kentico/kontent-template-manager/commit/24673bc97eeddcad79441ccdce1fa7d8ff7c0529))
+* updates deps & removes obsolete code ([a4ca4f0](https://github.com/Kentico/kontent-template-manager/commit/a4ca4f0c9a1ee4552f6521adae1c4440f912644a))
+
 ### [1.1.1](https://github.com/Kentico/kontent-template-manager/compare/v1.1.0...v1.1.1) (2020-05-12)
 
 
