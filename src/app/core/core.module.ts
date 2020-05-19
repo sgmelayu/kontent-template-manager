@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { ServicesModule } from '../../services';
 import { TypographyModule } from '../../typography';
 import { CardModule } from '../directives/directives.module';
 import { ExternalModule } from '../external';
@@ -14,7 +13,6 @@ import { RouterModule } from '@angular/router';
         RouterModule,
         CommonModule,
         BrowserAnimationsModule,
-        ServicesModule,
         ExternalModule,
         TypographyModule,
         FormsModule,

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ExportService } from '@kentico/kontent-backup-manager';
+import { ExportService, ZipService } from '@kentico/kontent-backup-manager';
 import { saveAs } from 'filesaver.js';
 
 import { ComponentDependencies } from '../../../di';
@@ -54,19 +54,27 @@ export class ExportComponent extends BasePageComponent implements OnInit {
 
             const exportData = await exportService.exportAllAsync();
 
-            // create zip file
-            const fileName = this.dependencies.templateManagerZipService.getDefaultBackupFilename() + '.zip';
-            const zipFile = await this.dependencies.templateManagerZipService.createZipAsync(exportData, fileName, {
-                enableLog: true,
-                filename: fileName
+            const zipService = new ZipService({
+                context: 'browser',
+                enableLog: false
             });
+
+            const fileName = this.getDefaultBackupFilename() + '.zip';
+
+            // create zip file
+            const zipFile = await zipService.createZipAsync(exportData);
 
             this.processsing = false;
             this.success = true;
             super.markForCheck();
 
             // download file
-            saveAs(zipFile, `${this.dependencies.templateManagerZipService.getDefaultBackupFilename()}.zip`);
+            saveAs(zipFile, fileName);
         });
     }
+
+    private getDefaultBackupFilename(): string {
+        const date = new Date();
+        return `kontent-backup-${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}-${date.getHours()}-${date.getMinutes()}`;
+     }
 }

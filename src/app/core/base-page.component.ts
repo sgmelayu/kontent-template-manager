@@ -39,11 +39,12 @@ export abstract class BasePageComponent extends BaseComponent implements OnDestr
         try {
             await func();
         } catch (error) {
+            console.error(error);
             this.processsing = false;
             if (error instanceof SharedModels.ContentManagementBaseKontentError) {
                 this.setError(`${error.message} ${error.validationErrors.map(m => m.message).join(', ')}`);
             } else {
-                this.setError('Unknown error during data import');
+                this.setError(`Unhandled error. ${error}`);
             }
             super.markForCheck();
         }

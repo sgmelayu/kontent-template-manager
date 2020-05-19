@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { IImportSource, ImportService } from '@kentico/kontent-backup-manager';
+import { IImportSource, ImportService, ZipService } from '@kentico/kontent-backup-manager';
 import { FileSystemFileEntry, NgxFileDropEntry } from 'ngx-file-drop';
 import { previewHelper } from 'src/app/components/preview/preview-helper';
 import { IDataPreviewWrapper } from 'src/app/components/preview/preview-models';
@@ -152,7 +152,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         super.markForCheck();
 
         const importService = new ImportService({
-            enableLog: true,
+            enableLog: false,
             fixLanguages: true,
             projectId: this.formGroup.controls['projectId'].value,
             apiKey: this.formGroup.controls['apiKey'].value,
@@ -187,7 +187,12 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         this.processsing = true;
         super.markForCheck();
 
-        const data = await this.dependencies.templateManagerZipService.extractZipAsync(this.file, true);
+        const zipService = new ZipService({
+            context: 'browser',
+            enableLog: false
+        });
+
+        const data = await zipService.extractZipAsync(this.file);
         this.importData = data;
 
         this.processsing = false;
