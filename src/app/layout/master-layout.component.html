@@ -1,4 +1,4 @@
-<div class="w-layout-fixed-toolbar" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px"
+<div class="w-layout-fixed-toolbar" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px"
     fxLayoutAlign="start center">
     <div fxLayout="column" fxFlex="30px" class="w-cursor-pointer push-left" (click)="sidenav.toggle()">
         <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
@@ -22,10 +22,12 @@
     <div fxLayout="column" fxFlex>
     </div>
     <div fxLayout="column" fxFlex="initial">
-        <a fxShow fxHide.lt-sm mat-button color="accent" target="_blank"
+        <a fxShow fxHide.lt-sm target="_blank"
             href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery">
-            Submit template
-        </a>
+            <lib-button [matIcon]="'add'" [color]="'accent'">
+                Submit Template
+            </lib-button>
+    </a>
         <a fxHide fxShow.lt-sm mat-mini-fab color="accent" target="_blank"
             href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery">
             <mat-icon>add</mat-icon>
