@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/Kentico/kontent-template-manager/compare/v1.2.0...v1.3.0) (2020-05-20)
+
+
+### Features
+
+* adds support for publishing variants, makes processing items more generic ([3c38f97](https://github.com/Kentico/kontent-template-manager/commit/3c38f979ebdbc5976209ec15e490930c2095a0c6))
+* uses more prominent button in master layout ([8cbeeed](https://github.com/Kentico/kontent-template-manager/commit/8cbeeede823851d0dface8852dfcfde6b92460c5))
+
 ## [1.2.0](https://github.com/Kentico/kontent-template-manager/compare/v1.1.1...v1.2.0) (2020-05-19)
 
 
