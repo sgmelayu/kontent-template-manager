@@ -10,6 +10,13 @@ import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
 import { BasePageComponent } from '../../core/base-page.component';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation-dialog.component';
+import { LanguageVariantModels } from '@kentico/kontent-management';
+import { PublishService } from 'src/services';
+
+interface IVariantWithTitle {
+    variant: LanguageVariantModels.ContentItemLanguageVariant;
+    title: string;
+}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,9 +68,12 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         return false;
     }
 
+    public publishVariants: boolean = false;
+
     constructor(
         dependencies: ComponentDependencies,
         cdr: ChangeDetectorRef,
+        private publishService: PublishService,
         private dialog: MatDialog,
         private fb: FormBuilder
     ) {
@@ -148,16 +158,28 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
             return;
         }
 
+        const projectId = this.formGroup.controls['projectId'].value;
+        const apiKey = this.formGroup.controls['apiKey'].value;
+
+        const importedVariants: IVariantWithTitle[] = [];
+
         this.processsing = true;
         super.markForCheck();
 
         const importService = new ImportService({
             enableLog: false,
             fixLanguages: true,
-            projectId: this.formGroup.controls['projectId'].value,
-            apiKey: this.formGroup.controls['apiKey'].value,
+            projectId: projectId,
+            apiKey: apiKey,
             onImport: (item) => {
                 this.dependencies.processingService.addProcessedItem(item);
+
+                if (item.type === 'languageVariant' && item.data instanceof LanguageVariantModels.ContentItemLanguageVariant) {
+                    importedVariants.push({
+                        title: item.title,
+                        variant: item.data
+                    });
+                }
             }
         });
 
@@ -166,11 +188,42 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
                 return;
             }
             const data = await importService.importAsync(this.importData);
+
+            if (this.publishVariants) {
+                await this.publishVariantsAsync(projectId, apiKey, importedVariants);
+            }
+
             this.success = true;
             this.processsing = false;
 
             super.markForCheck();
         });
+    }
+
+    async publishVariantsAsync(projectId: string, apiKey: string, variants: IVariantWithTitle[]): Promise<void> {
+        await this.publishService.tryPublishItems({
+            apiKey: apiKey,
+            projectId: projectId,
+        }, variants.map(m => {
+            return {
+                itemId: m.variant.item.id ?? '',
+                languageId: m.variant.language.id ?? '',
+                title: m.title
+            };
+        }), {
+            onFailed: (item) => {
+                this.dependencies.processingService.addProcessedItem({
+                    title: item.title,
+                    type: 'publish failed (incomplete data)'
+                });
+            },
+            onSuccess: (item) => {
+                this.dependencies.processingService.addProcessedItem({
+                    title: item.title,
+                    type: 'publish'
+                });
+            }
+        }).toPromise();
     }
 
     async handlePreview(): Promise<void> {

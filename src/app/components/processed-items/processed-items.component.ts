@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
 import { BaseComponent } from '../../core/base.component';
-import { IProcessedItem } from '@kentico/kontent-backup-manager';
+import { IProcessedItemTransformed } from '../../../services';
 
 @Component({
   selector: 'lib-processed-items',
@@ -13,9 +13,9 @@ import { IProcessedItem } from '@kentico/kontent-backup-manager';
 })
 export class ProcessedItemsComponent extends BaseComponent implements OnInit {
 
-  private _processedItems: List<IProcessedItem> = List<IProcessedItem>([]);
+  private _processedItems: List<IProcessedItemTransformed> = List<IProcessedItemTransformed>([]);
 
-  public get processedItems(): IProcessedItem[] {
+  public get processedItems(): IProcessedItemTransformed[] {
     return this._processedItems.toArray();
   }
 
@@ -38,7 +38,7 @@ export class ProcessedItemsComponent extends BaseComponent implements OnInit {
     super.subscribeToObservable(
       this.dependencies.processingService.clearProcessedItemsChanged$.pipe(
         map((item) => {
-          this._processedItems = List<IProcessedItem>([]);
+          this._processedItems = List<IProcessedItemTransformed>([]);
           super.markForCheck();
         })
       )
