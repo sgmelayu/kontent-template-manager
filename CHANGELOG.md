@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/Kentico/kontent-template-manager/compare/v1.3.0...v1.4.0) (2020-06-02)
+
+
+### Features
+
+* adds support for dev mode & extra logging into console ([b3af431](https://github.com/Kentico/kontent-template-manager/commit/b3af431d7fdec041f693bc52a5fcf9aeb5452449))
+
+
+### Bug Fixes
+
+* adds artificial delay to publish requests and updates retry strategy for publish service ([e7da4dc](https://github.com/Kentico/kontent-template-manager/commit/e7da4dc3694b2caf2a38aae7dd26d215c235a0d7))
+
 ## [1.3.0](https://github.com/Kentico/kontent-template-manager/compare/v1.2.0...v1.3.0) (2020-05-20)
 
 
