@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ManagementClient } from '@kentico/kontent-management';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
+import { catchError, map, delay } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
 export interface IPublishItemRequest {
@@ -26,7 +26,14 @@ export class PublishService {
     ): Observable<void> {
         const client = new ManagementClient({
             projectId: config.projectId,
-            apiKey: config.apiKey
+            apiKey: config.apiKey,
+            retryStrategy: {
+                addJitter: true,
+                canRetryError: (err) => true,
+                deltaBackoffMs: 500,
+                maxAttempts: 5,
+                maxCumulativeWaitTimeMs: 30
+            }
         });
         const obs: Observable<void>[] = [];
 
@@ -65,6 +72,6 @@ export class PublishService {
             );
         }
 
-        return observableHelper.zipObservables(obs);
+        return observableHelper.flatMapObservables(obs, 250);
     }
 }
