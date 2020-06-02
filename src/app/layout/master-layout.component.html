@@ -80,7 +80,15 @@
     </mat-sidenav>
 
     <div class="w-layout-subheader">
-        {{ title }}
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <div fxLayout="column" fxFlex *ngIf="config">
+                {{ config.title }}
+            </div>
+            <div fxLayout="column" libText1 *ngIf="config && config.showDevMode" fxFlex="initial" [matTooltip]="'When enabled, additional details are logged in browser console'">
+                <mat-checkbox (change)="handleIsDevModechange($event)" [ngModelOptions]="{standalone: true}" [(ngModel)]="isDevMode">Dev mode</mat-checkbox>
+            </div>
+        </div>
+ 
     </div>
 
     <div class="w-layout-content">

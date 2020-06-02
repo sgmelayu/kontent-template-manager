@@ -25,7 +25,10 @@ export class ExportComponent extends BasePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        super.setTitle('Export project data');
+        super.setConfig({
+            title: 'Export project data',
+            showDevMode: true
+        });
     }
 
     handleDownloadFile(): void {}
@@ -56,7 +59,7 @@ export class ExportComponent extends BasePageComponent implements OnInit {
 
             const zipService = new ZipService({
                 context: 'browser',
-                enableLog: false
+                enableLog: this.isDevMode()
             });
 
             const fileName = this.getDefaultBackupFilename() + '.zip';

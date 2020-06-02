@@ -13,6 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
@@ -20,6 +21,7 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
   imports: [
   ],
   exports: [
+    MatTooltipModule,
     MatToolbarModule,
     MatSidenavModule,
     FlexLayoutModule,

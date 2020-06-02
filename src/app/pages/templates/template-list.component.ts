@@ -21,7 +21,10 @@ export class TemplateListComponent extends BasePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        super.setTitle('Templates');
+        super.setConfig({
+            title: 'Templates',
+            showDevMode: false
+        });
 
         super.subscribeToObservable(
             this.dependencies.templatesService.getTemplates().pipe(

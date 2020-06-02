@@ -4,6 +4,7 @@ import { SharedModels } from '@kentico/kontent-management';
 import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
 import { BaseComponent } from './base.component';
+import { ILayoutConfig } from 'src/services';
 
 type eventCategory = 'button';
 type eventAction =
@@ -59,8 +60,12 @@ export abstract class BasePageComponent extends BaseComponent implements OnDestr
         this.dependencies.googleAnalyticsService.logEvent(data);
     }
 
-    protected setTitle(title: string): void {
-        this.dependencies.layoutService.setTitle(title);
+    protected setConfig(config: ILayoutConfig): void {
+        this.dependencies.layoutService.setLayoutConfig(config);
+    }
+
+    protected setIsDevMode(show: boolean): void {
+        this.dependencies.layoutService.setIsDevMode(show);
     }
 
     protected setError(error: string): void {
@@ -69,5 +74,9 @@ export abstract class BasePageComponent extends BaseComponent implements OnDestr
 
     protected resetErrors(): void {
         this.dependencies.layoutService.setError(undefined);
+    }
+
+    protected isDevMode(): boolean {
+        return this.dependencies.layoutService.isDevModeSource.getValue();
     }
 }

@@ -47,7 +47,10 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        super.setTitle('Clean');
+        super.setConfig({
+            title: 'Clean',
+            showDevMode: false
+        });
     }
 
     async deleteWithConfirm(): Promise<void> {

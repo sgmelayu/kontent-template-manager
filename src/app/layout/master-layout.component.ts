@@ -5,6 +5,8 @@ import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
 import { stringHelper } from '../../utilities';
 import { BaseComponent } from '../core/base.component';
+import { ILayoutConfig } from 'src/services';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 interface INavigationItem {
     routerLink?: string;
@@ -25,9 +27,14 @@ interface ILayoutOptions {
 })
 export class MasterLayoutComponent extends BaseComponent implements OnInit {
     public appName: string = environment.appName;
-    public title?: string;
+    public config?: ILayoutConfig;
     public error?: string;
+    public showDevMode: boolean = false;
+    public isDevMode: boolean;
     public year: number = new Date().getFullYear();
+
+    private readonly isDevModeStorage: string = 'isDevMode';
+    private readonly isDevModeStorageSource: string = 'master';
 
     public navigationItems: INavigationItem[] = [
         {
@@ -76,13 +83,15 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
     constructor(dependencies: ComponentDependencies, cdr: ChangeDetectorRef) {
         super(dependencies, cdr);
+
+        this.isDevMode = this.getStoredIsDevMode();
     }
 
     ngOnInit(): void {
         super.subscribeToObservable(
-            this.dependencies.layoutService.titleChanged$.pipe(
-                map((title) => {
-                    this.title = title;
+            this.dependencies.layoutService.layoutConfigChanged.pipe(
+                map((config) => {
+                    this.config = config;
                     super.detectChanges();
                 })
             )
@@ -96,6 +105,11 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
                 })
             )
         );
+    }
+
+    handleIsDevModechange(event: MatCheckboxChange): void {
+        this.dependencies.layoutService.setIsDevMode(event.checked);
+        this.storeIsDevMode(event.checked);
     }
 
     menuItemIsActive(path: string, exactMatch: boolean = true): boolean {
@@ -139,5 +153,13 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
         }
 
         return stringHelper.removeEverythingAfterIncludingSeparator(url, '?');
+    }
+
+    private storeIsDevMode(isDevMode: boolean): void {
+        this.dependencies.storageService.set(this.isDevModeStorageSource, this.isDevModeStorage, isDevMode);
+    }
+
+    private getStoredIsDevMode(): boolean {
+        return this.dependencies.storageService.get(this.isDevModeStorageSource, this.isDevModeStorage) ?? false;
     }
 }

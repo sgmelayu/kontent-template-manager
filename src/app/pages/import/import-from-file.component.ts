@@ -86,7 +86,10 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
     }
 
     ngOnInit(): void {
-        super.setTitle('Import project data');
+        super.setConfig({
+            title: 'Import project data',
+            showDevMode: true
+        });
     }
 
     importWithConfirm(): void {
@@ -167,7 +170,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         super.markForCheck();
 
         const importService = new ImportService({
-            enableLog: false,
+            enableLog: this.isDevMode(),
             fixLanguages: true,
             projectId: projectId,
             apiKey: apiKey,
@@ -242,7 +245,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
 
         const zipService = new ZipService({
             context: 'browser',
-            enableLog: false
+            enableLog: this.isDevMode()
         });
 
         const data = await zipService.extractZipAsync(this.file);

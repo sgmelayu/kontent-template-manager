@@ -1,27 +1,38 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+export interface ILayoutConfig {
+    title: string;
+    showDevMode: boolean;
+}
 
 @Injectable({
     providedIn: 'root',
 })
 export class LayoutService {
 
-    private readonly titleSource = new BehaviorSubject<string | undefined>(undefined);
-    public readonly titleChanged$ = this.titleSource.asObservable();
+    public readonly isDevModeSource = new BehaviorSubject<boolean>(false);
+    public readonly isDevModeChanged$ = this.isDevModeSource.asObservable();
 
-    private readonly errorSource = new BehaviorSubject<string | undefined>(undefined);
+    public readonly layoutConfigSource = new BehaviorSubject<ILayoutConfig | undefined>(undefined);
+    public readonly layoutConfigChanged = this.layoutConfigSource.asObservable();
+
+    public readonly errorSource = new BehaviorSubject<string | undefined>(undefined);
     public readonly errorChanged$ = this.errorSource.asObservable();
 
     constructor(
     ) {
     }
 
-    setTitle(title?: string): void {
-        this.titleSource.next(title);
+    setLayoutConfig(config?: ILayoutConfig): void {
+        this.layoutConfigSource.next(config);
     }
 
     setError(error?: string): void {
         this.errorSource.next(error);
     }
 
+    setIsDevMode(show: boolean): void {
+        this.isDevModeSource.next(show);
+    }
 }

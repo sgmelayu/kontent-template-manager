@@ -23,6 +23,9 @@ export class LimitationsComponent extends BasePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    super.setTitle('FAQ');
+    super.setConfig({
+      title: 'FAQ',
+      showDevMode: false
+  });
   }
 }
