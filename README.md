@@ -46,6 +46,8 @@ If you want to submit a Kentico Kontent Web Template to the [Templates Gallery](
     
 * **content.zip**<br>ZIP package generated via [https://kentico.github.io/kontent-template-manager](https://kentico.github.io/kontent-template-manager)
 
+    * (optional) - it is also possible to name the zip file as you want
+
 * **template.jpg**<br>Screenshot/image of the template in 3:2 ratio, e.g. 600x400px (min. 450x300px), in JPG format (no other format is allowed)
 
 * **README.md**
