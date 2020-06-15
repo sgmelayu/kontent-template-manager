@@ -122,7 +122,21 @@
             "email": "devrel@kentico.com"
         },
         "lastUpdate": "2020-06-03T15:05:19.733Z",
-        "forVersion": "0.0.3",
+        "forVersion": "1.4.0",
+        "technology": "Vue.js"
+    },
+    {
+        "name": "GatsbyJs Material UI template",
+        "description": "Showcase of Kentico Kontent Intranet admin UI using Material design and Gatsby.",
+        "repoUrl": "https://github.com/Simply007/kontent-sample-app-gatsby-intranet",
+        "exportPackageUrl": "https://github.com/Simply007/kontent-sample-app-gatsby-intranet/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/kontent-sample-app-gatsby-intranet/master/template.jpg",
+        "author": {
+            "name": "Ondřej Chrastina",
+            "email": "ondrej.chrastina@kentico.com"
+        },
+        "lastUpdate": "2020-06-15T08:56:00.734Z",
+        "forVersion": "1.4.0",
         "technology": "Vue.js"
     }
 ]
