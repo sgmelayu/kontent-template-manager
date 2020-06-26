@@ -5,4 +5,5 @@ node_js:
 before_script:
 - npm install
 script:
+- num run check
 - npm run build
