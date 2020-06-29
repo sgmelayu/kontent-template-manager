@@ -38,7 +38,7 @@
             "email": "ondrej.chrastina@kentico.com"
         },
         "lastUpdate": "2019-11-04T16:00:00.000Z",
-        "forVersion": "1",
+        "forVersion": "1.0.0",
         "technology": "GatsbyJs"
     },
     {
@@ -52,7 +52,7 @@
             "email": "ondrej.chrastina@kentico.com"
         },
         "lastUpdate": "2019-06-11T16:00:00.000Z",
-        "forVersion": "1",
+        "forVersion": "1.0.0",
         "technology": ".NET Core MVC"
     },
     {
@@ -80,7 +80,7 @@
             "email": "ondrej.chrastina@kentico.com"
         },
         "lastUpdate": "2019-11-22T14:00:00.000Z",
-        "forVersion": "1",
+        "forVersion": "1.0.0",
         "technology": "Svelte & Sapper"
     },
     {
@@ -94,7 +94,7 @@
             "email": "martinm@kentico.com"
         },
         "lastUpdate": "2020-04-06T16:00:00.000Z",
-        "forVersion": "1",
+        "forVersion": "1.0.0",
         "technology": "GatsbyJs"
     },
     {
@@ -108,7 +108,7 @@
             "email": "ondrej.chrastina@kentico.com"
         },
         "lastUpdate": "2020-05-13T09:13:05.794Z",
-        "forVersion": "1",
+        "forVersion": "1.0.0",
         "technology": "GatsbyJs"
     },
     {
