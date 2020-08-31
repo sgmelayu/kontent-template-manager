@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/Kentico/kontent-template-manager/compare/v1.4.0...v1.5.0) (2020-08-31)
+
+
+### Features
+
+* updates project to angular 10, updates other deps + fixes update related issues ([88524c4](https://github.com/Kentico/kontent-template-manager/commit/88524c4b169004299651dddc2e69efdc505cbfbd))
+
 ## [1.4.0](https://github.com/Kentico/kontent-template-manager/compare/v1.3.0...v1.4.0) (2020-06-02)
 
 
