@@ -6,7 +6,7 @@ export const environment = {
   backupManagerUrl: 'https://github.com/Kentico/kontent-backup-manager-js',
   google: {
     enableTracking: true,
-    trackingPrefix: '/cloud-template-manager',
+    trackingPrefix: '/kontent-template-manager',
     googleAnalyticsTrackingId: 'UA-69014260-7',
   },
   defaultProjects: {
