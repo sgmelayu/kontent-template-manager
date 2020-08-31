@@ -31,7 +31,12 @@
             ],
             "scripts": [
             ],
-            "es5BrowserSupport": true
+            "allowedCommonJsDependencies": [
+              "filesaver.js",
+              "local-storage-fallback",
+              "@kentico/kontent-management",
+              "@kentico/kontent-backup-manager"
+            ]
           },
           "configurations": {
             "production": {
