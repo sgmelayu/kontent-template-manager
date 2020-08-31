@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, Directive } from '@angular/core';
 import { SharedModels } from '@kentico/kontent-management';
 
 import { ComponentDependencies } from '../../di';
@@ -19,6 +19,7 @@ type eventAction =
     | 'prepare-migrate-from-project'
     | 'migrate-from-project';
 
+@Directive()
 export abstract class BasePageComponent extends BaseComponent implements OnDestroy {
     public processsing: boolean = false;
 

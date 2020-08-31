@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, Directive } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
 
@@ -7,6 +7,7 @@ import { observableHelper } from '../../utilities';
 import { versionInfo } from '../../version';
 import { environment } from 'src/environments/environment';
 
+@Directive()
 export abstract class BaseComponent implements OnDestroy {
     protected readonly ngUnsubscribe: Subject<void> = new Subject<void>();
 
