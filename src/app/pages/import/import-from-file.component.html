@@ -50,6 +50,19 @@
 </div>
 
 <ng-container *ngIf="!processsing && !success && !importPreviewData">
+
+    <p class="push-bottom-md">This page enables you to import data previously exported .zip package.</p>
+
+    <div class="push-bottom-md">
+        <div libTextDisplay1 *ngIf="project">
+            <lib-message type="success">{{ project.projectName }}</lib-message>
+        </div>
+
+        <div *ngIf="!project">
+            <lib-message type="warning">Invalid project or API key</lib-message>
+        </div>
+    </div>
+
     <form [formGroup]="formGroup">
         <div *ngIf="templateToImport">
             <div fxLayout="row wrap" fxLayoutGap="16px grid">
@@ -100,47 +113,38 @@
             </div>
         </div>
 
-        <div class="w-uploader" *ngIf="!templateToImport">
-            <p class="push-bottom-md">This page enables you to import data previously exported .zip package.</p>
+        <div class="w-uploader">
 
-            <div class="push-bottom-md">
-                <div libTextDisplay1 *ngIf="project">
-                    <lib-message type="success">{{ project.projectName }}</lib-message>
-                </div>
-        
-                <div *ngIf="!project">
-                    <lib-message type="warning">Invalid project</lib-message>
-                </div>
-            </div>
-
-            <ngx-file-drop
-                *ngIf="!file"
-                [multiple]="false"
-                [contentClassName]="'w-uploader-content'"
-                [dropZoneClassName]="'w-uploader-dropzone'"
-                (onFileDrop)="dropped($event)"
-            >
-                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-                    <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="center center">
-                        <div fxLayout="column" fxFlex="initial">Drop export file here</div>
-                        <div fxLayout="column" fxFlex="initial">
-                            <lib-button [matIcon]="'open_in_browser'" (click)="openFileSelector()">
-                                Or choose a file
-                            </lib-button>
+            <ng-container *ngIf="!templateToImport">
+                <ngx-file-drop
+                    *ngIf="!file"
+                    [multiple]="false"
+                    [contentClassName]="'w-uploader-content'"
+                    [dropZoneClassName]="'w-uploader-dropzone'"
+                    (onFileDrop)="dropped($event)"
+                >
+                    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="center center">
+                            <div fxLayout="column" fxFlex="initial">Drop export file here</div>
+                            <div fxLayout="column" fxFlex="initial">
+                                <lib-button [matIcon]="'open_in_browser'" (click)="openFileSelector()">
+                                    Or choose a file
+                                </lib-button>
+                            </div>
                         </div>
+                    </ng-template>
+                </ngx-file-drop>
+                <div *ngIf="file" fxLayout="row" libCard fxLayoutAlign="start center">
+                    <div fxLayout="column" fxFlex libTitle2>
+                        {{ file.name }}
                     </div>
-                </ng-template>
-            </ngx-file-drop>
-            <div *ngIf="file" fxLayout="row" libCard fxLayoutAlign="start center">
-                <div fxLayout="column" fxFlex libTitle2>
-                    {{ file.name }}
+                    <div fxLayout="column" fxFlex="initial">
+                        <button (click)="clearFile()" mat-icon-button>
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </div>
                 </div>
-                <div fxLayout="column" fxFlex="initial">
-                    <button (click)="clearFile()" mat-icon-button>
-                        <mat-icon>clear</mat-icon>
-                    </button>
-                </div>
-            </div>
+            </ng-container>
         </div>
 
         <div libCard class="push-top-md">
