@@ -55,19 +55,19 @@
                 <div fxLayout="column" fxFlex="100%" class="pad" fxLayoutAlign="end">
                     <div>
                         <div fxLayout="row wrap" fxLayoutGap="16px grid" class="push-top">
-                            <div fxLayout="column" fxFlex fxFlex.lt-md="100%">
+                            <div fxLayout="column" fxFlex="50%" fxFlex.lt-lg="100%">
                                 <a
                                     (click)="handleDownloadClick(template)"
                                     [href]="template.exportPackageUrl"
                                     target="_blank"
                                     class="w-no-underline"
                                 >
-                                    <lib-button matIcon="save_alt" color="accent"> Download </lib-button>
+                                    <lib-button matIcon="get_app" color="accent"> Download </lib-button>
                                 </a>
                             </div>
-                            <div fxLayout="column" fxFlex fxFlex.lt-md="100%">
+                            <div fxLayout="column" fxFlex="50%" fxFlex.lt-lg="100%">
                                 <a (click)="handleImportClick(template)" class="w-no-underline">
-                                    <lib-button matIcon="publish"> Import </lib-button>
+                                    <button mat-button color="accent"> Import </button>
                                 </a>
                             </div>
                         </div>

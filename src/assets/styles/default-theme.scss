@@ -10,6 +10,7 @@
   $disabledColorContrast: #ffffff;
   $cardBackgroundColor: #ffffff;
   $disabledColorGradient: #292929;
+  $headerBackground: #231f20;
 
   $backgroundColor: #f3f3f3;
 
@@ -36,8 +37,8 @@
     sideBackgroundColor: darken($backgroundColor, 12),
     sideTextColor: lighten($textColor, 5),
 
-    headerBackgroundColor: $primaryColor,
-    headerBackground: linear-gradient(90deg, $primaryColor 0%, lighten($primaryColor, 10) 100%),
+    headerBackgroundColor: $headerBackground,
+    headerBackground: linear-gradient(90deg, $headerBackground 0%, lighten($headerBackground, 15) 100%),
     headerTextColor: $primaryColorContrast,
     );
 

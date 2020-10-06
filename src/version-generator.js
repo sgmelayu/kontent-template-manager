@@ -22,6 +22,7 @@ export const versionInfo = {
         }
 
         console.log(colors.green(`Updating application version ${colors.yellow(appVersion)}`));
+        console.log(colors.green(`Updating kontent backup manager version ${colors.yellow(kbmVersion)}`));
         console.log(`${colors.green('Writing version module to ')}${colors.yellow(filePath)}\n`);
     });
 }
