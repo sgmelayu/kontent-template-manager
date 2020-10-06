@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
 import { BasePageComponent } from '../../core/base-page.component';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation-dialog.component';
 import { LanguageVariantModels } from '@kentico/kontent-management';
-import { ITemplate, PublishService } from 'src/services';
+import { IProjectCheck, ITemplate, PublishService } from 'src/services';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -26,7 +26,6 @@ interface IVariantWithTitle {
     templateUrl: './import-from-file.component.html'
 })
 export class ImportFromFileComponent extends BasePageComponent implements OnInit {
-
     public templateToImport?: ITemplate;
     public formGroup: FormGroup;
     public success: boolean = false;
@@ -66,11 +65,18 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         return false;
     }
 
+    public project?: IProjectCheck;
+
     public get canPrepareImport(): boolean {
-        if (this.formGroup.valid && this.file) {
-            return true;
+        if (this.formGroup.invalid || !this.file) {
+            return false;
         }
-        return false;
+
+        if (!this.project) {
+            return false;
+        }
+
+        return true;
     }
 
     public publishVariants: boolean = false;
@@ -86,8 +92,8 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         super(dependencies, cdr);
 
         this.formGroup = this.fb.group({
-            projectId: [environment.defaultProjects.targetProjectId, Validators.required],
-            apiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required]
+            projectId: ['', Validators.required],
+            apiKey: ['', Validators.required]
         });
     }
 
@@ -100,8 +106,10 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         const packageUrl = this.activatedRoute.snapshot.queryParams.packageUrl;
 
         if (packageUrl) {
-           this.initFromPackageUrl(packageUrl);
+            this.initFromPackageUrl(packageUrl);
         }
+
+        this.initForm();
     }
 
     importWithConfirm(): void {
@@ -189,7 +197,10 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
             onImport: (item) => {
                 this.dependencies.processingService.addProcessedItem(item);
 
-                if (item.type === 'languageVariant' && item.data instanceof LanguageVariantModels.ContentItemLanguageVariant) {
+                if (
+                    item.type === 'languageVariant' &&
+                    item.data instanceof LanguageVariantModels.ContentItemLanguageVariant
+                ) {
                     importedVariants.push({
                         title: item.title,
                         variant: item.data
@@ -216,29 +227,35 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
     }
 
     async publishVariantsAsync(projectId: string, apiKey: string, variants: IVariantWithTitle[]): Promise<void> {
-        await this.publishService.tryPublishItems({
-            apiKey: apiKey,
-            projectId: projectId,
-        }, variants.map(m => {
-            return {
-                itemId: m.variant.item.id ?? '',
-                languageId: m.variant.language.id ?? '',
-                title: m.title
-            };
-        }), {
-            onFailed: (item) => {
-                this.dependencies.processingService.addProcessedItem({
-                    title: item.title,
-                    type: 'publish failed (incomplete data)'
-                });
-            },
-            onSuccess: (item) => {
-                this.dependencies.processingService.addProcessedItem({
-                    title: item.title,
-                    type: 'publish'
-                });
-            }
-        }).toPromise();
+        await this.publishService
+            .tryPublishItems(
+                {
+                    apiKey: apiKey,
+                    projectId: projectId
+                },
+                variants.map((m) => {
+                    return {
+                        itemId: m.variant.item.id ?? '',
+                        languageId: m.variant.language.id ?? '',
+                        title: m.title
+                    };
+                }),
+                {
+                    onFailed: (item) => {
+                        this.dependencies.processingService.addProcessedItem({
+                            title: item.title,
+                            type: 'publish failed (incomplete data)'
+                        });
+                    },
+                    onSuccess: (item) => {
+                        this.dependencies.processingService.addProcessedItem({
+                            title: item.title,
+                            type: 'publish'
+                        });
+                    }
+                }
+            )
+            .toPromise();
     }
 
     async handlePreview(): Promise<void> {
@@ -272,25 +289,53 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         super.subscribeToObservable(
             this.dependencies.templatesService.getTemplates().pipe(
                 switchMap((templates) => {
-                    const templateToPrefill = templates.find(m => m.exportPackageUrl === packageUrl);
+                    const templateToPrefill = templates.find((m) => m.exportPackageUrl === packageUrl);
 
                     if (templateToPrefill) {
                         this.templateToImport = templateToPrefill;
 
-                        return this.dependencies.templatesService.getTemplateFile(templateToPrefill.exportPackageUrl).pipe(
-                            map(file => {
-                                this.file = file;
-                            })
-                        );
+                        return this.dependencies.templatesService
+                            .getTemplateFile(templateToPrefill.exportPackageUrl)
+                            .pipe(
+                                map((file) => {
+                                    this.file = file;
+                                    super.markForCheck();
+                                })
+                            );
                     }
 
                     return of(undefined);
                 }),
-                map(result => {
+                map((result) => {
                     this.processsing = false;
                     super.markForCheck();
                 })
             )
         );
+    }
+
+    private initForm(): void {
+        super.subscribeToObservable(
+            this.formGroup.valueChanges.pipe(
+                switchMap((form) => {
+                    const projectId = form.projectId;
+                    const apiKey = form.apiKey;
+
+                    return this.dependencies.projectService.validateProject({
+                        projectId: projectId,
+                        apiKey: apiKey
+                    });
+                }),
+                map((result) => {
+                    this.project = result;
+                    super.markForCheck();
+                })
+            )
+        );
+
+        const defaultProjectId = environment.defaultProjects.targetProjectId;
+        const defaultApiKey = environment.defaultProjects.targetProjectApiKey;
+
+        this.formGroup.setValue({ projectId: defaultProjectId, apiKey: defaultApiKey });
     }
 }

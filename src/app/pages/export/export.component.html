@@ -13,6 +13,16 @@
         This feature creates a zip package with all data (including asset binaries) from a given project
     </p>
 
+    <div class="push-bottom-md">
+        <div libTextDisplay1 *ngIf="project">
+            <lib-message type="success">{{ project.projectName }}</lib-message>
+        </div>
+
+        <div *ngIf="!project">
+            <lib-message type="warning">Invalid project</lib-message>
+        </div>
+    </div>
+
     <form [formGroup]="formGroup">
         <div libCard>
             <div fxLayout="row">
@@ -37,9 +47,9 @@
             </div>
         </div>
 
-        <div class="push-top" fxLayout="row">
+        <div class="push-top-md" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="handleExport()" [disabled]="formGroup.invalid" [matIcon]="'import_export'">Export data
+                <lib-button (buttonClick)="handleExport()" [disabled]="!canExport" [matIcon]="'import_export'">Export data
                 </lib-button>
             </div>
         </div>

@@ -9,14 +9,14 @@ import {
     ProcessingService,
     LayoutService,
     StorageService,
-    TimeService
+    TimeService,
+    ProjectService
 } from '../services';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ComponentDependencies {
-
     constructor(
         public processingService: ProcessingService,
         public media: MediaObserver,
@@ -27,5 +27,6 @@ export class ComponentDependencies {
         public layoutService: LayoutService,
         public storageService: StorageService,
         public timeService: TimeService,
-    ) { }
+        public projectService: ProjectService
+    ) {}
 }

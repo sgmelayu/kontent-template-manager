@@ -9,15 +9,20 @@
 </div>
 
 <div *ngIf="importPreviewData && !processsing && !success">
-
     <div class="push-bottom-md" *ngIf="mismatchVersionImport">
         <lib-message [type]="'warning'">
             <div>
-                You are attempting to import .zip package exported using <strong>Kontent Backup manager</strong> on version '{{ importDataVersion }}', but this web based tool is currently using version '{{ kbmVersion }}'.
+                You are attempting to import .zip package exported using <strong>Kontent Backup manager</strong> on
+                version '{{ importDataVersion }}', but this web based tool is currently using version '{{
+                    kbmVersion
+                }}'.
             </div>
             <div class="push-top">
-                You can still try importing data, but it may fail due to possible inconsistencies in package versions. You can also download specific version of <a [href]="backupManagerUrl" target="_blank">{{ backupManagerName }}</a> and run import using CLI. 
-            </div> </lib-message>
+                You can still try importing data, but it may fail due to possible inconsistencies in package versions.
+                You can also download specific version of
+                <a [href]="backupManagerUrl" target="_blank">{{ backupManagerName }}</a> and run import using CLI.
+            </div>
+        </lib-message>
     </div>
 
     <div *ngIf="displayInconsistenciesNotice" class="push-bottom-md">
@@ -30,31 +35,30 @@
     <div class="push-bottom-md">
         <div fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="importWithConfirm()" [disabled]="formGroup.invalid || !file"
-                    [matIcon]="'import_export'">Import data
+                <lib-button
+                    (click)="importWithConfirm()"
+                    [disabled]="formGroup.invalid || !file"
+                    [matIcon]="'import_export'"
+                    >Import data
                 </lib-button>
             </div>
         </div>
-        <div class="push-top" libText3>
-            * This will import data to target project. This action is not reversible.
-        </div>
+        <div class="push-top" libText3>* This will import data to target project. This action is not reversible.</div>
     </div>
 
     <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
 </div>
 
 <ng-container *ngIf="!processsing && !success && !importPreviewData">
-
     <form [formGroup]="formGroup">
-
         <div *ngIf="templateToImport">
-            <div  fxLayout="row wrap" fxLayoutGap="16px grid">
+            <div fxLayout="row wrap" fxLayoutGap="16px grid">
                 <div fxLayout="column" fxFlex="450px" fxFlex.lt-md="100%">
                     <div>
-                        <img style="width:100%" alt="" [src]="templateToImport.imageUrl">
+                        <img style="width: 100%" alt="" [src]="templateToImport.imageUrl" />
                     </div>
                 </div>
-                <div fxLayout="column" fxFlex fxFlex.lt-md="100%" >
+                <div fxLayout="column" fxFlex fxFlex.lt-md="100%">
                     <div libTextDisplay1>
                         {{ templateToImport.name }}
                     </div>
@@ -62,46 +66,63 @@
                     <mat-divider class="push-top push-bottom"></mat-divider>
 
                     <div>
-                        <span>Author: </span><span><strong>{{ templateToImport.author.name }}</strong></span>
-                    </div>
-
-                    <div class="push-top-sm">
-                        <span>Technology: </span><span><strong>{{ templateToImport.technology }}</strong></span>
-                    </div>
-
-                    <div class="push-top-sm">
-                        <span>Last update: </span><span><strong>{{ formatDateVerbose(templateToImport.lastUpdate) }}</strong></span>
-                    </div>
-
-                    <div class="push-top-sm">
-                        <span>Description: </span><span><strong>{{ templateToImport.description }}</strong></span>
-                    </div>
-
-                    <div class="push-top-sm">
-                        <a target="_blank" [href]="templateToImport.repoUrl"
-                            >App source & instructions</a
+                        <span>Author: </span
+                        ><span
+                            ><strong>{{ templateToImport.author.name }}</strong></span
                         >
+                    </div>
+
+                    <div class="push-top-sm">
+                        <span>Technology: </span
+                        ><span
+                            ><strong>{{ templateToImport.technology }}</strong></span
+                        >
+                    </div>
+
+                    <div class="push-top-sm">
+                        <span>Last update: </span
+                        ><span
+                            ><strong>{{ formatDateVerbose(templateToImport.lastUpdate) }}</strong></span
+                        >
+                    </div>
+
+                    <div class="push-top-sm">
+                        <span>Description: </span
+                        ><span
+                            ><strong>{{ templateToImport.description }}</strong></span
+                        >
+                    </div>
+
+                    <div class="push-top-sm">
+                        <a target="_blank" [href]="templateToImport.repoUrl">App source & instructions</a>
                     </div>
                 </div>
             </div>
-          
         </div>
 
         <div class="w-uploader" *ngIf="!templateToImport">
+            <p class="push-bottom-md">This page enables you to import data previously exported .zip package.</p>
 
-            <p class="push-bottom-md">
-                This page enables you to import data previously exported .zip package.
-            </p>
+            <div class="push-bottom-md">
+                <div libTextDisplay1 *ngIf="project">
+                    <lib-message type="success">{{ project.projectName }}</lib-message>
+                </div>
+        
+                <div *ngIf="!project">
+                    <lib-message type="warning">Invalid project</lib-message>
+                </div>
+            </div>
 
-            <ngx-file-drop *ngIf="!file" [multiple]="false" [contentClassName]="'w-uploader-content'"
-                [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
-
+            <ngx-file-drop
+                *ngIf="!file"
+                [multiple]="false"
+                [contentClassName]="'w-uploader-content'"
+                [dropZoneClassName]="'w-uploader-dropzone'"
+                (onFileDrop)="dropped($event)"
+            >
                 <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-
                     <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="center center">
-                        <div fxLayout="column" fxFlex="initial">
-                            Drop export file here
-                        </div>
+                        <div fxLayout="column" fxFlex="initial">Drop export file here</div>
                         <div fxLayout="column" fxFlex="initial">
                             <lib-button [matIcon]="'open_in_browser'" (click)="openFileSelector()">
                                 Or choose a file
@@ -127,7 +148,7 @@
                 <div fxLayout="column" fxFlex>
                     <div libText3>Target project id</div>
                     <mat-form-field appearance="fill" class="push-top-sm">
-                        <input matInput formControlName="projectId">
+                        <input matInput formControlName="projectId" />
                     </mat-form-field>
                 </div>
             </div>
@@ -138,7 +159,7 @@
                         <div libText3>Content Management API key</div>
 
                         <mat-form-field appearance="fill" class="push-top-sm">
-                            <input matInput formControlName="apiKey">
+                            <input matInput formControlName="apiKey" />
                         </mat-form-field>
                     </div>
                 </div>
@@ -147,17 +168,21 @@
             <div class="push-top">
                 <div fxLayout="row">
                     <div fxLayout="column" fxFlex>
-                        <mat-checkbox class="example-margin" [ngModelOptions]="{standalone: true}" [(ngModel)]="publishVariants">Publish language variants after import</mat-checkbox>
+                        <mat-checkbox
+                            class="example-margin"
+                            [ngModelOptions]="{ standalone: true }"
+                            [(ngModel)]="publishVariants"
+                            >Publish language variants after import</mat-checkbox
+                        >
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="push-top" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="handlePreview()" [disabled]="!canPrepareImport"
-                    [matIcon]="'import_export'">Prepare for import
+                <lib-button (buttonClick)="handlePreview()" [disabled]="!canPrepareImport" [matIcon]="'import_export'"
+                    >Prepare for import
                 </lib-button>
             </div>
         </div>
@@ -165,5 +190,4 @@
             * Data will not yet be imported. You will be able to confirm import after reviewing data.
         </div>
     </form>
-
 </ng-container>

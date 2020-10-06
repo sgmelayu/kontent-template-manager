@@ -13,6 +13,16 @@
         This feature deletes everything from a given project. This action is not reversible.
     </p>
 
+    <div class="push-bottom-md">
+        <div libTextDisplay1 *ngIf="project">
+            <lib-message type="success">{{ project.projectName }}</lib-message>
+        </div>
+
+        <div *ngIf="!project">
+            <lib-message type="warning">Invalid project</lib-message>
+        </div>
+    </div>
+
     <form [formGroup]="formGroup">
         <div libCard>
             <div fxLayout="row">
@@ -39,7 +49,7 @@
 
         <div class="push-top" fxLayout="row">
             <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
-                <lib-button (click)="deleteWithConfirm()" [disabled]="!canClean" [matIcon]="'import_export'">Delete all project data
+                <lib-button (buttonClick)="deleteWithConfirm()" [disabled]="!canClean" [matIcon]="'import_export'">Delete all project data
                 </lib-button>
             </div>
         </div>

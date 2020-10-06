@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ExportService, ZipService } from '@kentico/kontent-backup-manager';
 import { saveAs } from 'filesaver.js';
+import { map, switchMap } from 'rxjs/operators';
+import { IProjectCheck } from 'src/services';
 
 import { ComponentDependencies } from '../../../di';
 import { environment } from '../../../environments/environment';
@@ -14,13 +16,25 @@ import { BasePageComponent } from '../../core/base-page.component';
 export class ExportComponent extends BasePageComponent implements OnInit {
     public formGroup: FormGroup;
     public success: boolean = false;
+    public project?: IProjectCheck;
+
+    public get canExport(): boolean {
+        if (this.formGroup.invalid) {
+            return false;
+        }
+        if (!this.project) {
+            return false;
+        }
+
+        return true;
+    }
 
     constructor(dependencies: ComponentDependencies, cdr: ChangeDetectorRef, private fb: FormBuilder) {
         super(dependencies, cdr);
 
         this.formGroup = this.fb.group({
-            projectId: [environment.defaultProjects.sourceProjectId, Validators.required],
-            apiKey: [environment.defaultProjects.sourceProjectApiKey, Validators.required]
+            projectId: ['', Validators.required],
+            apiKey: ['', Validators.required]
         });
     }
 
@@ -29,13 +43,15 @@ export class ExportComponent extends BasePageComponent implements OnInit {
             title: 'Export project data',
             showDevMode: true
         });
+
+        this.initForm();
     }
 
     handleDownloadFile(): void {}
 
     async handleExport(): Promise<void> {
         await super.runWithErrorHandlerAsync(async () => {
-            if (this.formGroup.invalid || this.processsing) {
+            if (this.formGroup.invalid || this.processsing || !this.project) {
                 return;
             }
 
@@ -62,7 +78,7 @@ export class ExportComponent extends BasePageComponent implements OnInit {
                 enableLog: this.isDevMode()
             });
 
-            const fileName = this.getDefaultBackupFilename() + '.zip';
+            const fileName = this.getDefaultBackupFilename(this.project) + '.zip';
 
             // create zip file
             const zipFile = await zipService.createZipAsync(exportData);
@@ -76,8 +92,35 @@ export class ExportComponent extends BasePageComponent implements OnInit {
         });
     }
 
-    private getDefaultBackupFilename(): string {
+    private getDefaultBackupFilename(project: IProjectCheck): string {
         const date = new Date();
-        return `kontent-backup-${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}-${date.getHours()}-${date.getMinutes()}`;
-     }
+        return `kontent-backup-${project.projectName}-${date.getDate()}-${
+            date.getMonth() + 1
+        }-${date.getFullYear()}-${date.getHours()}-${date.getMinutes()}`;
+    }
+
+    private initForm(): void {
+        super.subscribeToObservable(
+            this.formGroup.valueChanges.pipe(
+                switchMap((form) => {
+                    const projectId = form.projectId;
+                    const apiKey = form.apiKey;
+
+                    return this.dependencies.projectService.validateProject({
+                        projectId: projectId,
+                        apiKey: apiKey
+                    });
+                }),
+                map((result) => {
+                    this.project = result;
+                    super.markForCheck();
+                })
+            )
+        );
+
+        const defaultProjectId = environment.defaultProjects.sourceProjectId;
+        const defaultApiKey = environment.defaultProjects.sourceProjectApiKey;
+
+        this.formGroup.setValue({ projectId: defaultProjectId, apiKey: defaultApiKey });
+    }
 }

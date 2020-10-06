@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CleanService } from '@kentico/kontent-backup-manager';
+import { map, switchMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { IProjectCheck } from 'src/services';
 
 import { ComponentDependencies } from '../../../di';
 import { BasePageComponent } from '../../core/base-page.component';
@@ -16,8 +18,17 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
     public formGroup: FormGroup;
     public success: boolean = false;
 
+    public project?: IProjectCheck;
+
     public get canClean(): boolean {
-        return this.formGroup.valid;
+        if (this.formGroup.invalid) {
+            return false;
+        }
+        if (!this.project) {
+            return false;
+        }
+
+        return true;
     }
 
     constructor(
@@ -29,8 +40,8 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
         super(dependencies, cdr);
 
         this.formGroup = this.fb.group({
-            projectId: [environment.defaultProjects.targetProjectId, Validators.required],
-            apiKey: [environment.defaultProjects.targetProjectApiKey, Validators.required]
+            projectId: ['', Validators.required],
+            apiKey: ['', Validators.required]
         });
     }
 
@@ -51,6 +62,8 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
             title: 'Clean',
             showDevMode: false
         });
+
+        this.initForm();
     }
 
     async deleteWithConfirm(): Promise<void> {
@@ -101,5 +114,30 @@ export class CleanupComponent extends BasePageComponent implements OnInit {
             this.success = true;
             super.markForCheck();
         });
+    }
+
+    private initForm(): void {
+        super.subscribeToObservable(
+            this.formGroup.valueChanges.pipe(
+                switchMap((form) => {
+                    const projectId = form.projectId;
+                    const apiKey = form.apiKey;
+
+                    return this.dependencies.projectService.validateProject({
+                        projectId: projectId,
+                        apiKey: apiKey
+                    });
+                }),
+                map((result) => {
+                    this.project = result;
+                    super.markForCheck();
+                })
+            )
+        );
+
+        const defaultProjectId = environment.defaultProjects.targetProjectId;
+        const defaultApiKey = environment.defaultProjects.targetProjectApiKey;
+
+        this.formGroup.setValue({ projectId: defaultProjectId, apiKey: defaultApiKey });
     }
 }
