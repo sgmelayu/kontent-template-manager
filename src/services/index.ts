@@ -6,3 +6,4 @@ export * from './storage/storage.service';
 export * from './storage/import-data-storage.service';
 export * from './layout/layout.service';
 export * from './kontent/publish.service';
+export * from './time/time.service';

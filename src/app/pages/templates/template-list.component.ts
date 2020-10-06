@@ -64,11 +64,27 @@ export class TemplateListComponent extends BasePageComponent implements OnInit {
     }
 
     handleDownloadClick(template: ITemplate): void {
-        // track gEvent
+        // track google Event
         super.trackEvent({
             eventCategory: 'button',
             eventAction: 'download-template',
             eventLabel: template.name
+        });
+    }
+
+    handleImportClick(template: ITemplate): void {
+        // track google Event
+        super.trackEvent({
+            eventCategory: 'button',
+            eventAction: 'direct-import-template',
+            eventLabel: template.name
+        });
+
+        // navigate to import page & prefill template
+        super.navigateToAction('import', {
+            queryParams: {
+                packageUrl: template.exportPackageUrl
+            }
         });
     }
 }

@@ -6,6 +6,8 @@ import { ComponentDependencies } from '../../di';
 import { observableHelper } from '../../utilities';
 import { versionInfo } from '../../version';
 import { environment } from 'src/environments/environment';
+import { NavigationExtras } from '@angular/router';
+import { DateTimeFormat } from 'src/services';
 
 @Directive()
 export abstract class BaseComponent implements OnDestroy {
@@ -73,5 +75,13 @@ export abstract class BaseComponent implements OnDestroy {
             .subscribe(() => {
                 this.markForCheck();
             });
+    }
+
+    protected navigateToAction(action: string, extras?: NavigationExtras): void {
+        this.dependencies.router.navigate([action], extras);
+    }
+
+    protected formatDateVerbose(date: DateTimeFormat): string {
+        return this.dependencies.timeService.formatDateVerbose(date);
     }
 }

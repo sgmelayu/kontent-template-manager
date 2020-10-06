@@ -2,10 +2,11 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+
 export const environment = {
   production: false,
   appName: 'Kontent Template Manager',
-  templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
+  templatesSourceUrl: '/assets/templates/list.json',
   backupManagerName: 'Kontent backup manager',
   backupManagerUrl: 'https://github.com/Kentico/kontent-backup-manager-js',
   defaultProjects: {

@@ -11,7 +11,10 @@ import { environment } from '../../../environments/environment';
 import { BasePageComponent } from '../../core/base-page.component';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation-dialog.component';
 import { LanguageVariantModels } from '@kentico/kontent-management';
-import { PublishService } from 'src/services';
+import { ITemplate, PublishService } from 'src/services';
+import { ActivatedRoute } from '@angular/router';
+import { map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface IVariantWithTitle {
     variant: LanguageVariantModels.ContentItemLanguageVariant;
@@ -23,6 +26,8 @@ interface IVariantWithTitle {
     templateUrl: './import-from-file.component.html'
 })
 export class ImportFromFileComponent extends BasePageComponent implements OnInit {
+
+    public templateToImport?: ITemplate;
     public formGroup: FormGroup;
     public success: boolean = false;
     public file?: File;
@@ -75,7 +80,8 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
         cdr: ChangeDetectorRef,
         private publishService: PublishService,
         private dialog: MatDialog,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private activatedRoute: ActivatedRoute
     ) {
         super(dependencies, cdr);
 
@@ -87,9 +93,15 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
 
     ngOnInit(): void {
         super.setConfig({
-            title: 'Import project data',
+            title: 'Import data',
             showDevMode: true
         });
+
+        const packageUrl = this.activatedRoute.snapshot.queryParams.packageUrl;
+
+        if (packageUrl) {
+           this.initFromPackageUrl(packageUrl);
+        }
     }
 
     importWithConfirm(): void {
@@ -253,5 +265,32 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
 
         this.processsing = false;
         super.markForCheck();
+    }
+
+    private initFromPackageUrl(packageUrl: string): void {
+        this.processsing = true;
+        super.subscribeToObservable(
+            this.dependencies.templatesService.getTemplates().pipe(
+                switchMap((templates) => {
+                    const templateToPrefill = templates.find(m => m.exportPackageUrl === packageUrl);
+
+                    if (templateToPrefill) {
+                        this.templateToImport = templateToPrefill;
+
+                        return this.dependencies.templatesService.getTemplateFile(templateToPrefill.exportPackageUrl).pipe(
+                            map(file => {
+                                this.file = file;
+                            })
+                        );
+                    }
+
+                    return of(undefined);
+                }),
+                map(result => {
+                    this.processsing = false;
+                    super.markForCheck();
+                })
+            )
+        );
     }
 }

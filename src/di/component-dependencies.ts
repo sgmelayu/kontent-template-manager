@@ -9,6 +9,7 @@ import {
     ProcessingService,
     LayoutService,
     StorageService,
+    TimeService
 } from '../services';
 
 @Injectable({
@@ -24,6 +25,7 @@ export class ComponentDependencies {
         public googleAnalyticsService: GoogleAnalyticsService,
         public importDataStorageService: ImportDataStorageService,
         public layoutService: LayoutService,
-        public storageService: StorageService
+        public storageService: StorageService,
+        public timeService: TimeService,
     ) { }
 }

@@ -9,6 +9,7 @@ import { ILayoutConfig } from 'src/services';
 type eventCategory = 'button';
 type eventAction =
     | 'download-template'
+    | 'direct-import-template'
     | 'export'
     | 'prepare-import-from-project'
     | 'prepare-import-from-file'

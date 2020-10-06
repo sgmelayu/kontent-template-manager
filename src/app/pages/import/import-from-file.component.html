@@ -13,7 +13,7 @@
     <div class="push-bottom-md" *ngIf="mismatchVersionImport">
         <lib-message [type]="'warning'">
             <div>
-                You are attempting to import package from version '{{ importDataVersion }}', but this web based tool is currently using version '{{ kbmVersion }}'.
+                You are attempting to import .zip package exported using <strong>Kontent Backup manager</strong> on version '{{ importDataVersion }}', but this web based tool is currently using version '{{ kbmVersion }}'.
             </div>
             <div class="push-top">
                 You can still try importing data, but it may fail due to possible inconsistencies in package versions. You can also download specific version of <a [href]="backupManagerUrl" target="_blank">{{ backupManagerName }}</a> and run import using CLI. 
@@ -35,7 +35,7 @@
                 </lib-button>
             </div>
         </div>
-        <div class="push-top-sm" libText3>
+        <div class="push-top" libText3>
             * This will import data to target project. This action is not reversible.
         </div>
     </div>
@@ -44,13 +44,55 @@
 </div>
 
 <ng-container *ngIf="!processsing && !success && !importPreviewData">
-    <p class="push-top-md push-bottom-md">
-        This feature enables you to import data from uploaded .zip export package.
-    </p>
 
     <form [formGroup]="formGroup">
 
-        <div class="w-uploader push-top-md">
+        <div *ngIf="templateToImport">
+            <div  fxLayout="row wrap" fxLayoutGap="16px grid">
+                <div fxLayout="column" fxFlex="450px" fxFlex.lt-md="100%">
+                    <div>
+                        <img style="width:100%" alt="" [src]="templateToImport.imageUrl">
+                    </div>
+                </div>
+                <div fxLayout="column" fxFlex fxFlex.lt-md="100%" >
+                    <div libTextDisplay1>
+                        {{ templateToImport.name }}
+                    </div>
+
+                    <mat-divider class="push-top push-bottom"></mat-divider>
+
+                    <div>
+                        <span>Author: </span><span><strong>{{ templateToImport.author.name }}</strong></span>
+                    </div>
+
+                    <div class="push-top-sm">
+                        <span>Technology: </span><span><strong>{{ templateToImport.technology }}</strong></span>
+                    </div>
+
+                    <div class="push-top-sm">
+                        <span>Last update: </span><span><strong>{{ formatDateVerbose(templateToImport.lastUpdate) }}</strong></span>
+                    </div>
+
+                    <div class="push-top-sm">
+                        <span>Description: </span><span><strong>{{ templateToImport.description }}</strong></span>
+                    </div>
+
+                    <div class="push-top-sm">
+                        <a target="_blank" [href]="templateToImport.repoUrl"
+                            >App source & instructions</a
+                        >
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+
+        <div class="w-uploader" *ngIf="!templateToImport">
+
+            <p class="push-bottom-md">
+                This page enables you to import data previously exported .zip package.
+            </p>
+
             <ngx-file-drop *ngIf="!file" [multiple]="false" [contentClassName]="'w-uploader-content'"
                 [dropZoneClassName]="'w-uploader-dropzone'" (onFileDrop)="dropped($event)">
 
