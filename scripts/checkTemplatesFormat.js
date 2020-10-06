@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi');
-const templates = require('../templates/list.json');
+const templates = require('../src/assets/templates/list.json');
 
 const semverRegexp = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
@@ -8,7 +8,7 @@ const templateSchema = Joi.object({
   name: Joi.string().max(60).required(),
   description: Joi.string().max(250).required(),
   repoUrl: Joi.string().uri({ scheme: 'https' }).required(),
-  exportPackageUrl: Joi.string().uri({ scheme: 'https' }).required(),
+  exportPackageUrl: Joi.string().required(),
   imageUrl: Joi.string().uri({ scheme: 'https' }).required(),
   author: Joi.object({
     name: Joi.string().max(60).required(),
