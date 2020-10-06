@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build-gh-pages": "npm run set-version && ng build --prod",
+    "build:prod": "ng build --prod",
+    "build-gh-pages": "npm run set-version && npm run build:prod",
     "set-version": "node ./src/version-generator.js",
     "release": "standard-version",
     "check": "node ./scripts/checkTemplatesFormat.js"
