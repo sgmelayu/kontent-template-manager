@@ -13,19 +13,23 @@
         This feature creates a zip package with all data (including asset binaries) from a given project
     </p>
 
-    <div class="push-bottom-md">
-        <div libTextDisplay1 *ngIf="project">
-            <lib-message type="success">{{ project.projectName }}</lib-message>
-        </div>
-
-        <div *ngIf="!project">
-            <lib-message type="warning">Invalid project or API key</lib-message>
-        </div>
-    </div>
 
     <form [formGroup]="formGroup">
         <div libCard>
-            <div fxLayout="row">
+
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Project</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input readonly="true" disabled="true" matInput [value]="project?.projectName">
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxFlex="initial">
+                    <lib-button style="margin-top:7px" [renderButtonOnly]="true" [matIcon]="project ? 'done' : 'clear'" [color]="project ? 'success' : 'error'" ></lib-button>
+                </div>
+            </div>
+
+            <div fxLayout="row" class="push-top">
                 <div fxLayout="column" fxFlex>
                     <div libText3>Source project id</div>
                     <mat-form-field appearance="fill" class="push-top-sm">

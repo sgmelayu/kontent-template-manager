@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { ComponentDependencies } from '../../../di';
 import { BaseComponent } from '../../core/base.component';
 
-export type ButtonColor = 'primary' | 'accent' | 'disabled';
+export type ButtonColor = 'primary' | 'accent' | 'disabled' | 'success' | 'error';
 
 @Component({
   selector: 'lib-button',
@@ -14,6 +14,7 @@ export class ButtonComponent extends BaseComponent {
 
   @Input() matIcon?: string;
   @Input() disabled: boolean = false;
+  @Input() renderButtonOnly: boolean = false;
   @Input() color: ButtonColor = 'primary';
 
   @Output() buttonClick = new EventEmitter<void>();

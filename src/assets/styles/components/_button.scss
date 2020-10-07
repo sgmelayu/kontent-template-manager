@@ -57,5 +57,23 @@
                 background: linear-gradient(90deg, map-get($theme, disabledColorGradient) 0%, map-get($theme, disabledColor) 100%);
             }
         }
+
+        &.success {
+            color: white;
+            background: rgb(98, 170, 15);
+
+            &:hover {
+               background: darken(rgb(98, 170, 15), 10);
+            }
+        }
+
+        &.error {
+            color: white;
+            background:  rgb(223, 46, 33);
+
+            &:hover {
+               background: darken( rgb(223, 46, 33), 10);
+            }
+        }
     }
 }

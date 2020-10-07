@@ -2,7 +2,7 @@
     <div fxLayout="column" fxFlex="initial" *ngIf="matIcon">
         <mat-icon>{{ matIcon }}</mat-icon>
     </div>
-    <div fxLayout="column" fxFlex>
+    <div fxLayout="column" fxFlex *ngIf="!renderButtonOnly">
         <ng-content></ng-content>
     </div>
 </div>
