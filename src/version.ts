@@ -1,5 +1,5 @@
 
 export const versionInfo = {
-    version: '1.5.0',
-    kbmVersion: '1.9.0'
+    version: '1.6.0',
+    kbmVersion: '1.10.0'
 };
