@@ -6,6 +6,7 @@
 export const environment = {
   production: false,
   appName: 'Kontent Template Manager',
+  basePath: '',
   templatesSourceUrl: '/assets/templates/list.json',
   backupManagerName: 'Kontent backup manager',
   backupManagerUrl: 'https://github.com/Kentico/kontent-backup-manager-js',

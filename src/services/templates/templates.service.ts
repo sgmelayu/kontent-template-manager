@@ -19,7 +19,7 @@ export class TemplatesService extends BaseService {
     }
 
     getTemplates(): Observable<ITemplate[]> {
-        return this.httpClient.get(environment.templatesSourceUrl + '?t=' + new Date().valueOf()).pipe(
+        return this.httpClient.get(environment.basePath + environment.templatesSourceUrl + '?t=' + new Date().valueOf()).pipe(
             map((response) => {
                 return response as ITemplate[];
             })
@@ -27,7 +27,7 @@ export class TemplatesService extends BaseService {
     }
 
     getTemplateFile(exportPackageUrl: string): Observable<File> {
-        return this.httpClient.get(exportPackageUrl, {
+        return this.httpClient.get(environment.basePath + exportPackageUrl, {
             responseType: 'blob'
         }).pipe(
             map((response) => {
