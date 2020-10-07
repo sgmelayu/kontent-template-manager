@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/Kentico/kontent-template-manager/compare/v1.5.0...v1.6.0) (2020-10-07)
+
+
+### Features
+
+* adds ability to directly import templates, stores template's list locally as well as data packages (required due to CORS), improves templates list layout & adds import preview for selected template ([a7279ea](https://github.com/Kentico/kontent-template-manager/commit/a7279ea54a7da93f228ec3eec8c46326b91086c6))
+* displays project title & verifies project validity when setting project id (fixes https://github.com/Kentico/kontent-template-manager/issues/23) & api key, fixes click event for disabled buttons ([a8e1ffd](https://github.com/Kentico/kontent-template-manager/commit/a8e1ffd41ead9fa2da93f2777d18e36e0086a2c5))
+* improves warning message when project ID or API key is invalid + shows project status when importing from template ([f29e387](https://github.com/Kentico/kontent-template-manager/commit/f29e387a60fde8ccb9f7cf3b17c1c3f624f6a284))
+* updates app design ([092917c](https://github.com/Kentico/kontent-template-manager/commit/092917c55908333c6465f97ab277577256090468))
+* updates dependencies & improves design of project status indicator ([7d23ebb](https://github.com/Kentico/kontent-template-manager/commit/7d23ebb405e3632641b8c6b01554f64111364c38))
+* updates deps ([48a7e97](https://github.com/Kentico/kontent-template-manager/commit/48a7e974422d9084b9bb841665b5f65efba648ab))
+
+
+### Bug Fixes
+
+* decorates Angular base classes with @Directive ([3393276](https://github.com/Kentico/kontent-template-manager/commit/3393276a14bdb7cbc896a49c09d7a4617305151e))
+
 ## [1.5.0](https://github.com/Kentico/kontent-template-manager/compare/v1.4.0...v1.5.0) (2020-08-31)
 
 
