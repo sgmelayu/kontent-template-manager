@@ -31,7 +31,7 @@ npx ngh --dir=dist
 
 ## Submitting Web Template to Templates Gallery
 
-If you want to submit a Kentico Kontent Web Template to the [Templates Gallery](https://kentico.github.io/kontent-template-manager/templates), please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust [/assets/templates/list.json](/assets/templates/list.json) and create a pull request.
+If you want to submit a Kentico Kontent Web Template to the [Templates Gallery](https://kentico.github.io/kontent-template-manager/templates), please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust [/src/assets/templates/list.json](/src/assets/templates/list.json) and create a pull request.
 
 ### Guidelines for Web Templates
 
