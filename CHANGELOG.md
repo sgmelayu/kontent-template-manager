@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/Kentico/kontent-template-manager/compare/v1.6.0...v1.7.0) (2020-10-21)
+
+
+### Features
+
+* updates deps ([fdd2b0a](https://github.com/Kentico/kontent-template-manager/commit/fdd2b0a0a43387f988d5e939527c9410c19aa11c))
+
 ## [1.6.0](https://github.com/Kentico/kontent-template-manager/compare/v1.5.0...v1.6.0) (2020-10-07)
 
 
