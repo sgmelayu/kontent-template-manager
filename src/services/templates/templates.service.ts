@@ -21,7 +21,11 @@ export class TemplatesService extends BaseService {
     getTemplates(): Observable<ITemplate[]> {
         return this.httpClient.get(environment.basePath + environment.templatesSourceUrl + '?t=' + new Date().valueOf()).pipe(
             map((response) => {
-                return response as ITemplate[];
+                const templates = response as ITemplate[];
+                for (const template of templates) {
+                    template.exportPackageUrl = environment.basePath + template.exportPackageUrl + '?t=' + new Date().valueOf();
+                }
+                return templates;
             })
         );
     }
