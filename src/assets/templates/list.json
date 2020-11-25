@@ -152,5 +152,19 @@
         "lastUpdate": "2020-06-15T08:56:00.734Z",
         "forVersion": "1.4.0",
         "technology": "GatsbyJs"
-    }
+    },
+    {
+        "name": "Memoirs",
+        "description": "A complete template for blogging and pages with Kontent and Statiq",
+        "repoUrl": "https://github.com/alanta/memoirs-theme",
+        "exportPackageUrl": "/assets/templates/packages/memoirs-kontent-statiq.zip",
+        "imageUrl": "https://github.com/alanta/memoirs-theme/raw/main/template.jpg",
+        "author": {
+            "name": "Marnix van Valen",
+            "email": "marnix@alanta.nl"
+        },
+        "lastUpdate": "2020-11-25T15:00:00.000Z",
+        "forVersion": "1.6.0",
+        "technology": "Statiq"
+    },
 ]
