@@ -46,7 +46,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "https://kentico.github.io/kontent-template-manager/",
+              "baseHref": "/kontent-template-manager/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
