@@ -6,7 +6,7 @@ before_script:
 - npm install
 script:
 - npm run check
-- npm run build:prod
+- npm run build-gh-pages
 deploy:	
   local-dir: dist	
   provider: pages	
