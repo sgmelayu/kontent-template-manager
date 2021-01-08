@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ManagementClient } from '@kentico/kontent-management';
-import { Observable, of, timer } from 'rxjs';
-import { catchError, map, delay } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
 export interface IPublishItemRequest {
@@ -53,7 +53,7 @@ export class PublishService {
 
             obs.push(
                 client
-                    .publishOrScheduleLanguageVariant()
+                    .publishLanguageVariant()
                     .byItemId(item.itemId)
                     .byLanguageId(item.languageId)
                     .withoutData()
