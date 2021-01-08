@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/Kentico/kontent-template-manager/compare/v1.7.0...v1.8.0) (2021-01-08)
+
+
+### Features
+
+* prepares deps for ng update ([533f21b](https://github.com/Kentico/kontent-template-manager/commit/533f21b917972aa9fb4a6ffcc8d34b95fe930abe))
+* update to angular 11 & all other dependencies ([a466696](https://github.com/Kentico/kontent-template-manager/commit/a466696b8912c3a56d909d9af620af682ba5e235))
+
+
+### Bug Fixes
+
+* fixes template url in prod environment ([e87a1f1](https://github.com/Kentico/kontent-template-manager/commit/e87a1f1c8c026bbf7b4332ed19e7dde9a81db75b))
+
 ## [1.7.0](https://github.com/Kentico/kontent-template-manager/compare/v1.6.0...v1.7.0) (2020-10-21)
 
 
