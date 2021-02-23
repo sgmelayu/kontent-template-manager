@@ -59,5 +59,3 @@ If you want to submit a Kentico Kontent Web Template to the [Templates Gallery](
 * **LICENSE** (optional)
 
 The repository **may not** contain any other files in the root directory.
-
-![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/kontent-template-manager?pixel)
