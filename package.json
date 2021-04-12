@@ -9,7 +9,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build:prod": "npm run check && ng build --prod",
-    "build-gh-pages": "npm run set-version && npm run build:prod",
+    "build-gh-pages": "npm run set-version && npm run build:prod && cp dist/index.html dist/404.html",
     "set-version": "node ./src/version-generator.js",
     "release": "standard-version",
     "check": "node ./scripts/checkTemplatesFormat.js"
