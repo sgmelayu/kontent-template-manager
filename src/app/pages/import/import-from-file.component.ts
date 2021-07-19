@@ -214,7 +214,8 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
             if (!this.importData) {
                 return;
             }
-            const data = await importService.importAsync(this.importData);
+
+            await importService.importAsync(this.importData);
 
             if (this.publishVariants) {
                 await this.publishVariantsAsync(projectId, apiKey, importedVariants);

@@ -5,6 +5,8 @@
         color: map-get($theme, textColor);
         background: map-get($theme, backgroundColor);
 
+        overflow-y: scroll;
+
         a:focus,
         button:focus,
         input:focus,

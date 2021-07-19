@@ -1,5 +1,10 @@
-<div class="w-layout-fixed-toolbar" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px"
-    fxLayoutAlign="start center">
+<div
+    class="w-layout-fixed-toolbar"
+    fxLayout="row"
+    fxLayoutAlign="start center"
+    fxLayoutGap="24px"
+    fxLayoutAlign="start center"
+>
     <div fxLayout="column" fxFlex="30px" class="w-cursor-pointer push-left" (click)="sidenav.toggle()">
         <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
             <defs>
@@ -19,64 +24,77 @@
     <div fxLayout="column" fxFlex="initial" fxShow fxHide.xs>
         <a routerLink="/">{{ appName }}</a>
     </div>
-    <div fxLayout="column" fxFlex>
-    </div>
+    <div fxLayout="column" fxFlex></div>
     <div fxLayout="column" fxFlex="initial">
-        <a fxShow fxHide.lt-md target="_blank"
-            href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery">
-            <lib-button [matIcon]="'add'" [color]="'primary'">
-                Submit Template
-            </lib-button>
-    </a>
-        <a fxHide fxShow.lt-md mat-mini-fab color="primary" target="_blank"
-            href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery">
+        <a
+            class="w-submit-template-link"
+            fxShow
+            fxHide.lt-md
+            target="_blank"
+            href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery"
+        >
+            Submit Template
+        </a>
+        <a
+            fxHide
+            fxShow.lt-md
+            mat-mini-fab
+            color="primary"
+            target="_blank"
+            href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery"
+        >
             <mat-icon>add</mat-icon>
         </a>
     </div>
     <a fxLayout="column" href="https://github.com/Kentico/kontent-template-manager" target="_blank" class="push-right">
-        <img class="w-layout-github-logo" alt="GitHub logo" src="https://image.flaticon.com/icons/svg/25/25231.svg">
+        <img class="w-layout-github-logo" alt="GitHub logo" src="https://image.flaticon.com/icons/svg/25/25231.svg" />
     </a>
 </div>
 
-<mat-sidenav-container class="w-layout-container w-layout-container-push">
-
-    <mat-sidenav #sidenav opened [mode]="isSmallScreen ? 'over' : 'side'" [opened]="isSmallScreen ? 'false' : 'true'"
-        class="w-layout-side-menu" [fixedInViewport]="layoutOptions.fixed" [fixedTopGap]="layoutOptions.topGap"
-        [fixedBottomGap]="layoutOptions.bottomGap" [autoFocus]="false">
-
-        <div fxLayout="row" fxFlexFill fxLayoutAlign="center stretch">
-            <div fxLayout="column" fxFlex="initial">
-                <div *ngFor="let item of navigationItems">
-                    <a fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px" *ngIf="item.type === 'link'"
-                        class="w-layout-side-item" [class.active]="menuItemIsActive(item.routerLink ?? '')"
-                        [routerLink]="item.routerLink">
-                        <div fxLayout="column" fxFlex="initial">
-                            <mat-icon>{{ item.icon }}</mat-icon>
-                        </div>
-                        <div fxLayout="column" fxFlex>
-                            {{ item.title}}
-                        </div>
-                    </a>
-                </div>
-
-                <div class="w-layout-height-spacer"></div>
-
-
-                <div class="push-bottom w-text-center" libText3>
-                    <div>
-                       Template manager: {{ version }}
+<mat-sidenav-container [autosize]="true" class="w-layout-container-push">
+    <mat-sidenav
+        #sidenav
+        opened
+        [mode]="isSmallScreen ? 'over' : 'side'"
+        [opened]="isSmallScreen ? 'false' : 'true'"
+        class="w-layout-side-menu"
+        [fixedInViewport]="layoutOptions.fixed"
+        [fixedTopGap]="layoutOptions.topGap"
+        [fixedBottomGap]="layoutOptions.bottomGap"
+        [autoFocus]="false"
+    >
+        <div style="width: 270px; height: 100%">
+            <div fxLayout="row" fxFlexFill fxLayoutAlign="center stretch">
+                <div fxLayout="column" fxFlex>
+                    <div *ngFor="let item of navigationItems">
+                        <a
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="24px"
+                            *ngIf="item.type === 'link'"
+                            class="w-layout-side-item"
+                            [class.active]="menuItemIsActive(item.routerLink ?? '')"
+                            [routerLink]="item.routerLink"
+                        >
+                            <div fxLayout="column" fxFlex="initial">
+                                <mat-icon>{{ item.icon }}</mat-icon>
+                            </div>
+                            <div fxLayout="column" fxFlex>
+                                {{ item.title }}
+                            </div>
+                        </a>
                     </div>
-                    <div class="push-top-sm">
-                        Backup manager: {{ kbmVersion }}
+
+                    <div class="w-layout-height-spacer"></div>
+
+                    <div class="push-bottom w-text-center" libText3>
+                        <div>Template manager: {{ version }}</div>
+                        <div class="push-top-sm">Backup manager: {{ kbmVersion }}</div>
+                        <div class="push-top-sm">© {{ year }}</div>
                     </div>
-                    <div class="push-top-sm">
-                        © {{ year }}
-                    </div>
-                  
                 </div>
             </div>
         </div>
-
     </mat-sidenav>
 
     <div class="w-layout-subheader">
@@ -84,20 +102,30 @@
             <div fxLayout="column" fxFlex *ngIf="config">
                 {{ config.title }}
             </div>
-            <div fxLayout="column" libText1 *ngIf="config && config.showDevMode" fxFlex="initial" [matTooltip]="'When enabled, additional details are logged in browser console'">
-                <mat-checkbox (change)="handleIsDevModechange($event)" [ngModelOptions]="{standalone: true}" [(ngModel)]="isDevMode">Dev mode</mat-checkbox>
+            <div
+                fxLayout="column"
+                libText1
+                *ngIf="config && config.showDevMode"
+                fxFlex="initial"
+                [matTooltip]="'When enabled, additional details are logged in browser console'"
+            >
+                <mat-checkbox
+                    (change)="handleIsDevModechange($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                    [(ngModel)]="isDevMode"
+                    >Dev mode</mat-checkbox
+                >
             </div>
         </div>
- 
     </div>
 
     <div class="w-layout-content">
+        <div class="pad-md">
+            <div class="push-bottom-md" *ngIf="error">
+                <lib-message [type]="'error'">{{ error }}</lib-message>
+            </div>
 
-        <div class="push-bottom-md" *ngIf="error">
-            <lib-message [type]="'error'">{{ error }}</lib-message>
+            <router-outlet></router-outlet>
         </div>
-
-        <router-outlet></router-outlet>
     </div>
-
 </mat-sidenav-container>
