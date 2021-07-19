@@ -32,6 +32,9 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
     public showDevMode: boolean = false;
     public isDevMode: boolean;
     public year: number = new Date().getFullYear();
+    public navbarId: string = 'template-manager-navbar';
+    private readonly headerScrollPixelsThreshold: number = 5;
+    private readonly headerScrolledClass: string = 'navbar-scrolled';
 
     private readonly isDevModeStorage: string = 'isDevMode';
     private readonly isDevModeStorageSource: string = 'master';
@@ -85,6 +88,19 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
         super(dependencies, cdr);
 
         this.isDevMode = this.getStoredIsDevMode();
+    }
+
+    ngAfterViewChecked(): void {
+        const navbar = document.getElementById(this.navbarId);
+        if (navbar) {
+            window.onscroll = () => {
+                if (window.scrollY > this.headerScrollPixelsThreshold) {
+                    navbar.classList.add(this.headerScrolledClass);
+                } else {
+                    navbar.classList.remove(this.headerScrolledClass);
+                }
+            };
+        }
     }
 
     ngOnInit(): void {

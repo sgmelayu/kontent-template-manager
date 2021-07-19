@@ -1,25 +1,43 @@
 <div
     class="w-layout-fixed-toolbar"
+    [id]="navbarId"
     fxLayout="row"
     fxLayoutAlign="start center"
     fxLayoutGap="24px"
     fxLayoutAlign="start center"
 >
-    <div fxLayout="column" fxFlex="30px" class="w-cursor-pointer push-left" (click)="sidenav.toggle()">
-        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-            <defs>
-                <style>
-                    .cls-1 {
-                        fill: #fff;
-                    }
-                </style>
-            </defs>
-            <title>kk-logo-short-black-pos-rgb-48px</title>
-            <circle cx="24" cy="24" r="24" />
-            <path class="cls-1" d="M18,14.77v9.39a.35.35,0,0,1-.29.35c-1.2.23-5.71.83-5.71-3V14.81c0-3.7,6-3.78,6,0" />
-            <path class="cls-1" d="M27,20.77v9.4a.36.36,0,0,1-.29.35c-1.2.22-5.71.83-5.71-3V20.81c0-3.7,6-3.78,6,0" />
-            <path class="cls-1" d="M36,26.77v9.4a.36.36,0,0,1-.29.35c-1.2.22-5.71.83-5.71-3V26.81c0-3.7,6-3.78,6,0" />
-        </svg>
+    <div fxLayout="column" fxFlex="85px" class="w-cursor-pointer push-left" (click)="sidenav.toggle()">
+        <div fxLayout="row" [fxLayoutAlign]="'center'">
+            <div fxLayout="column" fxFlex="37px">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 135 149.5304">
+                    <defs>
+                        <style>
+                            .cls-1 {
+                                fill: #f05a22;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Layer_1-2" data-name="Layer 1">
+                            <g id="kk-logo-vert-color-pos-rgb">
+                                <path
+                                    class="cls-1"
+                                    d="M36,16.3769V73.0012a2.1294,2.1294,0,0,1-1.7413,2.1C27.0746,76.4639,0,80.0758,0,57.19V16.8619C0-5.3272,36-5.8247,36,16.6032"
+                                />
+                                <path
+                                    class="cls-1"
+                                    d="M85,55.3769v56.6844a2.1288,2.1288,0,0,1-1.7408,2.0989C76.0672,115.533,49,119.134,49,96.2547V55.9375c0-22.1829,36-22.68,36-.2586"
+                                />
+                                <path
+                                    class="cls-1"
+                                    d="M135,90.3769v55.9943a2.1294,2.1294,0,0,1-1.7313,2.1C126.0746,149.8339,99,153.4458,99,130.56V90.2319c0-22.1891,36-22.6866,36-.2587"
+                                />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </div>
     </div>
     <div fxLayout="column" fxFlex="initial" fxShow fxHide.xs>
         <a routerLink="/">{{ appName }}</a>
@@ -36,9 +54,9 @@
             Submit Template
         </a>
         <a
+            mat-icon-button
             fxHide
             fxShow.lt-md
-            mat-mini-fab
             color="primary"
             target="_blank"
             href="https://github.com/Kentico/kontent-template-manager/blob/master/README.md#submitting-web-template-to-templates-gallery"
@@ -58,28 +76,26 @@
         [mode]="isSmallScreen ? 'over' : 'side'"
         [opened]="isSmallScreen ? 'false' : 'true'"
         class="w-layout-side-menu"
+        [ngClass.lt-lg]="'small-screen'"
         [fixedInViewport]="layoutOptions.fixed"
         [fixedTopGap]="layoutOptions.topGap"
         [fixedBottomGap]="layoutOptions.bottomGap"
         [autoFocus]="false"
     >
-        <div style="width: 270px; height: 100%">
+        <div style="width: 100px; height: 100%">
             <div fxLayout="row" fxFlexFill fxLayoutAlign="center stretch">
-                <div fxLayout="column" fxFlex>
-                    <div *ngFor="let item of navigationItems">
-                        <a
-                            fxLayout="row"
-                            fxLayoutAlign="start center"
-                            fxLayoutGap="24px"
+                <div fxLayout="column" fxFlex="100px">
+                    <div fxLayout="row" *ngFor="let item of navigationItems">
+                        <a fxLayout="column" fxFlex
                             *ngIf="item.type === 'link'"
                             class="w-layout-side-item"
                             [class.active]="menuItemIsActive(item.routerLink ?? '')"
                             [routerLink]="item.routerLink"
                         >
-                            <div fxLayout="column" fxFlex="initial">
+                            <div>
                                 <mat-icon>{{ item.icon }}</mat-icon>
                             </div>
-                            <div fxLayout="column" fxFlex>
+                            <div>
                                 {{ item.title }}
                             </div>
                         </a>
@@ -88,8 +104,7 @@
                     <div class="w-layout-height-spacer"></div>
 
                     <div class="push-bottom w-text-center" libText3>
-                        <div>Template manager: {{ version }}</div>
-                        <div class="push-top-sm">Backup manager: {{ kbmVersion }}</div>
+                        <div>v{{ version }}</div>
                         <div class="push-top-sm">© {{ year }}</div>
                     </div>
                 </div>
@@ -97,7 +112,7 @@
         </div>
     </mat-sidenav>
 
-    <div class="w-layout-subheader">
+    <div class="w-layout-subheader push-left-md push-right-md">
         <div fxLayout="row" fxLayoutAlign="start center">
             <div fxLayout="column" fxFlex *ngIf="config">
                 {{ config.title }}
@@ -117,6 +132,7 @@
                 >
             </div>
         </div>
+        <mat-divider class="push-top"></mat-divider>
     </div>
 
     <div class="w-layout-content">
