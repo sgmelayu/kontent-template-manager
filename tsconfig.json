@@ -1,34 +1,35 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "downlevelIteration": true,
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "alwaysStrict": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "noImplicitAny": true,
-    "skipLibCheck": false,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types",
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
-    "paths": {
-      "node_modules/*": [
-        "node_modules/*"
-      ],
+    "compileOnSave": false,
+    "angularCompilerOptions": {
+        "fullTemplateTypeCheck": true,
+        "preserveWhiteSpace": false,
+        "enableIvy": true,
+        "strictInjectionParameters": true,
+        "strictTemplates": true,
+        "strictInputAccessModifiers": true
+    },
+    "compilerOptions": {
+        "baseUrl": "./",
+        "downlevelIteration": true,
+        "outDir": "./dist/out-tsc",
+        "sourceMap": true,
+        "declaration": false,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "alwaysStrict": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": true,
+        "noImplicitAny": true,
+        "skipLibCheck": false,
+        "target": "es2015",
+        "typeRoots": ["node_modules/@types"],
+        "lib": ["es2018", "dom"],
+        "paths": {
+            "node_modules/*": ["node_modules/*"]
+        }
     }
-  }
 }
