@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ManagementClient } from '@kentico/kontent-management';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 export interface IProjectCheck {
@@ -25,25 +25,21 @@ export class ProjectService {
                 addJitter: false,
                 canRetryError: (err) => false,
                 deltaBackoffMs: 0,
-                maxAttempts: 0,
-                maxCumulativeWaitTimeMs: 0
+                maxAttempts: 3
             }
         });
 
-        return client
-            .projectInformation()
-            .toObservable()
-            .pipe(
-                map((response) => {
-                    const projectCheck: IProjectCheck = {
-                        projectName: response.data.project.name
-                    };
+        return from(client.projectInformation().toPromise()).pipe(
+            map((response) => {
+                const projectCheck: IProjectCheck = {
+                    projectName: response.data.project.name
+                };
 
-                    return projectCheck;
-                }),
-                catchError((error) => {
-                    return of(undefined);
-                })
-            );
+                return projectCheck;
+            }),
+            catchError((error) => {
+                return of(undefined);
+            })
+        );
     }
 }

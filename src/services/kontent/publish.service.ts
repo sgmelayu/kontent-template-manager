@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ManagementClient } from '@kentico/kontent-management';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { observableHelper } from 'src/utilities';
 
@@ -31,14 +31,13 @@ export class PublishService {
                 addJitter: true,
                 canRetryError: (err) => true,
                 deltaBackoffMs: 500,
-                maxAttempts: 5,
-                maxCumulativeWaitTimeMs: 30
+                maxAttempts: 5
             }
         });
         const obs: Observable<void>[] = [];
 
         // get unique array of requested items in case the same item would be published multiple times
-        const uniqueItems: {[key: string]:  true} = {};
+        const uniqueItems: { [key: string]: true } = {};
         const getUniqueKey: (item: IPublishItemRequest) => string = (item) => `${item.itemId}_${item.languageId}`;
 
         for (const item of items) {
@@ -52,23 +51,24 @@ export class PublishService {
             uniqueItems[uniqueKey] = true;
 
             obs.push(
-                client
-                    .publishLanguageVariant()
-                    .byItemId(item.itemId)
-                    .byLanguageId(item.languageId)
-                    .withoutData()
-                    .toObservable()
-                    .pipe(
-                        map((response) => {
-                            callbacks.onSuccess(item);
-                        }),
-                        catchError((error) => {
-                            callbacks.onFailed(item);
+                from(
+                    client
+                        .publishLanguageVariant()
+                        .byItemId(item.itemId)
+                        .byLanguageId(item.languageId)
+                        .withoutData()
+                        .toPromise()
+                ).pipe(
+                    map((response) => {
+                        callbacks.onSuccess(item);
+                    }),
+                    catchError((error) => {
+                        callbacks.onFailed(item);
 
-                            // ignore error & continue
-                            return of(undefined);
-                        })
-                    )
+                        // ignore error & continue
+                        return of(undefined);
+                    })
+                )
             );
         }
 

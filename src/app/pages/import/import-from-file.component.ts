@@ -193,6 +193,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
             enableLog: this.isDevMode(),
             fixLanguages: true,
             projectId: projectId,
+            enablePublish: true,
             apiKey: apiKey,
             onImport: (item) => {
                 this.dependencies.processingService.addProcessedItem(item);

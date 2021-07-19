@@ -10,7 +10,6 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
         }
       },
       "architect": {
@@ -27,7 +26,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/assets/styles/theme.scss"
+              "src/app/styles/theme.scss"
             ],
             "scripts": [
             ],
@@ -69,11 +68,6 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "import-tool:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "import-tool:build:production"
-            }
           }
         },
         "extract-i18n": {
