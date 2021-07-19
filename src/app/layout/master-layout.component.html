@@ -48,7 +48,7 @@
             <div fxLayout="column" fxFlex="initial">
                 <div *ngFor="let item of navigationItems">
                     <a fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px" *ngIf="item.type === 'link'"
-                        class="w-layout-side-item" [class.active]="menuItemIsActive(item.routerLink)"
+                        class="w-layout-side-item" [class.active]="menuItemIsActive(item.routerLink ?? '')"
                         [routerLink]="item.routerLink">
                         <div fxLayout="column" fxFlex="initial">
                             <mat-icon>{{ item.icon }}</mat-icon>

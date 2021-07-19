@@ -26,7 +26,7 @@ interface ITypeInfo {
 export class ImportDataPreviewComponent extends BaseComponent implements OnInit, OnChanges {
     @Input() previewData?: IDataPreviewWrapper;
 
-    private activeType?: ActiveType;
+    public activeType?: ActiveType;
     public previewedItem?: IItemPreviewWithIndex;
 
     public get activePreviewedItem(): IItemPreviewWithIndex | undefined {

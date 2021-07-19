@@ -50,7 +50,6 @@
 </div>
 
 <ng-container *ngIf="!processsing && !success && !importPreviewData">
-
     <p class="push-bottom-md">This page enables you to import data previously exported .zip package.</p>
 
     <form [formGroup]="formGroup">
@@ -85,7 +84,9 @@
                     <div class="push-top-sm">
                         <span>Last update: </span
                         ><span
-                            ><strong>{{ formatDateVerbose(templateToImport.lastUpdate) }}</strong></span
+                            ><strong>{{
+                                templateToImport.lastUpdate ? formatDateVerbose(templateToImport.lastUpdate) : 'never'
+                            }}</strong></span
                         >
                     </div>
 
@@ -104,7 +105,6 @@
         </div>
 
         <div class="w-uploader">
-
             <ng-container *ngIf="!templateToImport">
                 <ngx-file-drop
                     *ngIf="!file"
@@ -138,16 +138,20 @@
         </div>
 
         <div libCard class="push-top-md">
-
             <div fxLayout="row" fxLayoutAlign="start center">
                 <div fxLayout="column" fxFlex>
                     <div libText3>Target project</div>
                     <mat-form-field appearance="fill" class="push-top-sm">
-                        <input readonly="true" disabled="true" matInput [value]="project?.projectName">
+                        <input readonly="true" disabled="true" matInput [value]="project?.projectName" />
                     </mat-form-field>
                 </div>
                 <div fxLayout="column" fxFlex="initial">
-                    <lib-button style="margin-top:7px" [renderButtonOnly]="true" [matIcon]="project ? 'done' : 'clear'" [color]="project ? 'success' : 'error'" ></lib-button>
+                    <lib-button
+                        style="margin-top: 7px"
+                        [renderButtonOnly]="true"
+                        [matIcon]="project ? 'done' : 'clear'"
+                        [color]="project ? 'success' : 'error'"
+                    ></lib-button>
                 </div>
             </div>
 

@@ -35,7 +35,7 @@
                                     {{ template.technology }}
                                 </div>
                                 <div fxLayout="column" fxFlex="initial" fxHide>
-                                    {{ formatDateVerbose(template.lastUpdate) }}
+                                    {{ template.lastUpdate ? formatDateVerbose(template.lastUpdate) : 'never' }}
                                 </div>
                             </div>
                             <div class="push-top-sm">

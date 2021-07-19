@@ -47,6 +47,10 @@ export abstract class BaseComponent implements OnDestroy {
         this.destroy();
     }
 
+    formatDateVerbose(date: DateTimeFormat): string {
+        return this.dependencies.timeService.formatDateVerbose(date);
+    }
+
     protected destroy(): void {
         this.ngUnsubscribe.next();
         this.ngUnsubscribe.complete();
@@ -79,9 +83,5 @@ export abstract class BaseComponent implements OnDestroy {
 
     protected navigateToAction(action: string, extras?: NavigationExtras): void {
         this.dependencies.router.navigate([action], extras);
-    }
-
-    protected formatDateVerbose(date: DateTimeFormat): string {
-        return this.dependencies.timeService.formatDateVerbose(date);
     }
 }
