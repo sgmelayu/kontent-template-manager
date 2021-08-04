@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/Kentico/kontent-template-manager/compare/v1.9.0...v1.9.1) (2021-08-04)
+
+
+### Bug Fixes
+
+* updates backup manager dependency which fixes publish functionality ([c58371d](https://github.com/Kentico/kontent-template-manager/commit/c58371d398c6780e7c6219c1ee6093d7af2b001a))
+
 ## [1.9.0](https://github.com/Kentico/kontent-template-manager/compare/v1.8.0...v1.9.0) (2021-08-04)
 
 
