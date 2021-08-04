@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/Kentico/kontent-template-manager/compare/v1.8.0...v1.9.0) (2021-08-04)
+
+
+### Features
+
+* implements strict templates, uses new prod build script syntax ([b2aa716](https://github.com/Kentico/kontent-template-manager/commit/b2aa7169f59bd9b9647f2c2b6cade45fea3f2c1a))
+* redesigns template manager to match new redesigned kontent app ([c37ec11](https://github.com/Kentico/kontent-template-manager/commit/c37ec11a5cb8245136bb5752a7110f7c16ebab96))
+* sets angular compiler options ([fd7774f](https://github.com/Kentico/kontent-template-manager/commit/fd7774f766de751dd80b7f4101f75b53655c6ddb))
+* update to Angular 12, update to new CM API & Backup manager, update all other deps ([3c47fce](https://github.com/Kentico/kontent-template-manager/commit/3c47fce5ededcbff988eaa474ebf0ad1cf19f57b))
+* working update to Angular 12 with all necessary changes ([592e80a](https://github.com/Kentico/kontent-template-manager/commit/592e80a56d63ad943dba5dd34b23547aebbfccf1))
+
+
+### Bug Fixes
+
+* fixes font face declaration ([d78ad64](https://github.com/Kentico/kontent-template-manager/commit/d78ad64de23772b6b1ae1bc161f3783b6cf5c6b2))
+* removes double publish and use backup manager publish functionality only ([d493512](https://github.com/Kentico/kontent-template-manager/commit/d4935125f49d09cc861c3657be8484f965189ec8))
+
 ## [1.8.0](https://github.com/Kentico/kontent-template-manager/compare/v1.7.0...v1.8.0) (2021-01-08)
 
 
