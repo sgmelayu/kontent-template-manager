@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
 import { BasePageComponent } from '../../core/base-page.component';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation-dialog.component';
 import { LanguageVariantModels } from '@kentico/kontent-management';
-import { IProjectCheck, ITemplate, PublishService } from 'src/services';
+import { IProjectCheck, ITemplate } from 'src/services';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -84,7 +84,6 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
     constructor(
         dependencies: ComponentDependencies,
         cdr: ChangeDetectorRef,
-        private publishService: PublishService,
         private dialog: MatDialog,
         private fb: FormBuilder,
         private activatedRoute: ActivatedRoute
@@ -193,7 +192,7 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
             enableLog: this.isDevMode(),
             fixLanguages: true,
             projectId: projectId,
-            enablePublish: true,
+            enablePublish: this.publishVariants,
             apiKey: apiKey,
             onImport: (item) => {
                 this.dependencies.processingService.addProcessedItem(item);
@@ -217,47 +216,11 @@ export class ImportFromFileComponent extends BasePageComponent implements OnInit
 
             await importService.importAsync(this.importData);
 
-            if (this.publishVariants) {
-                await this.publishVariantsAsync(projectId, apiKey, importedVariants);
-            }
-
             this.success = true;
             this.processsing = false;
 
             super.markForCheck();
         });
-    }
-
-    async publishVariantsAsync(projectId: string, apiKey: string, variants: IVariantWithTitle[]): Promise<void> {
-        await this.publishService
-            .tryPublishItems(
-                {
-                    apiKey: apiKey,
-                    projectId: projectId
-                },
-                variants.map((m) => {
-                    return {
-                        itemId: m.variant.item.id ?? '',
-                        languageId: m.variant.language.id ?? '',
-                        title: m.title
-                    };
-                }),
-                {
-                    onFailed: (item) => {
-                        this.dependencies.processingService.addProcessedItem({
-                            title: item.title,
-                            type: 'publish failed (incomplete data)'
-                        });
-                    },
-                    onSuccess: (item) => {
-                        this.dependencies.processingService.addProcessedItem({
-                            title: item.title,
-                            type: 'publish'
-                        });
-                    }
-                }
-            )
-            .toPromise();
     }
 
     async handlePreview(): Promise<void> {
