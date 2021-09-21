@@ -1,4 +1,4 @@
-## Kentico Kontent Template Manager
+## Kontent Template Manager
 
 [![Template manager](https://img.shields.io/badge/-Template%20Manager-brightgreen.svg)](https://kentico.github.io/kontent-template-manager/)
 
@@ -7,7 +7,7 @@
 
 ### About
 
-This web based application can be used to `backup` & `restore` Kentico Kontent projects. Under the hood it uses [Kontent backup manager](https://github.com/Kentico/kontent-backup-manager-js) which can be used independently using CLI in case you need to automate your backup processes.
+This web based application can be used to `backup` & `restore` Kontent by Kentico projects. Under the hood it uses [Kontent backup manager](https://github.com/Kentico/kontent-backup-manager-js) which can be used independently using CLI in case you need to automate your backup processes.
 
 ### Running application locally
 
@@ -31,7 +31,7 @@ npx ngh --dir=dist
 
 ## Submitting Web Template to Templates Gallery
 
-If you want to submit a Kentico Kontent Web Template to the [Templates Gallery](https://kentico.github.io/kontent-template-manager/templates), please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust [/src/assets/templates/list.json](/src/assets/templates/list.json) and create a pull request.
+If you want to submit a Kontent Web Template to the [Templates Gallery](https://kentico.github.io/kontent-template-manager/templates), please make sure to follow below mentioned guidelines. Once your repository is ready, please adjust [/src/assets/templates/list.json](/src/assets/templates/list.json) and create a pull request.
 
 ### Guidelines for Web Templates
 
