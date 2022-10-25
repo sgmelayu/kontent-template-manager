@@ -1,9 +1,9 @@
 ## Kontent Template Manager
 
-[![Template manager](https://img.shields.io/badge/-Template%20Manager-brightgreen.svg)](https://kentico.github.io/kontent-template-manager/)
+[![No Maintenance Intended](https://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-[![Build & Deploy](https://github.com/Kentico/kontent-template-manager/actions/workflows/integrate.yml/badge.svg)](https://github.com/Kentico/kontent-template-manager/actions/workflows/integrate.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/03673043-ac8f-484c-89e4-e80d0bd2b371/deploy-status)](https://app.netlify.com/sites/kontent-template-manager/deploys)
+## :warning: Deprecation Notice
+> This repository has been archived and is no longer maintained. Please consider using https://github.com/kontent-ai/backup-manager-js.
 
 ### About
 
