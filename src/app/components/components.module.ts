@@ -4,25 +4,27 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CoreModule } from '../core/core.module';
 import { MessageComponent } from './messages/message.component';
-import { ImportDataPreview } from './preview/import-data-preview.component';
+import { ImportDataPreviewComponent } from './preview/import-data-preview.component';
 import { ProcessedItemsComponent } from './processed-items/processed-items.component';
+import { ButtonComponent } from './buttons/button.component';
 
 @NgModule({
-  declarations: [
-    MessageComponent,
-    ProcessedItemsComponent,
-    ImportDataPreview
-  ],
-
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     CoreModule
   ],
+  declarations: [
+    MessageComponent,
+    ProcessedItemsComponent,
+    ImportDataPreviewComponent,
+    ButtonComponent
+  ],
   exports: [
     MessageComponent,
     ProcessedItemsComponent,
-    ImportDataPreview
+    ImportDataPreviewComponent,
+    ButtonComponent
   ]
 })
 export class ComponentsModule { }

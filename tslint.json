@@ -1,23 +1,43 @@
 {
-  "extends": "tslint:recommended",
+  "extends": [
+    "tslint:recommended",
+    "rxjs-tslint-rules",
+    "tslint-angular"
+  ],
   "rulesDirectory": [
     "codelyzer"
   ],
   "rules": {
-    "array-type": false,
-    "arrow-parens": false,
+    "rxjs-no-unsafe-takeuntil": {
+      "severity": "error"
+    },
+    "arrow-return-shorthand": true,
+    "callable-types": true,
+    "class-name": true,
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+    "curly": true,
     "deprecation": {
       "severity": "warn"
     },
+    "eofline": true,
+    "forin": true,
     "import-blacklist": [
       true,
       "rxjs/Rx"
     ],
-    "interface-name": false,
-    "max-classes-per-file": false,
+    "import-spacing": true,
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "interface-over-type-literal": true,
+    "label-position": true,
     "max-line-length": [
       true,
-      180
+      1000
     ],
     "member-access": false,
     "member-ordering": [
@@ -31,7 +51,8 @@
         ]
       }
     ],
-    "no-consecutive-blank-lines": false,
+    "no-arg": true,
+    "no-bitwise": true,
     "no-console": [
       true,
       "debug",
@@ -40,39 +61,124 @@
       "timeEnd",
       "trace"
     ],
+    "one-variable-per-declaration": false,
+    "no-construct": true,
+    "no-debugger": true,
+    "no-duplicate-super": true,
     "no-empty": false,
+    "no-empty-interface": true,
+    "no-eval": true,
     "no-inferrable-types": [
       false,
       "ignore-params"
     ],
+    "no-misused-new": true,
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
+    "no-shadowed-variable": true,
+    "no-string-literal": false,
+    "no-string-throw": true,
     "no-switch-case-fall-through": true,
-    "no-use-before-declare": true,
-    "no-var-requires": false,
-    "object-literal-key-quotes": [
-      true,
-      "as-needed"
-    ],
+    "no-trailing-whitespace": true,
+    "no-unnecessary-initializer": true,
+    "no-unused-expression": true,
+    "no-var-keyword": true,
     "object-literal-sort-keys": false,
-    "ordered-imports": false,
+    "one-line": [
+      true,
+      "check-open-brace",
+      "check-catch",
+      "check-else",
+      "check-whitespace"
+    ],
+    "prefer-const": true,
     "quotemark": [
       true,
       "single"
     ],
-    "trailing-comma": false,
+    "prefer-for-of": false,
+    "radix": true,
+    "semicolon": [true, "always", "strict-bound-class-methods"],
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
+    "unified-signatures": true,
+    "variable-name": false,
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type"
+    ],
     "no-output-on-prefix": true,
-    "use-input-property-decorator": true,
-    "use-output-property-decorator": true,
-    "use-host-property-decorator": true,
     "no-input-rename": true,
     "no-output-rename": true,
-    "use-life-cycle-interface": true,
     "use-pipe-transform-interface": true,
     "component-class-suffix": true,
-    "directive-class-suffix": true,
-    "no-angle-bracket-type-assertion": false,
+    "directive-class-suffix": false,
+    "directive-selector": [
+      true,
+      "attribute",
+      [
+        "mod",
+        "lib",
+        "layout"
+      ],
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      [
+        "mod",
+        "page",
+        "lib",
+        "root",
+        "layout"
+      ],
+      "kebab-case"
+    ],
+    "arrow-parens": false,
     "object-literal-shorthand": false,
-    "no-string-literal": false,
+    "array-type": [
+      true,
+      "array"
+    ],
+    "no-angle-bracket-type-assertion": false,
+    "object-literal-key-quotes": [
+      false,
+      "as-needed"
+    ],
+    "max-classes-per-file": [
+      true,
+      30
+    ],
+    "angular-whitespace": [false, "check-interpolation"],
+    "trailing-comma": [
+      false,
+      {
+        "multiline": {
+          "objects": "always",
+          "arrays": "always",
+          "functions": "never",
+          "typeLiterals": "ignore"
+        },
+        "esSpecCompliant": true
+      }
+    ],
+    "ordered-imports": false
   }
 }

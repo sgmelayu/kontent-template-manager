@@ -1,104 +1,62 @@
 <div *ngIf="previewData">
 
-    <div fxLayout="row wrap" fxLayoutGap="16px" fxLayoutAlign="start center">
-        <div *ngIf="showType('contentTypes')" fxLayout="column" class="pad"
-            [class.w-inactive-item]="activeType !== 'contentTypes'"
-            [class.w-active-item]="activeType === 'contentTypes'" fxFlex.lt-md="50%" (click)="setType('contentTypes')">
-            <div>
-                Content types
-            </div>
-            <div class="push-top-sm w-text-center" libTextCaption>
-                {{ previewData.contentTypes.length }}
-            </div>
-        </div>
-        <div *ngIf="showType('taxonomies')" fxLayout="column" class="pad"
-            [class.w-inactive-item]="activeType !== 'taxonomies'" [class.w-active-item]="activeType === 'taxonomies'"
-            fxFlex.lt-md="50%" (click)="setType('taxonomies')">
-            <div>
-                Taxonomies
-            </div>
-            <div class="push-top-sm w-text-center" libTextCaption>
-                {{ previewData.taxonomies.length }}
-            </div>
-        </div>
-        <div *ngIf="showType('assets')" fxLayout="column" class="pad" [class.w-inactive-item]="activeType !== 'assets'"
-            [class.w-active-item]="activeType === 'assets'" fxFlex.lt-md="50%" (click)="setType('assets')">
-            <div>
-                Assets
-            </div>
-            <div class="push-top-sm w-text-center" libTextCaption>
-                {{ previewData.assets.length }}
-            </div>
-        </div>
-        <div *ngIf="showType('contentItems')" fxLayout="column" class="pad"
-            [class.w-inactive-item]="activeType !== 'contentItems'"
-            [class.w-active-item]="activeType === 'contentItems'" fxFlex.lt-md="50%" (click)="setType('contentItems')">
-            <div>
-                Content items
-            </div>
-            <div class="push-top-sm w-text-center" libTextCaption>
-                {{ previewData.contentItems.length }}
-            </div>
-        </div>
-        <div *ngIf="showType('languageVariants')" fxLayout="column" class="pad"
-            [class.w-inactive-item]="activeType !== 'languageVariants'"
-            [class.w-active-item]="activeType === 'languageVariants'" fxFlex.lt-md="50%"
-            (click)="setType('languageVariants')">
-            <div>
-                Language variants
-            </div>
-            <div class="push-top-sm w-text-center" libTextCaption>
-                {{ previewData.languageVariants.length }}
+    <div>
+        <div fxLayout="row wrap" fxLayoutGap="16px grid" fxLayoutAlign="start">
+            <div fxLayout="column" *ngFor="let type of types"  fxFlex.lt-md="50%" (click)="setType(type)">
+                <div class="pad" [class.w-inactive-item]="activeType !== type.type"
+                [class.w-active-item]="activeType === type.type">
+                    <div>
+                        {{ type.title }}
+                    </div>
+                    <div class="push-top-sm w-text-center" libTextCaption>
+                        {{ type.getItems(previewData).length}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div fxLayout="row wrap" fxLayoutGap="16px" class="push-top">
-        <div fxLayout="column" fxFlex="calc(50% - 16px)" fxFlex.lt-lg="100%">
-            <div libCard>
-                <cdk-virtual-scroll-viewport *ngIf="activeItems" itemSize="50" class="w-import-viewport">
-                    <mat-list role="list">
-                        <mat-list-item role="listitem" *cdkVirtualFor="let item of activeItems; let i = index">
-                            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
-                                <div fxLayout="column" fxFlex="initial">
-                                    <strong>#{{ i + 1 }} </strong>
-                                </div>
-                                <div fxLayout="column" fxFlex="initial">
-                                    <span class="w-preview-link" (click)="previewItem(item, i)">Preview</span>
-                                </div>
-                                <div fxLayout="column" fxFlex="initial">
-                                    |
-                                </div>
-                                <div fxLayout="column" fxFlex>
-                                    {{ item.title }}
-                                </div>
-                            </div>
 
-                        </mat-list-item>
-                    </mat-list>
-                </cdk-virtual-scroll-viewport>
-            </div>
-        </div>
+    <div class="push-top-lg">
 
-        <div fxLayout="column" fxFlex="calc(50% - 16px)" fxFlex.lt-lg="100%">
-            <div libCard>
-                <div libTitle2>
-                    Item preview
-                </div>
-                <div class="push-top-sm" *ngIf="activePreviewedItem">
-                    {{ activePreviewedItem.index + 1 }} | {{ activePreviewedItem.title }}
-                </div>
-
-                <div class="push-top">
-                    <div *ngIf="!activePreviewedItem">
-                        No item is selected
+        <div fxLayout="row wrap" fxLayoutGap="16px grid" class="push-top">
+            <div fxLayout="column" fxFlex="calc(50% - 16px)" fxFlex.lt-lg="100%">
+                <div libCard>
+                    <cdk-virtual-scroll-viewport *ngIf="activeItems" itemSize="50" class="w-import-viewport">
+                        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" [class.push-top]="!first"
+                        *cdkVirtualFor="let item of activeItems; let first = first; let i = index">
+                        <div fxLayout="column" fxFlex="initial">
+                            <span libText3>#{{ i + 1 }} </span>
+                        </div>
+                        <div fxLayout="column" fxFlex="initial">
+                            <span class="w-preview-link" (click)="previewItem(item, i)">Preview</span>
+                        </div>
+                        <div fxLayout="column" fxFlex>
+                            {{ item.title }}
+                        </div>
                     </div>
+                    </cdk-virtual-scroll-viewport>
+                </div>
+            </div>
+
+            <div fxLayout="column" fxFlex="calc(50% - 16px)" fxFlex.lt-lg="100%">
+                <div libCard>
                     <div *ngIf="activePreviewedItem">
-                        <ngx-json-viewer [json]="activePreviewedItem.data"></ngx-json-viewer>
+                        {{ activePreviewedItem.index + 1 }} | {{ activePreviewedItem.title }}
+                    </div>
+
+                    <div class="push-top">
+                        <div *ngIf="!activePreviewedItem">
+                            No item is selected
+                        </div>
+                        <div *ngIf="activePreviewedItem">
+                            <ngx-json-viewer [expanded]="false" [json]="activePreviewedItem.data"></ngx-json-viewer>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
 </div>
