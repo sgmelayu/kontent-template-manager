@@ -1,8 +1,7 @@
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { flatMap, delay } from 'rxjs/operators';
+import { delay, flatMap } from 'rxjs/operators';
 
 export class ObservableHelper {
-
     /**
      * Returns true if given parameter is an Observable, false otherwise
      * @param value Value to check
@@ -15,9 +14,9 @@ export class ObservableHelper {
     }
 
     /**
-    * https://www.learnrxjs.io/operators/combination/zip.html
-    * @param observables Observables to zip
-    */
+     * https://www.learnrxjs.io/operators/combination/zip.html
+     * @param observables Observables to zip
+     */
     zipObservables(observables: Observable<any>[]): Observable<any> {
         if (!observables) {
             throw Error(`Given observables are not valid`);
@@ -68,11 +67,11 @@ export class ObservableHelper {
 
         for (let i = 1; i < observables.length; i++) {
             const currentObservable = observables[i];
-           flatMappedObs = flatMappedObs.pipe(
+            flatMappedObs = flatMappedObs.pipe(
                 delay(delayMs),
                 flatMap((x) => {
                     return currentObservable;
-                }),
+                })
             );
         }
 
@@ -80,9 +79,9 @@ export class ObservableHelper {
     }
 
     /**
-    * https://www.learnrxjs.io/operators/combination/forkjoin.html
-    * @param observables Observables to fork join
-    */
+     * https://www.learnrxjs.io/operators/combination/forkjoin.html
+     * @param observables Observables to fork join
+     */
     forkJoinObservables(observables: Observable<any>[]): Observable<any> {
         if (!observables) {
             throw Error(`Given observables are not valid`);
