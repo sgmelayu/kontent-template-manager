@@ -2,6 +2,7 @@ const colors = require('colors/safe');
 const path = require('path');
 const fs = require('fs');
 const appVersion = require('../package.json').version;
+const kbmVersion = require('../package.json').dependencies["@kentico/kontent-backup-manager"];
 
 exports.createVersionFile = (filePath, appVersion) => {
 
@@ -9,7 +10,8 @@ exports.createVersionFile = (filePath, appVersion) => {
 
     const src = `
 export const versionInfo = {
-    version: '${appVersion}'
+    version: '${appVersion}',
+    kbmVersion: '${kbmVersion}'
 };
 `;
 
@@ -20,6 +22,7 @@ export const versionInfo = {
         }
 
         console.log(colors.green(`Updating application version ${colors.yellow(appVersion)}`));
+        console.log(colors.green(`Updating kontent backup manager version ${colors.yellow(kbmVersion)}`));
         console.log(`${colors.green('Writing version module to ')}${colors.yellow(filePath)}\n`);
     });
 }

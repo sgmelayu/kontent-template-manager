@@ -10,6 +10,7 @@ import {
     TextDisplay2Directive,
     TextDisplay3Directive,
     TextDisplay4Directive,
+    Text3Directive,
 } from './basic/text';
 import { Title1Directive, Title2Directive, Title3Directive, Title4Directive } from './basic/titles';
 
@@ -27,6 +28,7 @@ import { Title1Directive, Title2Directive, Title3Directive, Title4Directive } fr
         // Text
         Text1Directive,
         Text2Directive,
+        Text3Directive,
         TextCaptionDirective,
         // Display
         TextDisplay1Directive,
@@ -43,6 +45,7 @@ import { Title1Directive, Title2Directive, Title3Directive, Title4Directive } fr
         // Text
         Text1Directive,
         Text2Directive,
+        Text3Directive,
         TextCaptionDirective,
         // Display
         TextDisplay1Directive,
