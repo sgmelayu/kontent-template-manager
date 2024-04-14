@@ -1,21 +1,16 @@
-import { Directive, ElementRef, Input, OnInit, Renderer2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, SimpleChanges } from '@angular/core';
 
 @Directive({
-    selector: '[libCard]',
+    selector: '[libCard]'
 })
-export class CardDirective implements OnInit {
-
+export class CardDirective implements OnInit, OnChanges {
     @Input() enableCard: boolean = true;
     @Input() addPad: boolean = true;
 
-    protected readonly padClass = 'pad';
+    protected readonly padClass = 'pad-md';
     protected readonly standardCardClass = 'w-card';
 
-
-    constructor(
-        private hostElement: ElementRef,
-        private renderer: Renderer2) {
-    }
+    constructor(private hostElement: ElementRef, private renderer: Renderer2) {}
 
     ngOnInit(): void {
         this.processCard();
@@ -27,7 +22,6 @@ export class CardDirective implements OnInit {
 
     private processCard(): void {
         if (this.hostElement) {
-
             if (this.addPad) {
                 this.renderer.addClass(this.hostElement.nativeElement, this.padClass);
             } else {

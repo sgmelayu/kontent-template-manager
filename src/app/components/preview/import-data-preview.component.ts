@@ -1,117 +1,134 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 
 import { ComponentDependencies } from '../../../di';
 import { BaseComponent } from '../../core/base.component';
 import { ActiveType, IDataPreviewWrapper, IItemPreview, IItemPreviewWithIndex } from './preview-models';
 
+interface ITypeInfo {
+    title: string;
+    type: ActiveType;
+    getItems: (data: IDataPreviewWrapper) => IItemPreview[];
+}
+
 @Component({
-  selector: 'lib-import-data-preview',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './import-data-preview.component.html',
-  styleUrls: ['./import-data-preview.component.scss']
+    selector: 'lib-import-data-preview',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './import-data-preview.component.html'
 })
-export class ImportDataPreview extends BaseComponent implements OnInit {
+export class ImportDataPreviewComponent extends BaseComponent implements OnInit, OnChanges {
+    @Input() previewData?: IDataPreviewWrapper;
 
-  @Input() previewData?: IDataPreviewWrapper;
-  @Input() showTypes: 'all' | 'contentItemsImport' = 'all';
+    public activeType?: ActiveType;
+    public previewedItem?: IItemPreviewWithIndex;
 
-  private _activeType?: ActiveType;
+    public get activePreviewedItem(): IItemPreviewWithIndex | undefined {
+        if (this.previewedItem) {
+            return this.previewedItem;
+        }
 
-  public get activeType(): ActiveType {
-    if (this._activeType) {
-      return this._activeType;
+        if (!this.activeItems) {
+            return undefined;
+        }
+
+        if (this.activeItems.length > 0) {
+            const firstItem = this.activeItems[0];
+            return {
+                data: firstItem.data,
+                index: 0,
+                title: firstItem.title
+            };
+        }
+        return undefined;
     }
 
-    if (this.showTypes === 'all') {
-      return 'contentTypes';
+    public readonly types: ITypeInfo[] = [
+        {
+            title: 'Content types',
+            type: 'contentTypes',
+            getItems: (data) => data.contentTypes
+        },
+        {
+            title: 'Content type snippets',
+            type: 'contentTypeSnippets',
+            getItems: (data) => data.contentTypeSnippets
+        },
+        {
+            title: 'Content items',
+            type: 'contentItems',
+            getItems: (data) => data.contentItems
+        },
+        {
+            title: 'Taxonomies',
+            type: 'taxonomies',
+            getItems: (data) => data.taxonomies
+        },
+        {
+            title: 'Languages',
+            type: 'languages',
+            getItems: (data) => data.languages
+        },
+        {
+            title: 'Language variants',
+            type: 'languageVariants',
+            getItems: (data) => data.languageVariants
+        },
+        {
+            title: 'Assets',
+            type: 'assets',
+            getItems: (data) => data.assets
+        },
+        {
+            title: 'Asset folders',
+            type: 'assetFolders',
+            getItems: (data) => data.assetFolders
+        },
+        {
+            title: 'Data inconsistencies',
+            type: 'dataInconsistencies',
+            getItems: (data) => data.dataInconsistencies
+        }
+    ];
+
+    public activeItems: IItemPreview[] = [];
+
+    constructor(dependencies: ComponentDependencies, cdr: ChangeDetectorRef) {
+        super(dependencies, cdr);
     }
 
-    return 'assets';
-  }
+    ngOnInit(): void {}
 
-  public previewedItem?: IItemPreviewWithIndex;
-
-  public get activePreviewedItem(): IItemPreviewWithIndex | undefined {
-    if (this.previewedItem) {
-      return this.previewedItem;
+    ngOnChanges(simpleChanges: SimpleChanges): void {
+        if (this.previewData && !this.activeType) {
+            this.activeItems = this.previewData.contentTypes;
+            this.activeType = 'contentTypes';
+        }
     }
 
-    if (!this.activeItems) {
-      return undefined;
+    previewItem(item: IItemPreview, index: number): void {
+        this.previewedItem = {
+            data: item.data,
+            index: index,
+            title: item.title
+        };
+        super.markForCheck();
     }
 
-    if (this.activeItems.length > 0) {
-      const firstItem = this.activeItems[0];
-      return {
-        data: firstItem.data,
-        index: 0,
-        title: firstItem.title
-      }
+    setType(type: ITypeInfo): void {
+        if (!this.previewData) {
+            return;
+        }
+
+        this.activeType = type.type;
+        this.previewedItem = undefined;
+        this.activeItems = type.getItems(this.previewData);
+        super.markForCheck();
     }
-    return undefined;
-  }
-
-  public get activeItems(): IItemPreview[] | undefined {
-    if (!this.previewData) {
-      return undefined;
-    }
-
-    if (this.activeType === 'contentTypes') {
-      return this.previewData.contentTypes;
-    }
-
-    if (this.activeType === 'assets') {
-      return this.previewData.assets;
-    }
-
-    if (this.activeType === 'taxonomies') {
-      return this.previewData.taxonomies;
-    }
-
-    if (this.activeType === 'contentItems') {
-      return this.previewData.contentItems;
-    }
-
-    if (this.activeType === 'languageVariants') {
-      return this.previewData.languageVariants;
-    }
-  }
-
-  constructor(
-    dependencies: ComponentDependencies,
-    cdr: ChangeDetectorRef) {
-    super(dependencies, cdr);
-  }
-
-  ngOnInit(): void {
-  }
-
-  showType(type: ActiveType): boolean {
-    if (this.showTypes === 'all') {
-      return true;
-    }
-
-    if (this.showTypes === 'contentItemsImport') {
-      const allowedTypes: ActiveType[] = ['assets', 'contentItems', 'languageVariants'];
-
-      return allowedTypes.includes(type);
-    }
-
-    throw Error(`Unsupported show type`);
-  }
-
-  previewItem(item: IItemPreview, index: number): void {
-    this.previewedItem = {
-      data: item.data,
-      index: index,
-      title: item.title
-    };
-    super.detectChanges();
-  }
-
-  setType(type: ActiveType): void {
-    this._activeType = type;
-    this.previewedItem = undefined;
-    super.detectChanges();
-  }
 }

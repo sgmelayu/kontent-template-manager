@@ -1,4 +1,5 @@
 
 export const versionInfo = {
-    version: '0.0.8'
+    version: '1.9.1',
+    kbmVersion: '3.0.1'
 };
