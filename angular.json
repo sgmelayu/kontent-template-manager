@@ -10,7 +10,6 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
         }
       },
       "architect": {
@@ -22,16 +21,29 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
+            "serviceWorker": false,
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/app/styles/theme.scss"
             ],
             "scripts": [
             ],
-            "es5BrowserSupport": true
+            "allowedCommonJsDependencies": [
+              "filesaver.js",
+              "local-storage-fallback",
+              "@kentico/kontent-management",
+              "@kentico/kontent-backup-manager"
+            ]
           },
           "configurations": {
             "production": {
@@ -41,11 +53,10 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "https://kentico.github.io/cloud-template-manager/",
+              "baseHref": "https://kentico.github.io/kontent-template-manager/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -65,11 +76,6 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "import-tool:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "import-tool:build:production"
-            }
           }
         },
         "extract-i18n": {
@@ -86,7 +92,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.scss"
+              "src/assets/styles/theme.scss"
             ],
             "scripts": [],
             "assets": [

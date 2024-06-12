@@ -6,7 +6,7 @@ export interface ITemplate {
     imageUrl: string;
     author: {
         name: string;
-        email: String;
+        email: string;
     };
     forVersion: string;
     technology: string;
