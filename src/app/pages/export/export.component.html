@@ -1,60 +1,62 @@
-<div class="push-bottom" *ngIf="error">
-    <lib-message [type]="'error'" [text]="error"></lib-message>
+<mat-progress-bar *ngIf="processsing" mode="indeterminate"></mat-progress-bar>
+
+<div class="push-bottom-md" *ngIf="success">
+    <lib-message [type]="'success'">Project data successfully exported</lib-message>
 </div>
 
-<h1>
-    Export data
-</h1>
+<div>
+    <lib-processed-items></lib-processed-items>
+</div>
 
-<p class="push-top push-bottom">
-    This function enables you to create <em>json</em> export package of data from given project
-</p>
+<ng-container *ngIf="!processsing && !success">
+    <p class="push-top-md push-bottom-md">
+        This feature creates a zip package with all data (including asset binaries) from a given project
+    </p>
 
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
-<ng-container *ngIf="step === 'initial'">
-    <div [formGroup]="formGroup">
-        <div libCard class="push-top">
-            <mat-form-field class="w-full-width">
-                <input autocomplete="off" matInput placeholder="Project Id" formControlName="projectId" required>
-            </mat-form-field>
+    <form [formGroup]="formGroup">
+        <div libCard>
 
-            <mat-form-field class="push-top w-full-width">
-                <input autocomplete="off" matInput
-                    placeholder="Languages - separated by semicolon such as 'en-US; es-ES'. Leave empty for default language."
-                    formControlName="languages">
-            </mat-form-field>
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Project</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input readonly="true" disabled="true" matInput [value]="project?.projectName">
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxFlex="initial">
+                    <lib-button style="margin-top:7px" [renderButtonOnly]="true" [matIcon]="project ? 'done' : 'clear'" [color]="project ? 'success' : 'error'" ></lib-button>
+                </div>
+            </div>
+
+            <div fxLayout="row" class="push-top">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Source project id</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input matInput formControlName="projectId">
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="push-top">
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlex>
+                        <div libText3>Content Management API key</div>
+
+                        <mat-form-field appearance="fill" class="push-top-sm">
+                            <input matInput formControlName="apiKey">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div>
 
-        <div class="push-top">
-            <button *ngIf="canSubmit" (click)="handleExport()" mat-raised-button color="warn">Export data</button>
-            <button disabled *ngIf="!canSubmit" (click)="handleExport()" mat-raised-button>Export data</button>
+        <div class="push-top-md" fxLayout="row">
+            <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+                <lib-button (buttonClick)="handleExport()" [disabled]="!canExport" [matIcon]="'import_export'">Export data
+                </lib-button>
+            </div>
         </div>
-    </div>
-</ng-container>
+    </form>
 
-<ng-container *ngIf="step === 'completed'">
-    <div>
-        <lib-message [type]="'success'" [text]="'Data was exported successfully.'"></lib-message>
-
-        <div class="push-top" *ngIf="showDownloadButton">
-            <button mat-raised-button color="accent" (click)="handleDownloadFile()">Download zip</button>
-        </div>
-
-        <div libTitle1 class="push-top">
-            Preview of exported data
-        </div>
-
-        <div class="push-top">
-            <lib-import-data-preview [previewData]="importPreviewData"></lib-import-data-preview>
-        </div>
-    </div>
-</ng-container>
-
-<ng-container *ngIf="step === 'exporting'">
-    <div libCard>
-        <lib-processed-items></lib-processed-items>
-    </div>
 </ng-container>

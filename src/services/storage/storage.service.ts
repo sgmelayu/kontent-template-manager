@@ -73,5 +73,4 @@ export class StorageService {
     private saveCurrentObj(): void {
         storage.setItem(this.storageName, JSON.stringify(this.storageObj));
     }
-
 }
