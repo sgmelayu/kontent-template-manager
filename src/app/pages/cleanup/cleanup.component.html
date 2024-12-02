@@ -1,0 +1,61 @@
+<mat-progress-bar *ngIf="processsing" mode="indeterminate"></mat-progress-bar>
+
+<div class="push-bottom-md" *ngIf="success">
+    <lib-message [type]="'success'">Data in given project were deleted</lib-message>
+</div>
+
+<div>
+    <lib-processed-items></lib-processed-items>
+</div>
+
+<ng-container *ngIf="!processsing && !success">
+    <p class="push-top-md push-bottom-md">
+        This feature deletes everything from a given project. This action is not reversible.
+    </p>
+
+    <form [formGroup]="formGroup">
+        <div libCard>
+
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Project</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input readonly="true" disabled="true" matInput [value]="project?.projectName">
+                    </mat-form-field>
+                </div>
+                <div fxLayout="column" fxFlex="initial">
+                    <lib-button style="margin-top:7px" [renderButtonOnly]="true" [matIcon]="project ? 'done' : 'clear'" [color]="project ? 'success' : 'error'" ></lib-button>
+                </div>
+            </div>
+
+            <div fxLayout="row" class="push-top">
+                <div fxLayout="column" fxFlex>
+                    <div libText3>Project id</div>
+                    <mat-form-field appearance="fill" class="push-top-sm">
+                        <input matInput formControlName="projectId">
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="push-top">
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlex>
+                        <div libText3>Content Management API key</div>
+
+                        <mat-form-field appearance="fill" class="push-top-sm">
+                            <input matInput formControlName="apiKey">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="push-top" fxLayout="row">
+            <div fxLayout="column" fxFlex="initial" fxFlex.lt-md="100%">
+                <lib-button (buttonClick)="deleteWithConfirm()" [disabled]="!canClean" [matIcon]="'import_export'">Delete all project data
+                </lib-button>
+            </div>
+        </div>
+    </form>
+
+</ng-container>
