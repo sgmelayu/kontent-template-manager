@@ -4,31 +4,16 @@
 
 export const environment = {
   production: false,
-  appName: 'Template manager',
+  appName: 'Kontent Template Manager',
   templatesSourceUrl: 'https://raw.githubusercontent.com/Kentico/cloud-template-manager/master/templates/list.json',
   defaultProjects: {
-    depth: 10,
     sourceProjectId: 'f249eb83-18fd-01b8-2db7-c561bcb1ed1e',
     // tslint:disable-next-line:max-line-length
-    sourceProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxM2VkMmI4ODQ1NDg0ZjIwYjVkNWVhOTRlZDVlOWY0YSIsImlhdCI6IjE1NTQzNjg0NjgiLCJleHAiOiIxODk5OTY4NDY4IiwicHJvamVjdF9pZCI6ImYyNDllYjgzMThmZDAxYjgyZGI3YzU2MWJjYjFlZDFlIiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.UJ8rpJ5fKrCco4_1JvVtMFvUIyrIHr1Wo-VTRbdx34M',
-    languages: 'en-US; es-ES',
+    sourceProjectApiKey: 'ew0KICAiYWxnIjogIkhTMjU2IiwNCiAgInR5cCI6ICJKV1QiDQp9.ew0KICAianRpIjogIjEzZWQyYjg4NDU0ODRmMjBiNWQ1ZWE5NGVkNWU5ZjRhIiwNCiAgImlhdCI6ICIxNTU0MzY4NDY4IiwNCiAgImV4cCI6ICIxODk5OTY4NDY4IiwNCiAgInByb2plY3RfaWQiOiAiZjI0OWViODMxOGZkMDFiODJkYjdjNTYxYmNiMWVkMWUiLA0KICAidmVyIjogIjIuMS4wIiwNCiAgInVpZCI6ICJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsDQogICJhdWQiOiAibWFuYWdlLmtlbnRpY29jbG91ZC5jb20iDQp9.mrlstpy1goa7pCWd1RnJGRygdn0HrwsZ6_mrYYFpbfM',
     // sourceProjectId: 'b062c2f0-1a33-0070-794f-b48fa8bc1899',
     targetProjectId: 'ede994d8-bb05-01b5-9c33-8b65e7372306',
     // tslint:disable-next-line:max-line-length
-    targetProjectApiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0Yjg1NmJmMTEyYTA0ODcwYjRiMDBjNGQ3OTZkZGUxNyIsImlhdCI6IjE1NTI2NDk3NjUiLCJleHAiOiIxODk4MjQ5NzY1IiwicHJvamVjdF9pZCI6ImVkZTk5NGQ4YmIwNTAxYjU5YzMzOGI2NWU3MzcyMzA2IiwidmVyIjoiMi4xLjAiLCJ1aWQiOiJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsImF1ZCI6Im1hbmFnZS5rZW50aWNvY2xvdWQuY29tIn0.d5ynvZh06reXR2JRSR86Vp9jhFFqmX1mJlD_jzuHG84'
-  },
-  requestDelay: 0,
-  export: {
-    filenames: {
-      packagePrefix: 'export_',
-      assets: 'assets.json',
-      languageVariants: 'language-variants.json',
-      contentItems: 'content-items.json',
-      contentTypes: 'content-types.json',
-      taxonomies: 'taxonomies.json',
-      assetsFolder: 'assets',
-      metadata: 'metadata.json'
-    }
+    targetProjectApiKey: 'ew0KICAiYWxnIjogIkhTMjU2IiwNCiAgInR5cCI6ICJKV1QiDQp9.ew0KICAianRpIjogIjRiODU2YmYxMTJhMDQ4NzBiNGIwMGM0ZDc5NmRkZTE3IiwNCiAgImlhdCI6ICIxNTUyNjQ5NzY1IiwNCiAgImV4cCI6ICIxODk4MjQ5NzY1IiwNCiAgInByb2plY3RfaWQiOiAiZWRlOTk0ZDhiYjA1MDFiNTljMzM4YjY1ZTczNzIzMDYiLA0KICAidmVyIjogIjIuMS4wIiwNCiAgInVpZCI6ICJ1c3JfMHZRWUJDcUF2cm5vNXJpZkhuaVlFRyIsDQogICJhdWQiOiAibWFuYWdlLmtlbnRpY29jbG91ZC5jb20iDQp9.Pb7cpftOuzWFsppX1lPjZWkOviC5jDOuZyHKwYgPWNU'
   },
   google: {
     enableTracking: false,

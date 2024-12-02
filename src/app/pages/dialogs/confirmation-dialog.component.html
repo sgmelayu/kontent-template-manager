@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Confirmation</h1>
+<div mat-dialog-content>
+    <p>{{ text }}</p>
+</div>
+<div mat-dialog-actions>
+    <div fxLayout="row" style="width:100%" fxLayoutGap="16px" fxLayoutAlign="start center">
+        <div fxLayout="column" fxFlex>
+
+        </div>
+        <div fxLayout="column" fxFlex="initial">
+            <button mat-button (click)="close()">Cancel</button>
+        </div>
+        <div fxLayout="column" fxFlex="initial">
+            <lib-button (click)="confirm()" [matIcon]="'done'">Continue
+            </lib-button>
+        </div>
+    </div>
+</div>

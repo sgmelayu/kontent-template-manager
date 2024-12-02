@@ -9,6 +9,7 @@ export interface IImporDataStorage {
     targetProjectId?: string;
     targetProjectApiKey?: string;
     publishContentItems?: boolean;
+    sourceProjectSecureApiKey?: string;
 }
 
 @Injectable({

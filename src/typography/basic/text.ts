@@ -33,6 +33,21 @@ export class Text2Directive {
 }
 
 @Directive({
+    selector: '[libText3]'
+})
+export class Text3Directive {
+
+    constructor(
+        private renderer: Renderer2,
+        private hostElement: ElementRef
+    ) {
+        addClass(this.renderer, this.hostElement, 'w-text-3');
+    }
+
+}
+
+
+@Directive({
     selector: '[libTextCaption]'
 })
 export class TextCaptionDirective {

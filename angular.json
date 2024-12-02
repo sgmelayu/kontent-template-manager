@@ -27,7 +27,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/assets/styles/theme.scss"
             ],
             "scripts": [
             ],
@@ -41,7 +41,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "https://kentico.github.io/cloud-template-manager/",
+              "baseHref": "https://kentico.github.io/kontent-template-manager/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -86,7 +86,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.scss"
+              "src/assets/styles/theme.scss"
             ],
             "scripts": [],
             "assets": [

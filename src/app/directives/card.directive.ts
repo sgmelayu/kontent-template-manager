@@ -8,9 +8,8 @@ export class CardDirective implements OnInit {
     @Input() enableCard: boolean = true;
     @Input() addPad: boolean = true;
 
-    protected readonly padClass = 'pad';
+    protected readonly padClass = 'pad-md';
     protected readonly standardCardClass = 'w-card';
-
 
     constructor(
         private hostElement: ElementRef,

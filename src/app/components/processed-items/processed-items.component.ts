@@ -3,8 +3,8 @@ import { List } from 'immutable';
 import { map } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../../di';
-import { IProcessingItem } from '../../../services';
 import { BaseComponent } from '../../core/base.component';
+import { IProcessedItem } from '@kentico/kontent-backup-manager';
 
 @Component({
   selector: 'lib-processed-items',
@@ -13,9 +13,9 @@ import { BaseComponent } from '../../core/base.component';
 })
 export class ProcessedItemsComponent extends BaseComponent implements OnInit {
 
-  private _processedItems: List<IProcessingItem> = List<IProcessingItem>([]);
+  private _processedItems: List<IProcessedItem> = List<IProcessedItem>([]);
 
-  public get processedItems(): IProcessingItem[] {
+  public get processedItems(): IProcessedItem[] {
     return this._processedItems.toArray();
   }
 
@@ -30,7 +30,7 @@ export class ProcessedItemsComponent extends BaseComponent implements OnInit {
       this.dependencies.processingService.processedItemsChanged$.pipe(
         map((items) => {
           this._processedItems = this._processedItems.unshift(...items);
-          super.detectChanges();
+          super.markForCheck();
         })
       )
     );
@@ -38,8 +38,8 @@ export class ProcessedItemsComponent extends BaseComponent implements OnInit {
     super.subscribeToObservable(
       this.dependencies.processingService.clearProcessedItemsChanged$.pipe(
         map((item) => {
-          this._processedItems = List<IProcessingItem>([]);
-          super.detectChanges();
+          this._processedItems = List<IProcessedItem>([]);
+          super.markForCheck();
         })
       )
     );

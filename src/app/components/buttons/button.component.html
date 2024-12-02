@@ -1,0 +1,8 @@
+<div class="w-button-large" [class]="colorClass" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+    <div fxLayout="column" fxFlex="initial" *ngIf="matIcon">
+        <mat-icon>{{ matIcon }}</mat-icon>
+    </div>
+    <div fxLayout="column" fxFlex>
+        <ng-content></ng-content>
+    </div>
+</div>

@@ -4,6 +4,7 @@ import { ComponentDependencies } from '../../di';
 import { environment } from '../../environments/environment';
 import { stringHelper } from '../../utilities';
 import { BaseComponent } from '../core/base.component';
+import { map } from 'rxjs/operators';
 
 interface INavigationItem {
   routerLink?: string;
@@ -12,16 +13,22 @@ interface INavigationItem {
   type: 'link' | 'section'
 }
 
+interface ILayoutOptions {
+  fixed: boolean;
+  topGap: number;
+  bottomGap: number;
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './master-layout.component.html',
-  styleUrls: [
-    './master-layout.component.scss'
-  ]
+  templateUrl: './master-layout.component.html'
 })
 export class MasterLayoutComponent extends BaseComponent implements OnInit {
 
   public appName: string = environment.appName;
+  public title?: string;
+  public error?: string;
+  public year: number = new Date().getFullYear();
 
   public navigationItems: INavigationItem[] = [
     {
@@ -29,27 +36,15 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'section'
     },
     {
-      title: 'Import from project',
-      routerLink: '/',
-      icon: 'settings_backup_restore',
-      type: 'link'
-    },
-    {
-      title: 'Import from file',
-      routerLink: '/import-from-file',
-      icon: 'settings_backup_restore',
-      type: 'link'
-    },
-    {
-      title: 'Migrate items between projects',
-      routerLink: '/migrate-content-items',
-      icon: 'sync',
-      type: 'link'
-    },
-    {
       title: 'Export',
-      routerLink: '/export',
+      routerLink: '/',
       icon: 'cloud_download',
+      type: 'link'
+    },
+    {
+      title: 'Import',
+      routerLink: '/import',
+      icon: 'settings_backup_restore',
       type: 'link'
     },
     {
@@ -77,20 +72,41 @@ export class MasterLayoutComponent extends BaseComponent implements OnInit {
       type: 'section'
     },
     {
-      title: 'Limitations',
-      routerLink: '/limitations',
+      title: 'FAQ',
+      routerLink: '/faq',
       icon: 'help',
       type: 'link'
     }
   ];
 
+  public readonly layoutOptions: ILayoutOptions = {
+    fixed: true,
+    topGap: 64,
+    bottomGap: 0
+};
+
   constructor(
     dependencies: ComponentDependencies,
     cdr: ChangeDetectorRef) {
     super(dependencies, cdr);
+
+   
   }
 
   ngOnInit(): void {
+    super.subscribeToObservable(this.dependencies.layoutService.titleChanged$.pipe(
+      map(title => {
+        this.title = title;
+        super.detectChanges();
+      })
+    ));
+
+    super.subscribeToObservable(this.dependencies.layoutService.errorChanged$.pipe(
+      map(error => {
+        this.error = error;
+        super.detectChanges();
+      })
+    ))
   }
 
   menuItemIsActive(path: string, exactMatch: boolean = true): boolean {

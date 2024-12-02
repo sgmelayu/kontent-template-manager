@@ -29,15 +29,71 @@
     },
     {
         "name": "GatsbyJs Photon",
-        "description": "Kentico Cloud & GatsbyJs template based on Photon",
-        "repoUrl": "https://github.com/Simply007/cloud-template-gatsby",
-        "exportPackageUrl": "https://github.com/Simply007/cloud-template-gatsby/archive/master.zip",
-        "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-gatsby/master/template.jpg",
+        "description": "Kentico Kontent & GatsbyJs template based on Photon",
+        "repoUrl": "https://github.com/Simply007/kontent-template-gatsby-landing-page-photon",
+        "exportPackageUrl": "https://github.com/Simply007/kontent-template-gatsby-landing-page-photon/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/kontent-template-gatsby-landing-page-photon/master/template.jpg",
         "author": {
             "name": "Ondřej Chrastina",
             "email": "ondrej.chrastina@kentico.com"
         },
-        "lastUpdate": "2019-05-20T16:00:00.000Z",
+        "lastUpdate": "2019-11-04T16:00:00.000Z",
+        "forVersion": "1",
+        "technology": "GatsbyJs"
+    },
+    {
+        "name": "ASP.NET Core MVC",
+        "description": "Kentico Kontent web template built with ASP.NET Core MVC",
+        "repoUrl": "https://github.com/Simply007/cloud-template-dotnet-core",
+        "exportPackageUrl": "https://github.com/Simply007/cloud-template-dotnet-core/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/cloud-template-dotnet-core/master/template.jpg",
+        "author": {
+            "name": "Ondřej Chrastina",
+            "email": "ondrej.chrastina@kentico.com"
+        },
+        "lastUpdate": "2019-06-11T16:00:00.000Z",
+        "forVersion": "1",
+        "technology": ".NET Core MVC"
+    },
+    {
+        "name": "Freelancer",
+        "description": "Start Bootstrap Freelancer template based on ASP.NET Core Blazor",
+        "repoUrl": "https://github.com/petrsvihlik/StartBootstrap.Freelancer.Blazor",
+        "exportPackageUrl": "https://github.com/petrsvihlik/StartBootstrap.Freelancer.Blazor/archive/master.zip",
+        "imageUrl": "https://repository-images.githubusercontent.com/194238112/db381080-9b34-11e9-961a-89b79eaeb650",
+        "author": {
+            "name": "Petr Švihlík",
+            "email": "petr.svihlik@kentico.com"
+        },
+        "lastUpdate": "2019-06-30T16:00:00.000Z",
+        "forVersion": "0.0.8",
+        "technology": "ASP.NET Core Blazor"
+    },
+    {
+        "name": "Nerd Cafe",
+        "description": "Kentico Kontent web template built with Svelte and Sapper",
+        "repoUrl": "https://github.com/Simply007/kontent-sample-app-svelte-sapper",
+        "exportPackageUrl": "https://github.com/Simply007/kontent-sample-app-svelte-sapper/archive/master.zip",
+        "imageUrl": "https://raw.githubusercontent.com/Simply007/kontent-sample-app-svelte-sapper/master/template.jpg",
+        "author": {
+            "name": "Ondřej Chrastina",
+            "email": "ondrej.chrastina@kentico.com"
+        },
+        "lastUpdate": "2019-11-22T14:00:00.000Z",
+        "forVersion": "1",
+        "technology": "Svelte & Sapper"
+    },
+    {
+        "name": "GatsbyJs Lumen",
+        "description": "Kentico Kontent & GatsbyJs template based on Lumen",
+        "repoUrl": "https://github.com/Kentico/gatsby-starter-kontent-lumen",
+        "exportPackageUrl": "https://github.com/Kentico/gatsby-starter-kontent-lumen/archive/master.zip",
+        "imageUrl": "https://camo.githubusercontent.com/9e7bbeb7cfd30f29cf4285e8866ae1277d01314f/68747470733a2f2f692e696d6775722e636f6d2f6a56496d7154322e6a7067",
+        "author": {
+            "name": "Martin Makarský",
+            "email": "martinm@kentico.com"
+        },
+        "lastUpdate": "2020-04-06T16:00:00.000Z",
         "forVersion": "1",
         "technology": "GatsbyJs"
     }
