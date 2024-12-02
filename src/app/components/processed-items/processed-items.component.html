@@ -1,9 +1,18 @@
-<cdk-virtual-scroll-viewport itemSize="50" class="w-import-viewport">
-    <mat-list role="list">
-        <mat-list-item role="listitem" *cdkVirtualFor="let processedItem of processedItems">
-            <p>
-                <strong>{{ processedItem.action }} {{ processedItem.type }}</strong>: {{ processedItem.name }}
-            </p>
-        </mat-list-item>
-    </mat-list>
-</cdk-virtual-scroll-viewport>
+<div libCard *ngIf="processedItems && processedItems.length">
+    <cdk-virtual-scroll-viewport itemSize="50" class="w-import-viewport">
+        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" [class.push-top]="!first"
+            *cdkVirtualFor="let processedItem of processedItems; let first = first">
+            <div fxLayout="column" fxFlex>
+                <span libTitle4 *ngIf="processedItem.type === 'status'">
+                    {{ processedItem.title }}
+                </span>
+                <span *ngIf="processedItem.type !== 'status'">
+                    {{ processedItem.title }}
+                </span>
+            </div>
+            <div fxLayout="column" fxFlex="initial" libText3 class="push-right">
+                {{ processedItem.type }}
+            </div>
+        </div>
+    </cdk-virtual-scroll-viewport>
+</div>

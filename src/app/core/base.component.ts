@@ -1,17 +1,32 @@
-import { ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, Directive } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
 
 import { ComponentDependencies } from '../../di';
 import { observableHelper } from '../../utilities';
 import { versionInfo } from '../../version';
+import { environment } from 'src/environments/environment';
+import { NavigationExtras } from '@angular/router';
+import { DateTimeFormat } from 'src/services';
 
+@Directive()
 export abstract class BaseComponent implements OnDestroy {
-
     protected readonly ngUnsubscribe: Subject<void> = new Subject<void>();
+
+    public get backupManagerName(): string {
+        return environment.backupManagerName;
+    }
+
+    public get backupManagerUrl(): string {
+        return environment.backupManagerUrl;
+    }
 
     public get version(): string {
         return versionInfo.version;
+    }
+
+    public get kbmVersion(): string {
+        return versionInfo.kbmVersion;
     }
 
     public get isSmallScreen(): boolean {
@@ -26,29 +41,19 @@ export abstract class BaseComponent implements OnDestroy {
         return !this.isSmallScreen;
     }
 
-    public isLoading: boolean = false;
-
-    constructor(
-        protected dependencies: ComponentDependencies,
-        protected cdr: ChangeDetectorRef
-    ) {
-    }
+    constructor(protected dependencies: ComponentDependencies, protected cdr: ChangeDetectorRef) {}
 
     ngOnDestroy(): void {
         this.destroy();
     }
 
+    formatDateVerbose(date: DateTimeFormat): string {
+        return this.dependencies.timeService.formatDateVerbose(date);
+    }
+
     protected destroy(): void {
         this.ngUnsubscribe.next();
         this.ngUnsubscribe.complete();
-    }
-
-    protected startLoading(): void {
-        this.isLoading = true;
-    }
-
-    protected stopLoading(): void {
-        this.isLoading = false;
     }
 
     protected detectChanges(): void {
@@ -66,16 +71,17 @@ export abstract class BaseComponent implements OnDestroy {
     protected subscribeToObservable(observable: Observable<any>): void {
         observable
             .pipe(
-                takeUntil(this.ngUnsubscribe),
-                catchError(error => {
-                    this.markForCheck();
+                catchError((error) => {
                     return throwError(error);
-                })
+                }),
+                takeUntil(this.ngUnsubscribe)
             )
             .subscribe(() => {
                 this.markForCheck();
             });
     }
 
-
+    protected navigateToAction(action: string, extras?: NavigationExtras): void {
+        this.dependencies.router.navigate([action], extras);
+    }
 }
