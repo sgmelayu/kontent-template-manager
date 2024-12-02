@@ -1,7 +1,6 @@
 export class StringHelper {
-
     extractEverythingBefore(text: string, beforeString: string): string {
-        return text.substring(0, text.indexOf(beforeString))
+        return text.substring(0, text.indexOf(beforeString));
     }
 
     /**
@@ -58,7 +57,7 @@ export class StringHelper {
 
     /**
      * Removes everything after some separator. Includes the separator itself.
-     * @param text Text 
+     * @param text Text
      * @param separator Everything after this will be removed (included separator itself)
      */
     removeEverythingAfterIncludingSeparator(text: string, separator: string): string {
@@ -74,7 +73,10 @@ export class StringHelper {
      * @param text text to hash
      */
     getHash(text: string): number {
-        let hash = 0, i, chr;
+        // tslint:disable-next-line: one-variable-per-declaration
+        let hash = 0,
+            i,
+            chr;
         if (!text) {
             return hash;
         }
@@ -82,7 +84,7 @@ export class StringHelper {
         for (i = 0; i < text.length; i++) {
             chr = text.charCodeAt(i);
             // tslint:disable-next-line:no-bitwise
-            hash = ((hash << 5) - hash) + chr;
+            hash = (hash << 5) - hash + chr;
             // tslint:disable-next-line:no-bitwise
             hash |= 0; // Convert to 32bit integer
         }
@@ -102,23 +104,23 @@ export class StringHelper {
     }
 
     /**
-   * Returns true if text contains all of the given inputs
-   * @param text text
-   * @param contains text array
-   */
+     * Returns true if text contains all of the given inputs
+     * @param text text
+     * @param contains text array
+     */
     containsAll(text: string, containsArr: string[]): boolean {
         if (!text || !containsArr || !Array.isArray(containsArr)) {
             return false;
         }
 
-        return containsArr.every(m => text.toLowerCase().includes(m.toLowerCase()));
+        return containsArr.every((m) => text.toLowerCase().includes(m.toLowerCase()));
     }
 
     /**
-    * Returns true if text contains one of the given inputs
-    * @param text text
-    * @param contains text array
-    */
+     * Returns true if text contains one of the given inputs
+     * @param text text
+     * @param contains text array
+     */
     containsAny(text: string, containsArr: string[]): boolean {
         if (!text || !containsArr || !Array.isArray(containsArr)) {
             return false;
@@ -126,7 +128,7 @@ export class StringHelper {
 
         let result = false;
 
-        containsArr.forEach(contains => {
+        containsArr.forEach((contains) => {
             const textContainsResult = text.toLowerCase().indexOf(contains.toLowerCase()) !== -1;
             if (textContainsResult) {
                 result = true;
@@ -153,7 +155,7 @@ export class StringHelper {
      * @param text Text
      */
     stripHtmlTags(text: string): string | undefined {
-        if ((text === null) || (text === '')) {
+        if (text === null || text === '') {
             return undefined;
         } else {
             text = text.toString();
@@ -162,13 +164,14 @@ export class StringHelper {
     }
 
     newGuid(): string {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            // tslint:disable-next-line:no-bitwise triple-equals
-            const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            // tslint:disable-next-line: no-bitwise
+            const r = (Math.random() * 16) | 0,
+                // tslint:disable-next-line: no-bitwise
+                v = c === 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
     }
-
 }
 
 export const stringHelper = new StringHelper();

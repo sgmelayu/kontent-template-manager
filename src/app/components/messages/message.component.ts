@@ -10,8 +10,6 @@ import { BaseComponent } from '../../core/base.component';
 })
 export class MessageComponent extends BaseComponent {
 
-  @Input() text?: string;
-  @Input() html?: string;
   @Input() type: 'error' | 'success' | 'warning' | 'info' = 'error';
 
   constructor(

@@ -7,10 +7,9 @@ declare var gtag: any;
 declare var window: any;
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'root'
 })
 export class GoogleAnalyticsService {
-
     private readonly gTagParam = 'gtag';
 
     /**
@@ -25,21 +24,14 @@ export class GoogleAnalyticsService {
 
     private renderer2: Renderer2;
 
-    constructor(
-        rendererFactory2: RendererFactory2,
-    ) {
+    constructor(rendererFactory2: RendererFactory2) {
         this.renderer2 = rendererFactory2.createRenderer(null, null);
     }
 
     /**
      * Logs event activity as per https://developers.google.com/analytics/devguides/collection/analyticsjs/events
      */
-    logEvent(data: {
-        eventCategory: string,
-        eventAction: string,
-        eventLabel?: string,
-        eventValue?: number
-    }): void {
+    logEvent(data: { eventCategory: string; eventAction: string; eventLabel?: string; eventValue?: number }): void {
         if (!environment.google.enableTracking) {
             // tracking is disabled
             return;
@@ -68,15 +60,15 @@ export class GoogleAnalyticsService {
         /**
          * The page's title.
          */
-        pageTitle: string,
+        pageTitle: string;
         /**
          * The page's URL.
          */
-        pageLocation?: string,
+        pageLocation?: string;
         /**
          * The path portion of location. This value must start with a slash (/) character.
          */
-        pagePath?: string,
+        pagePath?: string;
     }): void {
         if (!environment.google.enableTracking) {
             // tracking is disabled
@@ -91,12 +83,11 @@ export class GoogleAnalyticsService {
             gtag('config', environment.google.googleAnalyticsTrackingId, {
                 page_title: data.pageTitle,
                 page_location: data.pageLocation,
-                page_path: data.pagePath,
+                page_path: data.pagePath
             });
         } else {
             throw Error(`gtag is not available and cannot log page`);
         }
-
     }
 
     private ensureGoogleAnalyticsScript(): void {
